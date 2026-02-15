@@ -1,6 +1,6 @@
 interface Props {
   color: string;
-};
+}
 
 export default function Scene(props: Props) {
   return (
@@ -12,5 +12,4 @@ export default function Scene(props: Props) {
       </mesh>
     </>
   );
-};
-
+}
