@@ -5,6 +5,7 @@ import { button, useControls } from "leva";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
 import { earth } from "@/data/planets";
+import "./index.css";
 
 interface PlanetMeshProps {
   planet: Planet;
@@ -144,7 +145,7 @@ export default function Page() {
   };
 
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+    <div className="simulation-page">
       <Canvas
         camera={{ position: [0, 0, 220], fov: 60 }}
         onCreated={({ gl }) => {
@@ -175,26 +176,11 @@ export default function Page() {
         <OrbitControls enableZoom={true} />
       </Canvas>
 
-      <div
-        style={{
-          position: "absolute",
-          top: 16,
-          left: 16,
-          width: 320,
-          maxHeight: "75vh",
-          overflowY: "auto",
-          background: "rgba(0, 0, 0, 0.7)",
-          color: "#ffffff",
-          borderRadius: 8,
-          padding: 12,
-          backdropFilter: "blur(4px)",
-          fontSize: 14,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div className="simulation-panel">
+        <div className="simulation-panel__header">
           <strong>クリック配置</strong>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div className="simulation-panel__actions">
+            <label className="simulation-panel__toggle">
               <input
                 type="checkbox"
                 checked={placementMode}
@@ -205,15 +191,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setPlacementPanelOpen((prev) => !prev)}
-              style={{
-                border: "1px solid rgba(255, 255, 255, 0.35)",
-                borderRadius: 6,
-                background: "transparent",
-                color: "#ffffff",
-                padding: "2px 8px",
-                cursor: "pointer",
-                fontSize: 12,
-              }}
+              className="simulation-panel__button"
             >
               {placementPanelOpen ? "たたむ" : "ひらく"}
             </button>
@@ -221,28 +199,20 @@ export default function Page() {
         </div>
         {placementPanelOpen && (
           <>
-            <p style={{ marginTop: 8, marginBottom: 12, opacity: 0.85 }}>
+            <p className="simulation-panel__hint">
               ONの間は水色の面をクリックすると、座標が自動入力されます。
             </p>
 
             <strong>追加済み惑星 ({planets.length})</strong>
-            <ul style={{ listStyle: "none", padding: 0, marginTop: 10, marginBottom: 0 }}>
+            <ul className="simulation-panel__list">
               {planets.map((planet, index) => (
                 <li
                   key={`planet-item-${index}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 8,
-                    marginBottom: 8,
-                    paddingBottom: 8,
-                    borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
-                  }}
+                  className="simulation-panel__item"
                 >
                   <div>
                     <div>#{index + 1}</div>
-                    <div style={{ fontSize: 12, opacity: 0.85 }}>
+                    <div className="simulation-panel__meta">
                       r={planet.radius.toFixed(1)} / (
                       {planet.position.x.toFixed(1)}, {planet.position.y.toFixed(1)},
                       {planet.position.z.toFixed(1)})
@@ -251,14 +221,7 @@ export default function Page() {
                   <button
                     type="button"
                     onClick={() => removePlanet(index)}
-                    style={{
-                      border: "1px solid rgba(255, 255, 255, 0.35)",
-                      borderRadius: 6,
-                      background: "transparent",
-                      color: "#ffffff",
-                      padding: "4px 8px",
-                      cursor: "pointer",
-                    }}
+                    className="simulation-panel__delete"
                   >
                     削除
                   </button>
