@@ -90,6 +90,7 @@ export default function Page() {
   const [planets, setPlanets] = useState<Planet[]>([earth]);
 
   const [placementMode, setPlacementMode] = useState(false);
+  const [placementPanelOpen, setPlacementPanelOpen] = useState(true);
 
   const [planetControls, setPlanetControls, getPlanetControl] = useControls("New Planet", () => ({
     radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
@@ -192,59 +193,80 @@ export default function Page() {
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <strong>クリック配置</strong>
-          <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <input
-              type="checkbox"
-              checked={placementMode}
-              onChange={(event) => setPlacementMode(event.target.checked)}
-            />
-            ON
-          </label>
-        </div>
-        <p style={{ marginTop: 8, marginBottom: 12, opacity: 0.85 }}>
-          ONの間は水色の面をクリックすると、座標が自動入力されます。
-        </p>
-
-        <strong>追加済み惑星 ({planets.length})</strong>
-        <ul style={{ listStyle: "none", padding: 0, marginTop: 10, marginBottom: 0 }}>
-          {planets.map((planet, index) => (
-            <li
-              key={`planet-item-${index}`}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <input
+                type="checkbox"
+                checked={placementMode}
+                onChange={(event) => setPlacementMode(event.target.checked)}
+              />
+              ON
+            </label>
+            <button
+              type="button"
+              onClick={() => setPlacementPanelOpen((prev) => !prev)}
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 8,
-                marginBottom: 8,
-                paddingBottom: 8,
-                borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
+                border: "1px solid rgba(255, 255, 255, 0.35)",
+                borderRadius: 6,
+                background: "transparent",
+                color: "#ffffff",
+                padding: "2px 8px",
+                cursor: "pointer",
+                fontSize: 12,
               }}
             >
-              <div>
-                <div>#{index + 1}</div>
-                <div style={{ fontSize: 12, opacity: 0.85 }}>
-                  r={planet.radius.toFixed(1)} / (
-                  {planet.position.x.toFixed(1)}, {planet.position.y.toFixed(1)},
-                  {planet.position.z.toFixed(1)})
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => removePlanet(index)}
-                style={{
-                  border: "1px solid rgba(255, 255, 255, 0.35)",
-                  borderRadius: 6,
-                  background: "transparent",
-                  color: "#ffffff",
-                  padding: "4px 8px",
-                  cursor: "pointer",
-                }}
-              >
-                削除
-              </button>
-            </li>
-          ))}
-        </ul>
+              {placementPanelOpen ? "たたむ" : "ひらく"}
+            </button>
+          </div>
+        </div>
+        {placementPanelOpen && (
+          <>
+            <p style={{ marginTop: 8, marginBottom: 12, opacity: 0.85 }}>
+              ONの間は水色の面をクリックすると、座標が自動入力されます。
+            </p>
+
+            <strong>追加済み惑星 ({planets.length})</strong>
+            <ul style={{ listStyle: "none", padding: 0, marginTop: 10, marginBottom: 0 }}>
+              {planets.map((planet, index) => (
+                <li
+                  key={`planet-item-${index}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 8,
+                    marginBottom: 8,
+                    paddingBottom: 8,
+                    borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
+                  }}
+                >
+                  <div>
+                    <div>#{index + 1}</div>
+                    <div style={{ fontSize: 12, opacity: 0.85 }}>
+                      r={planet.radius.toFixed(1)} / (
+                      {planet.position.x.toFixed(1)}, {planet.position.y.toFixed(1)},
+                      {planet.position.z.toFixed(1)})
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removePlanet(index)}
+                    style={{
+                      border: "1px solid rgba(255, 255, 255, 0.35)",
+                      borderRadius: 6,
+                      background: "transparent",
+                      color: "#ffffff",
+                      padding: "4px 8px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    削除
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
     </div>
   );
