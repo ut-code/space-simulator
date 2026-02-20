@@ -1,10 +1,10 @@
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
-import * as THREE from "three";
-import type { Planet } from "@/types/planet";
-import { earth, test1 } from "@/data/planets";
+import type * as THREE from "three";
 import { Explosion } from "@/components/Explosion";
+import { earth, test1 } from "@/data/planets";
+import type { Planet } from "@/types/planet";
 import { isColliding } from "@/utils/isColliding";
 
 const planets: Planet[] = [earth, test1];
@@ -19,15 +19,19 @@ function PlanetMesh({ planet }: PlanetMeshProps) {
 	// Load the texture (you can use any public Earth texture URL)
 	const [colorMap] = useTexture([planet.texturePath]);
 
-  // This hook runs every frame (approx 60fps)
-  useFrame((_state, delta) => {
-    if (meshRef.current) {
-      // Rotate the planet on its Y-axis
-      meshRef.current.rotation.y += delta * planet.rotationSpeedY;
-      // 位置を planet.position に同期
-      meshRef.current.position.set(planet.position.x, planet.position.y, planet.position.z);
-    }
-  });
+	// This hook runs every frame (approx 60fps)
+	useFrame((_state, delta) => {
+		if (meshRef.current) {
+			// Rotate the planet on its Y-axis
+			meshRef.current.rotation.y += delta * planet.rotationSpeedY;
+			// 位置を planet.position に同期
+			meshRef.current.position.set(
+				planet.position.x,
+				planet.position.y,
+				planet.position.z,
+			);
+		}
+	});
 
 	return (
 		<mesh
@@ -43,71 +47,71 @@ function PlanetMesh({ planet }: PlanetMeshProps) {
 	);
 }
 interface SimulationProps {
-  planets: Planet[];
-  setExplosions: React.Dispatch<React.SetStateAction<Planet[]>>;
+	planets: Planet[];
+	setExplosions: React.Dispatch<React.SetStateAction<Planet[]>>;
 }
 
 export function Simulation({ planets, setExplosions }: SimulationProps) {
-  // 前フレームの衝突ペアを記録して、連続爆発を防ぐ
-  const collidedPairsRef = useRef<Set<string>>(new Set());
+	// 前フレームの衝突ペアを記録して、連続爆発を防ぐ
+	const collidedPairsRef = useRef<Set<string>>(new Set());
 
-  useFrame((_state, delta) => {
-    // 並進運動
-    planets.forEach((planet) => {
-      if (planet.velocity) {
-        planet.position.addScaledVector(planet.velocity, delta);
-      }
-    });
+	useFrame((_state, delta) => {
+		// 並進運動
+		planets.forEach((planet) => {
+			if (planet.velocity) {
+				planet.position.addScaledVector(planet.velocity, delta);
+			}
+		});
 
-    // 衝突判定
-    for (let i = 0; i < planets.length; i++) {
-      for (let j = i + 1; j < planets.length; j++) {
-        const a = planets[i];
-        const b = planets[j];
-        const key = `${i}-${j}`;
+		// 衝突判定
+		for (let i = 0; i < planets.length; i++) {
+			for (let j = i + 1; j < planets.length; j++) {
+				const a = planets[i];
+				const b = planets[j];
+				const key = `${i}-${j}`;
 
-        if (isColliding(a, b)) {
-          if (!collidedPairsRef.current.has(key)) {
-            collidedPairsRef.current.add(key);
+				if (isColliding(a, b)) {
+					if (!collidedPairsRef.current.has(key)) {
+						collidedPairsRef.current.add(key);
 
-            // 衝突したら爆発を追加
-            setExplosions((prev) => [...prev, a, b]);
+						// 衝突したら爆発を追加
+						setExplosions((prev) => [...prev, a, b]);
 
-            console.log(`Collision detected between planet ${i} and ${j}`);
-          }
-        } else {
-          // 衝突していない場合は記録を削除
-          collidedPairsRef.current.delete(key);
-        }
-      }
-    }
-  });
+						console.log(`Collision detected between planet ${i} and ${j}`);
+					}
+				} else {
+					// 衝突していない場合は記録を削除
+					collidedPairsRef.current.delete(key);
+				}
+			}
+		}
+	});
 
-  return null;
+	return null;
 }
 
 export default function Page() {
-  const [explosions, setExplosions] = useState<Planet[]>([]);
+	const [explosions, setExplosions] = useState<Planet[]>([]);
 
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 6] }}
-      onCreated={({ gl }) => {
-        gl.setClearColor("#000000", 1);
-      }}
-      style={{ width: "100vw", height: "100vh" }}
-    >
-      {/* Adds ambient and directional light so we can see the 3D shape */}
-      <ambientLight intensity={1.2} />
-      <pointLight position={[10, 10, 10]} intensity={3} />
+	return (
+		<Canvas
+			camera={{ position: [0, 0, 6] }}
+			onCreated={({ gl }) => {
+				gl.setClearColor("#000000", 1);
+			}}
+			style={{ width: "100vw", height: "100vh" }}
+		>
+			{/* Adds ambient and directional light so we can see the 3D shape */}
+			<ambientLight intensity={1.2} />
+			<pointLight position={[10, 10, 10]} intensity={3} />
 
-      {planets.map((planet, idx) => (
-        <PlanetMesh key={idx} planet={planet} />
-      ))}
-      <Simulation planets={planets} setExplosions={setExplosions} />
-      {explosions.map((exp, idx) => (
-        <Explosion key={idx} planet={exp} />
-      ))}
+			{planets.map((planet, idx) => (
+				<PlanetMesh key={idx} planet={planet} />
+			))}
+			<Simulation planets={planets} setExplosions={setExplosions} />
+			{explosions.map((exp, idx) => (
+				<Explosion key={idx} planet={exp} />
+			))}
 
 			{/* Optional background and controls */}
 			<Stars
