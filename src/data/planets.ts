@@ -2,6 +2,7 @@ import * as THREE from "three";
 import type { Planet } from "@/types/planet";
 
 export const earth: Planet = {
+	name: "Earth",
 	texturePath:
 		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
 	rotationSpeedY: 2,
@@ -12,7 +13,8 @@ export const earth: Planet = {
 	velocity: new THREE.Vector3(0, 0, 0),
 };
 
-export const test1: Planet = {
+export const testPlanet: Planet = {
+	name: "TestPlanet",
 	texturePath:
 		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
 	rotationSpeedY: 2,

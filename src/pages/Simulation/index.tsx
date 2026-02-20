@@ -3,11 +3,11 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import type * as THREE from "three";
 import { Explosion } from "@/components/Explosion";
-import { earth, test1 } from "@/data/planets";
+import { earth, testPlanet } from "@/data/planets";
 import type { Planet } from "@/types/planet";
 import { isColliding } from "@/utils/isColliding";
 
-const planets: Planet[] = [earth, test1];
+const testPlanets: Planet[] = [earth, testPlanet];
 
 interface PlanetMeshProps {
 	planet: Planet;
@@ -57,11 +57,11 @@ export function Simulation({ planets, setExplosions }: SimulationProps) {
 
 	useFrame((_state, delta) => {
 		// 並進運動
-		planets.forEach((planet) => {
-			if (planet.velocity) {
-				planet.position.addScaledVector(planet.velocity, delta);
+		for (let i = 0; i < planets.length; i++) {
+			if (planets[i].velocity) {
+				planets[i].position.addScaledVector(planets[i].velocity, delta);
 			}
-		});
+		}
 
 		// 衝突判定
 		for (let i = 0; i < planets.length; i++) {
@@ -105,10 +105,10 @@ export default function Page() {
 			<ambientLight intensity={1.2} />
 			<pointLight position={[10, 10, 10]} intensity={3} />
 
-			{planets.map((planet, idx) => (
-				<PlanetMesh key={idx} planet={planet} />
+			{testPlanets.map((planet) => (
+				<PlanetMesh key={planet.name} planet={planet} />
 			))}
-			<Simulation planets={planets} setExplosions={setExplosions} />
+			<Simulation planets={testPlanets} setExplosions={setExplosions} />
 			{explosions.map((exp, idx) => (
 				<Explosion key={idx} planet={exp} />
 			))}

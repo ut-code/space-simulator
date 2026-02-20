@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
 
-export type Fragment = {
+type Fragment = {
 	mesh: THREE.Mesh;
 	velocity: THREE.Vector3;
 	rotationAxis: THREE.Vector3;
