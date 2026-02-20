@@ -1,13 +1,13 @@
 import { Canvas } from "@react-three/fiber";
 
 interface Props {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 export default function ThreeCanvas(props: Props) {
-  return (
-    <Canvas camera={{ position: [0, 2, 5], fov: 60 }} shadows>
-      {props.children}
-    </Canvas>
-  );
+	return (
+		<Canvas camera={{ position: [0, 2, 5], fov: 60 }} shadows>
+			{props.children}
+		</Canvas>
+	);
 }
