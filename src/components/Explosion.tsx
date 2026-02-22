@@ -1,9 +1,10 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import type { Planet } from "@/types/planet";
+import type { ExplosionData } from "@/types/Explosion";
 
 type Fragment = {
+	id: string;
 	mesh: THREE.Mesh;
 	velocity: THREE.Vector3;
 	rotationAxis: THREE.Vector3;
@@ -11,24 +12,21 @@ type Fragment = {
 };
 
 type ExplosionProps = {
-	planet: Planet;
-	fragmentCount?: number;
+	explosion: ExplosionData;
 	onComplete?: () => void;
 };
 
-export const Explosion: React.FC<ExplosionProps> = ({
-	planet,
-	fragmentCount = 50,
-	onComplete,
-}: ExplosionProps) => {
-	const groupRef = useRef<THREE.Group>(null);
+export function Explosion({ explosion, onComplete }: ExplosionProps) {
+	const groupRef = useRef<THREE.Group | null>(null);
 	const [fragments, setFragments] = useState<Fragment[]>([]);
 
 	// 爆発初期化
 	useEffect(() => {
 		const newFragments: Fragment[] = [];
-		for (let i = 0; i < fragmentCount; i++) {
-			const size = Math.random() * (planet.radius * 0.2) + 0.05;
+		for (let i = 0; i < explosion.fragmentCount; i++) {
+			const id = crypto.randomUUID();
+
+			const size = Math.random() * (explosion.radius * 0.2) + 0.05;
 			const geometry = new THREE.SphereGeometry(size, 6, 6);
 			const material = new THREE.MeshStandardMaterial({
 				color: 0xffaa33,
@@ -37,7 +35,7 @@ export const Explosion: React.FC<ExplosionProps> = ({
 			const mesh = new THREE.Mesh(geometry, material);
 
 			// 初期位置は惑星中心
-			mesh.position.copy(planet.position);
+			mesh.position.copy(explosion.position);
 
 			// ランダム方向に飛ぶ速度
 			const velocity = new THREE.Vector3(
@@ -54,6 +52,7 @@ export const Explosion: React.FC<ExplosionProps> = ({
 			).normalize();
 
 			newFragments.push({
+				id,
 				mesh,
 				velocity,
 				rotationAxis,
@@ -61,7 +60,24 @@ export const Explosion: React.FC<ExplosionProps> = ({
 			});
 		}
 		setFragments(newFragments);
-	}, [planet, fragmentCount]);
+
+		return () => {
+			for (let i = 0; i < newFragments.length; i++) {
+				const f = newFragments[i];
+				f.mesh.parent?.remove(f.mesh);
+				f.mesh.geometry.dispose();
+
+				const mat = f.mesh.material;
+				if (Array.isArray(mat)) {
+					for (let j = 0; j < mat.length; j++) {
+						mat[j].dispose();
+					}
+				} else {
+					mat.dispose();
+				}
+			}
+		};
+	}, [explosion]);
 
 	// フレームごとの更新
 	useFrame((_, delta) => {
@@ -69,9 +85,12 @@ export const Explosion: React.FC<ExplosionProps> = ({
 
 		setFragments((prev) => {
 			const alive: Fragment[] = [];
-			prev.forEach((f) => {
+
+			for (let i = 0; i < prev.length; i++) {
+				const f = prev[i];
+
 				// 位置更新
-				f.mesh.position.add(f.velocity.clone().multiplyScalar(delta));
+				f.mesh.position.addScaledVector(f.velocity, delta);
 
 				// 回転
 				f.mesh.rotateOnAxis(f.rotationAxis, delta * 5);
@@ -81,12 +100,18 @@ export const Explosion: React.FC<ExplosionProps> = ({
 
 				// 減衰
 				f.lifetime -= delta;
-				if (f.lifetime > 0) alive.push(f);
-				else f.mesh.parent?.remove(f.mesh); // Group から削除
-			});
+
+				if (f.lifetime > 0) {
+					alive.push(f);
+				} else {
+					f.mesh.parent?.remove(f.mesh); // Group から削除
+				}
+			}
 
 			// 爆発完了通知
-			if (alive.length === 0 && onComplete) onComplete();
+			if (alive.length === 0 && onComplete) {
+				onComplete();
+			}
 
 			return alive;
 		});
@@ -94,9 +119,9 @@ export const Explosion: React.FC<ExplosionProps> = ({
 
 	return (
 		<group ref={groupRef}>
-			{fragments.map((f, i) => (
-				<primitive key={i} object={f.mesh} />
+			{fragments.map((f) => (
+				<primitive key={f.id} object={f.mesh} />
 			))}
 		</group>
 	);
-};
+}

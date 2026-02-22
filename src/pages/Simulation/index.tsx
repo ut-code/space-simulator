@@ -4,14 +4,15 @@ import { useRef, useState } from "react";
 import type * as THREE from "three";
 import { Explosion } from "@/components/Explosion";
 import { earth, testPlanet } from "@/data/planets";
+import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
 import { isColliding } from "@/utils/isColliding";
 
 const testPlanets: Planet[] = [earth, testPlanet];
 
-interface PlanetMeshProps {
+type PlanetMeshProps = {
 	planet: Planet;
-}
+};
 
 function PlanetMesh({ planet }: PlanetMeshProps) {
 	const meshRef = useRef<THREE.Mesh>(null);
@@ -46,12 +47,12 @@ function PlanetMesh({ planet }: PlanetMeshProps) {
 		</mesh>
 	);
 }
-interface SimulationProps {
+type SimulationProps = {
 	planets: Planet[];
-	setExplosions: React.Dispatch<React.SetStateAction<Planet[]>>;
-}
+	onExplosion: (newExp: ExplosionData) => void;
+};
 
-export function Simulation({ planets, setExplosions }: SimulationProps) {
+export function Simulation({ planets, onExplosion }: SimulationProps) {
 	// 前フレームの衝突ペアを記録して、連続爆発を防ぐ
 	const collidedPairsRef = useRef<Set<string>>(new Set());
 
@@ -75,7 +76,13 @@ export function Simulation({ planets, setExplosions }: SimulationProps) {
 						collidedPairsRef.current.add(key);
 
 						// 衝突したら爆発を追加
-						setExplosions((prev) => [...prev, a, b]);
+						const newExp = {
+							id: crypto.randomUUID(),
+							radius: (a.radius + b.radius) / 2,
+							position: a.position.clone().lerp(b.position, 0.5),
+							fragmentCount: 50,
+						};
+						onExplosion(newExp);
 
 						console.log(`Collision detected between planet ${i} and ${j}`);
 					}
@@ -91,7 +98,7 @@ export function Simulation({ planets, setExplosions }: SimulationProps) {
 }
 
 export default function Page() {
-	const [explosions, setExplosions] = useState<Planet[]>([]);
+	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
 
 	return (
 		<Canvas
@@ -108,9 +115,14 @@ export default function Page() {
 			{testPlanets.map((planet) => (
 				<PlanetMesh key={planet.name} planet={planet} />
 			))}
-			<Simulation planets={testPlanets} setExplosions={setExplosions} />
-			{explosions.map((exp, idx) => (
-				<Explosion key={idx} planet={exp} />
+			<Simulation
+				planets={testPlanets}
+				onExplosion={(newExp: ExplosionData) =>
+					setExplosions((prev) => [...prev, newExp])
+				}
+			/>
+			{explosions.map((exp) => (
+				<Explosion key={exp.id} explosion={exp} />
 			))}
 
 			{/* Optional background and controls */}
