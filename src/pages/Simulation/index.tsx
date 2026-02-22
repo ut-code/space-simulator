@@ -1,13 +1,18 @@
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type * as THREE from "three";
-import { earth } from "@/data/planets";
+import { Explosion } from "@/components/Explosion";
+import { earth, testPlanet } from "@/data/planets";
+import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
+import { isColliding } from "@/utils/isColliding";
 
-interface PlanetMeshProps {
+const testPlanets: Planet[] = [earth, testPlanet];
+
+type PlanetMeshProps = {
 	planet: Planet;
-}
+};
 
 function PlanetMesh({ planet }: PlanetMeshProps) {
 	const meshRef = useRef<THREE.Mesh>(null);
@@ -20,6 +25,12 @@ function PlanetMesh({ planet }: PlanetMeshProps) {
 		if (meshRef.current) {
 			// Rotate the planet on its Y-axis
 			meshRef.current.rotation.y += delta * planet.rotationSpeedY;
+			// 位置を planet.position に同期
+			meshRef.current.position.set(
+				planet.position.x,
+				planet.position.y,
+				planet.position.z,
+			);
 		}
 	});
 
@@ -36,8 +47,59 @@ function PlanetMesh({ planet }: PlanetMeshProps) {
 		</mesh>
 	);
 }
+type SimulationProps = {
+	planets: Planet[];
+	onExplosion: (newExp: ExplosionData) => void;
+};
+
+export function Simulation({ planets, onExplosion }: SimulationProps) {
+	// 前フレームの衝突ペアを記録して、連続爆発を防ぐ
+	const collidedPairsRef = useRef<Set<string>>(new Set());
+
+	useFrame((_state, delta) => {
+		// 並進運動
+		for (let i = 0; i < planets.length; i++) {
+			if (planets[i].velocity) {
+				planets[i].position.addScaledVector(planets[i].velocity, delta);
+			}
+		}
+
+		// 衝突判定
+		for (let i = 0; i < planets.length; i++) {
+			for (let j = i + 1; j < planets.length; j++) {
+				const a = planets[i];
+				const b = planets[j];
+				const key = `${i}-${j}`;
+
+				if (isColliding(a, b)) {
+					if (!collidedPairsRef.current.has(key)) {
+						collidedPairsRef.current.add(key);
+
+						// 衝突したら爆発を追加
+						const newExp = {
+							id: crypto.randomUUID(),
+							radius: (a.radius + b.radius) / 2,
+							position: a.position.clone().lerp(b.position, 0.5),
+							fragmentCount: 50,
+						};
+						onExplosion(newExp);
+
+						console.log(`Collision detected between planet ${i} and ${j}`);
+					}
+				} else {
+					// 衝突していない場合は記録を削除
+					collidedPairsRef.current.delete(key);
+				}
+			}
+		}
+	});
+
+	return null;
+}
 
 export default function Page() {
+	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
+
 	return (
 		<Canvas
 			camera={{ position: [0, 0, 6] }}
@@ -50,7 +112,18 @@ export default function Page() {
 			<ambientLight intensity={1.2} />
 			<pointLight position={[10, 10, 10]} intensity={3} />
 
-			<PlanetMesh planet={earth} />
+			{testPlanets.map((planet) => (
+				<PlanetMesh key={planet.name} planet={planet} />
+			))}
+			<Simulation
+				planets={testPlanets}
+				onExplosion={(newExp: ExplosionData) =>
+					setExplosions((prev) => [...prev, newExp])
+				}
+			/>
+			{explosions.map((exp) => (
+				<Explosion key={exp.id} explosion={exp} />
+			))}
 
 			{/* Optional background and controls */}
 			<Stars
