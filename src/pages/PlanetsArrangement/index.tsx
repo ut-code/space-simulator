@@ -1,10 +1,19 @@
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { earth } from "@/data/planets";
+import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { Planet } from "@/types/planet";
+
+const planetTexturePaths = [
+	earth.texturePath,
+	sun.texturePath,
+	mars.texturePath,
+	jupiter.texturePath,
+	venus.texturePath,
+];
+useTexture.preload(planetTexturePaths);
 
 type PlanetMeshProps = {
 	planet: Planet;
@@ -89,6 +98,8 @@ function PlacementSurface({ enabled, yLevel, onPlace }: PlacementSurfaceProps) {
 	);
 }
 
+const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
+
 export default function Page() {
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 
@@ -98,6 +109,16 @@ export default function Page() {
 	const [planetControls, setPlanetControls, getPlanetControl] = useControls(
 		"New Planet",
 		() => ({
+			planetType: {
+				value: "earth",
+				options: {
+					Earth: "earth",
+					Sun: "sun",
+					Mars: "mars",
+					Jupiter: "jupiter",
+					Venus: "venus",
+				},
+			},
 			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
 			posX: { value: 0, min: -200, max: 200, step: 0.2 },
 			posY: { value: 0, min: -200, max: 200, step: 0.2 },
@@ -106,8 +127,22 @@ export default function Page() {
 		}),
 	);
 
+	useEffect(() => {
+		const selectedType =
+			(planetControls.planetType as keyof typeof planetTemplates) ?? "earth";
+		const template = planetTemplates[selectedType] ?? earth;
+		setPlanetControls({
+			radius: template.radius,
+			rotationSpeedY: template.rotationSpeedY,
+		});
+	}, [planetControls.planetType, setPlanetControls]);
+
 	useControls("New Planet", {
 		addPlanet: button(() => {
+			const selectedType =
+				(getPlanetControl("planetType") as keyof typeof planetTemplates) ??
+				"earth";
+			const template = planetTemplates[selectedType] ?? earth;
 			const settings = {
 				radius: getPlanetControl("radius"),
 				posX: getPlanetControl("posX"),
@@ -120,8 +155,8 @@ export default function Page() {
 				...prev,
 				{
 					id: crypto.randomUUID(),
-					name: "New Planet",
-					texturePath: earth.texturePath,
+					name: template.name,
+					texturePath: template.texturePath,
 					rotationSpeedY: settings.rotationSpeedY,
 					radius: settings.radius,
 					width: 64,
