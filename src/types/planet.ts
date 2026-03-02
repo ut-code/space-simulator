@@ -1,5 +1,6 @@
 import type * as THREE from "three";
 export type Planet = {
+	id: string;
 	name: string;
 	texturePath: string;
 	rotationSpeedY: number;

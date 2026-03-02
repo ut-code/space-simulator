@@ -1,7 +1,12 @@
 import * as THREE from "three";
+import jupiterTexture from "@/assets/2k_jupiter.jpg";
+import marsTexture from "@/assets/2k_mars.jpg";
+import sunTexture from "@/assets/2k_sun.jpg";
+import venusTexture from "@/assets/2k_venus_atmosphere.jpg";
 import type { Planet } from "@/types/planet";
 
 export const earth: Planet = {
+	id: "initial-earth",
 	name: "Earth",
 	texturePath:
 		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
@@ -14,6 +19,7 @@ export const earth: Planet = {
 };
 
 export const testPlanet: Planet = {
+	id: "test-planet",
 	name: "TestPlanet",
 	texturePath:
 		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
@@ -25,6 +31,50 @@ export const testPlanet: Planet = {
 	velocity: new THREE.Vector3(-10, 0, 0),
 };
 
-// Easy to add more planets later:
-// export const mars: Planet = { ... };
-// export const jupiter: Planet = { ... };
+export const sun: Planet = {
+	id: "sun",
+	name: "Sun",
+	texturePath: sunTexture,
+	rotationSpeedY: 0.1,
+	radius: 10,
+	width: 64,
+	height: 64,
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
+};
+
+export const mars: Planet = {
+	id: "mars",
+	name: "Mars",
+	texturePath: marsTexture,
+	rotationSpeedY: 1.5,
+	radius: 1.5,
+	width: 64,
+	height: 64,
+	position: new THREE.Vector3(45, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 1.6),
+};
+
+export const jupiter: Planet = {
+	id: "jupiter",
+	name: "Jupiter",
+	texturePath: jupiterTexture,
+	rotationSpeedY: 1.2,
+	radius: 5,
+	width: 64,
+	height: 64,
+	position: new THREE.Vector3(80, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 1),
+};
+
+export const venus: Planet = {
+	id: "venus",
+	name: "Venus",
+	texturePath: venusTexture,
+	rotationSpeedY: 1.8,
+	radius: 1.8,
+	width: 64,
+	height: 64,
+	position: new THREE.Vector3(20, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 2.5),
+};
