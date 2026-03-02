@@ -2,6 +2,7 @@ import * as THREE from "three";
 import type { Planet } from "@/types/planet";
 
 export const earth: Planet = {
+	id: "initial-earth",
 	name: "Earth",
 	texturePath:
 		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
@@ -14,6 +15,7 @@ export const earth: Planet = {
 };
 
 export const testPlanet: Planet = {
+	id: "test-planet",
 	name: "TestPlanet",
 	texturePath:
 		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
