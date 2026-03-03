@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
@@ -76,6 +77,8 @@ export function Simulation({ planets, onExplosion }: SimulationProps) {
 }
 
 export default function Page() {
+	const orbitControlsRef = useRef<Controls | null>(null);
+
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
 
@@ -152,6 +155,13 @@ export default function Page() {
 		showGrid: true,
 		showAxes: true,
 		showPreview: true,
+		resetCameraPosition: button(() => {
+			if (orbitControlsRef.current) {
+				orbitControlsRef.current.reset();
+				orbitControlsRef.current.target.set(0, 0, 0);
+				orbitControlsRef.current.update();
+			}
+		}),
 	});
 
 	const previewPosition = useMemo<[number, number, number]>(
@@ -222,7 +232,7 @@ export default function Page() {
 					fade
 					speed={1}
 				/>
-				<OrbitControls enableZoom={true} />
+				<OrbitControls ref={orbitControlsRef} enableZoom={true} />
 			</Canvas>
 			<div className="absolute left-4 top-4 w-80 max-h-[75vh] overflow-y-auto rounded-lg bg-black/70 p-3 text-sm text-white backdrop-blur-sm">
 				<div className="flex items-center justify-between">
