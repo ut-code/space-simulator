@@ -1,7 +1,7 @@
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
@@ -97,6 +97,15 @@ export default function Page() {
 					Jupiter: "jupiter",
 					Venus: "venus",
 				},
+				onChange: (value) => {
+					const selectedType =
+						(value as keyof typeof planetTemplates) ?? "earth";
+					const template = planetTemplates[selectedType] ?? earth;
+					setPlanetControls({
+						radius: template.radius,
+						rotationSpeedY: template.rotationSpeedY,
+					});
+				},
 			},
 			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
 			posX: { value: 0, min: -200, max: 200, step: 0.2 },
@@ -105,16 +114,6 @@ export default function Page() {
 			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
 		}),
 	);
-
-	useEffect(() => {
-		const selectedType =
-			(planetControls.planetType as keyof typeof planetTemplates) ?? "earth";
-		const template = planetTemplates[selectedType] ?? earth;
-		setPlanetControls({
-			radius: template.radius,
-			rotationSpeedY: template.rotationSpeedY,
-		});
-	}, [planetControls.planetType, setPlanetControls]);
 
 	useControls("New Planet", {
 		addPlanet: button(() => {
