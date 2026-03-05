@@ -9,7 +9,12 @@ import { calc_gravity_force } from "../utils/UniversalGravitation";
 
 type PlanetMeshProps = {
 	planet: Planet;
-	planetRegistry: ReturnType<typeof React.useRef<Map<string, THREE.Mesh>>>;
+	planetRegistry: React.MutableRefObject<
+		Map<
+			string,
+			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+		>
+	>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
 };
 
@@ -69,7 +74,10 @@ export function PlanetMesh({
 				id: planet.id,
 				radius: planet.radius,
 			};
-			planetRegistry.current.set(planet.id, ref.current);
+			planetRegistry.current.set(planet.id, {
+				mesh: ref.current,
+				position,
+			});
 		}
 		return () => {
 			if (planetRegistry.current) {
@@ -90,10 +98,11 @@ export function PlanetMesh({
 		forceAccumulator.set(0, 0, 0); // 毎フレームリセットして使い回す
 
 		// 他のすべての惑星からの引力を計算して合算
-		planetRegistry.current.forEach((otherMesh, otherId) => {
-			if (otherId === planet.id) return;
+		for (const [otherId, other] of planetRegistry.current) {
+			if (otherId === planet.id) continue;
 
-			const otherPos = otherMesh.position;
+			const { mesh: otherMesh, position: otherPosition } = other;
+			const otherPos = new THREE.Vector3(...otherPosition.current);
 			const otherMass = otherMesh.userData.mass || 1;
 			const otherRadius = otherMesh.userData.radius || 0.1;
 
@@ -106,7 +115,7 @@ export function PlanetMesh({
 				otherRadius,
 			);
 			forceAccumulator.add(force);
-		});
+		}
 
 		// 計算した力を重心に適用
 		api.applyForce(forceAccumulator.toArray(), myPos.toArray());

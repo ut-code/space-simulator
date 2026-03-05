@@ -28,7 +28,12 @@ const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
-	const planetRegistry = useRef<Map<string, THREE.Mesh>>(new Map());
+	const planetRegistry = useRef<
+		Map<
+			string,
+			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+		>
+	>(new Map());
 
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
