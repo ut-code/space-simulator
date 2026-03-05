@@ -16,6 +16,7 @@ export const earth: Planet = {
 	height: 64,
 	position: new THREE.Vector3(0, 0, 0),
 	velocity: new THREE.Vector3(0, 0, 0),
+	mass: 1,
 };
 
 export const testPlanet: Planet = {
@@ -29,6 +30,7 @@ export const testPlanet: Planet = {
 	height: 64,
 	position: new THREE.Vector3(100, 0, 0),
 	velocity: new THREE.Vector3(-10, 0, 0),
+	mass: 1,
 };
 
 export const sun: Planet = {
@@ -41,6 +43,7 @@ export const sun: Planet = {
 	height: 64,
 	position: new THREE.Vector3(0, 0, 0),
 	velocity: new THREE.Vector3(0, 0, 0),
+	mass: 333000,
 };
 
 export const mars: Planet = {
@@ -53,6 +56,7 @@ export const mars: Planet = {
 	height: 64,
 	position: new THREE.Vector3(45, 0, 0),
 	velocity: new THREE.Vector3(0, 0, 1.6),
+	mass: 0.107,
 };
 
 export const jupiter: Planet = {
@@ -65,6 +69,7 @@ export const jupiter: Planet = {
 	height: 64,
 	position: new THREE.Vector3(80, 0, 0),
 	velocity: new THREE.Vector3(0, 0, 1),
+	mass: 318,
 };
 
 export const venus: Planet = {
@@ -77,4 +82,5 @@ export const venus: Planet = {
 	height: 64,
 	position: new THREE.Vector3(20, 0, 0),
 	velocity: new THREE.Vector3(0, 0, 2.5),
+	mass: 0.815,
 };
