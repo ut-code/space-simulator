@@ -45,6 +45,19 @@ export function PlanetMesh({
 	// Load the texture (you can use any public Earth texture URL)
 	const [colorMap] = useTexture([planet.texturePath]);
 
+	// 物理エンジンの位置を追跡するためのref
+	const position = useRef([
+		planet.position.x,
+		planet.position.y,
+		planet.position.z,
+	]);
+	useEffect(() => {
+		const unsubscribe = api.position.subscribe((v) => {
+			position.current = v;
+		});
+		return () => unsubscribe(); // アンマウント時に購読解除
+	}, [api.position]);
+
 	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
 	useEffect(() => {
 		if (!planetRegistry.current) return;
@@ -72,7 +85,8 @@ export function PlanetMesh({
 	useFrame(() => {
 		if (!ref.current || !planetRegistry.current) return;
 
-		const myPos = ref.current.position;
+		// ref.current.positionの代わりに、物理エンジンから取得した位置を使用
+		const myPos = new THREE.Vector3(...position.current);
 		forceAccumulator.set(0, 0, 0); // 毎フレームリセットして使い回す
 
 		// 他のすべての惑星からの引力を計算して合算
