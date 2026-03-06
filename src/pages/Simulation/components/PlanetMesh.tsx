@@ -88,13 +88,18 @@ export function PlanetMesh({
 
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
 	const forceAccumulator = useMemo(() => new THREE.Vector3(), []);
+	const myPosVec = useMemo(() => new THREE.Vector3(), []);
+	const otherPosVec = useMemo(() => new THREE.Vector3(), []);
 
 	// This hook runs every frame (approx 60fps)
 	useFrame(() => {
 		if (!ref.current || !planetRegistry.current) return;
 
+		// 誤差による自転速度の異常上昇を防ぐ
+		api.angularVelocity.set(0, planet.rotationSpeedY, 0);
+
 		// ref.current.positionの代わりに、物理エンジンから取得した位置を使用
-		const myPos = new THREE.Vector3(...position.current);
+		myPosVec.fromArray(position.current);
 		forceAccumulator.set(0, 0, 0); // 毎フレームリセットして使い回す
 
 		// 他のすべての惑星からの引力を計算して合算
@@ -102,15 +107,15 @@ export function PlanetMesh({
 			if (otherId === planet.id) continue;
 
 			const { mesh: otherMesh, position: otherPosition } = other;
-			const otherPos = new THREE.Vector3(...otherPosition.current);
+			otherPosVec.fromArray(otherPosition.current);
 			const otherMass = otherMesh.userData.mass || 1;
 			const otherRadius = otherMesh.userData.radius || 0.1;
 
 			const force = calc_gravity_force(
-				myPos,
+				myPosVec,
 				planet.mass,
 				planet.radius,
-				otherPos,
+				otherPosVec,
 				otherMass,
 				otherRadius,
 			);
@@ -118,7 +123,7 @@ export function PlanetMesh({
 		}
 
 		// 計算した力を重心に適用
-		api.applyForce(forceAccumulator.toArray(), myPos.toArray());
+		api.applyForce(forceAccumulator.toArray(), myPosVec.toArray());
 	});
 
 	return (
