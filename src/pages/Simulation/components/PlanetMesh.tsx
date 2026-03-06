@@ -5,7 +5,7 @@ import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
-import { calc_gravity_force } from "../utils/UniversalGravitation";
+import { calc_gravity_force } from "../utils/gravityUtils";
 
 type PlanetMeshProps = {
 	planet: Planet;
