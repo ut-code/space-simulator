@@ -9,4 +9,5 @@ export type Planet = {
 	height: number;
 	position: THREE.Vector3;
 	velocity: THREE.Vector3;
+	mass: number;
 };

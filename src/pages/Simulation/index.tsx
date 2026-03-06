@@ -1,5 +1,6 @@
+import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -7,7 +8,6 @@ import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
-import { isColliding } from "@/utils/isColliding";
 import { Explosion } from "./components/Explosion";
 import { PlanetMesh } from "./components/PlanetMesh";
 import {
@@ -26,58 +26,14 @@ useTexture.preload(planetTexturePaths);
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
-type SimulationProps = {
-	planets: Planet[];
-	onExplosion: (newExp: ExplosionData) => void;
-};
-
-export function Simulation({ planets, onExplosion }: SimulationProps) {
-	// 前フレームの衝突ペアを記録して、連続爆発を防ぐ
-	const collidedPairsRef = useRef<Set<string>>(new Set());
-
-	useFrame((_state, delta) => {
-		// 並進運動
-		for (let i = 0; i < planets.length; i++) {
-			if (planets[i].velocity) {
-				planets[i].position.addScaledVector(planets[i].velocity, delta);
-			}
-		}
-
-		// 衝突判定
-		for (let i = 0; i < planets.length; i++) {
-			for (let j = i + 1; j < planets.length; j++) {
-				const a = planets[i];
-				const b = planets[j];
-				const key = `${i}-${j}`;
-
-				if (isColliding(a, b)) {
-					if (!collidedPairsRef.current.has(key)) {
-						collidedPairsRef.current.add(key);
-
-						// 衝突したら爆発を追加
-						const newExp = {
-							id: crypto.randomUUID(),
-							radius: (a.radius + b.radius) / 2,
-							position: a.position.clone().lerp(b.position, 0.5),
-							fragmentCount: 50,
-						};
-						onExplosion(newExp);
-
-						console.log(`Collision detected between planet ${i} and ${j}`);
-					}
-				} else {
-					// 衝突していない場合は記録を削除
-					collidedPairsRef.current.delete(key);
-				}
-			}
-		}
-	});
-
-	return null;
-}
-
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
+	const planetRegistry = useRef<
+		Map<
+			string,
+			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+		>
+	>(new Map());
 
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
@@ -145,6 +101,7 @@ export default function Page() {
 						settings.posZ,
 					),
 					velocity: new THREE.Vector3(0, 0, 0),
+					mass: template.mass,
 				},
 			]);
 		}),
@@ -180,6 +137,24 @@ export default function Page() {
 		setPlanets((prev) => prev.filter((_, index) => index !== planetIndex));
 	};
 
+	const handleExplosion = (position: THREE.Vector3, radius: number) => {
+		// 連続爆発を防ぐための簡易的なデバウンス処理などをここに追加しても良い
+		setExplosions((prev) => {
+			// 同じ場所での重複爆発を簡易的に防ぐ
+			if (prev.some((e) => e.position.distanceTo(position) < 2)) return prev;
+
+			return [
+				...prev,
+				{
+					id: crypto.randomUUID(),
+					radius: radius * 1.5,
+					position: position.clone(),
+					fragmentCount: 50,
+				},
+			];
+		});
+	};
+
 	return (
 		<div className="relative h-screen w-screen">
 			<Canvas
@@ -193,9 +168,16 @@ export default function Page() {
 				<ambientLight intensity={1.2} />
 				<pointLight position={[10, 10, 10]} intensity={3} />
 
-				{planets.map((planet) => (
-					<PlanetMesh key={planet.id} planet={planet} />
-				))}
+				<Physics gravity={[0, 0, 0]}>
+					{planets.map((planet) => (
+						<PlanetMesh
+							key={planet.id}
+							planet={planet}
+							planetRegistry={planetRegistry}
+							onExplosion={handleExplosion}
+						/>
+					))}
+				</Physics>
 
 				<PlacementSurface
 					enabled={placementMode}
@@ -211,12 +193,7 @@ export default function Page() {
 				)}
 				{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
 				{showAxes && <axesHelper args={[20]} />}
-				<Simulation
-					planets={planets}
-					onExplosion={(newExp: ExplosionData) =>
-						setExplosions((prev) => [...prev, newExp])
-					}
-				/>
+
 				{explosions.map((exp) => (
 					<Explosion key={exp.id} explosion={exp} />
 				))}
