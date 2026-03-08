@@ -1,13 +1,14 @@
 import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
+import { CameraController } from "./components/CameraController";
 import { Explosion } from "./components/Explosion";
 import { PlanetMesh } from "./components/PlanetMesh";
 import {
@@ -25,65 +26,6 @@ const planetTexturePaths = [
 useTexture.preload(planetTexturePaths);
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
-
-function CameraController({
-	followedPlanetId,
-	planetRegistry,
-	orbitControlsRef,
-}: {
-	followedPlanetId: string | null;
-	planetRegistry: React.MutableRefObject<
-		Map<
-			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
-		>
-	>;
-	orbitControlsRef: React.MutableRefObject<Controls | null>;
-}) {
-	const { camera } = useThree();
-	const previousPos = useRef(new THREE.Vector3());
-	const currentPos = useRef(new THREE.Vector3());
-	const delta = useRef(new THREE.Vector3());
-	const hasPrev = useRef(false);
-
-	const targetRef = useRef<{
-		mesh: THREE.Mesh;
-		position: React.MutableRefObject<number[]>;
-	} | null>(null);
-
-	useEffect(() => {
-		hasPrev.current = false;
-		if (followedPlanetId) {
-			targetRef.current = planetRegistry.current.get(followedPlanetId) ?? null;
-		} else {
-			targetRef.current = null;
-		}
-	}, [followedPlanetId, planetRegistry]);
-
-	useFrame(() => {
-		const target = targetRef.current;
-		const controls = orbitControlsRef.current;
-		if (!target || !controls) return;
-
-		// number[] を Vector3 にセット
-		const [x, y, z] = target.position.current;
-		currentPos.current.set(x, y, z);
-
-		if (hasPrev.current) {
-			delta.current.copy(currentPos.current).sub(previousPos.current);
-			camera.position.add(delta.current);
-		}
-
-		// OrbitControlsのターゲット更新
-		controls.target.copy(currentPos.current);
-		controls.update();
-
-		// 前回位置更新
-		previousPos.current.copy(currentPos.current);
-		hasPrev.current = true;
-	});
-	return null;
-}
 
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
@@ -241,7 +183,7 @@ export default function Page() {
 								planet={planet}
 								planetRegistry={planetRegistry}
 								onExplosion={handleExplosion}
-								onSelect={setFollowedPlanetId}
+								onSelect={(id) => setFollowedPlanetId(id)}
 							/>
 						</Suspense>
 					))}

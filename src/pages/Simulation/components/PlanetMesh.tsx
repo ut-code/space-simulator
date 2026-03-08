@@ -16,7 +16,7 @@ type PlanetMeshProps = {
 		>
 	>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
-	onSelect?: (planetId: string) => void;
+	onSelect: (planetId: string) => void;
 };
 
 export function PlanetMesh({
@@ -134,7 +134,7 @@ export function PlanetMesh({
 			ref={ref}
 			onDoubleClick={(e) => {
 				e.stopPropagation();
-				onSelect?.(planet.id);
+				onSelect(planet.id);
 			}}
 		>
 			{/* args: [radius, widthSegments, heightSegments]
