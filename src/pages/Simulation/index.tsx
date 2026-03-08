@@ -135,8 +135,11 @@ export default function Page() {
 		});
 	};
 
-	const removePlanet = (planetIndex: number) => {
-		setPlanets((prev) => prev.filter((_, index) => index !== planetIndex));
+	const removePlanet = (planetId: string) => {
+		setPlanets((prev) => prev.filter((p) => p.id !== planetId));
+		if (followedPlanetId === planetId) {
+			setFollowedPlanetId(null);
+		}
 	};
 
 	const handleExplosion = (position: THREE.Vector3, radius: number) => {
@@ -293,15 +296,28 @@ export default function Page() {
 											{planet.position.z.toFixed(1)})
 										</div>
 									</div>
-									<button
-										type="button"
-										onClick={() =>
-											removePlanet(planets.findIndex((p) => p.id === planet.id))
-										}
-										className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-white"
-									>
-										削除
-									</button>
+									<div className="flex shrink-0 items-center gap-2">
+										{followedPlanetId === planet.id ? (
+											<span className="px-2 py-1 text-xs text-blue-300">
+												追尾中
+											</span>
+										) : (
+											<button
+												type="button"
+												onClick={() => setFollowedPlanetId(planet.id)}
+												className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
+											>
+												追尾
+											</button>
+										)}
+										<button
+											type="button"
+											onClick={() => removePlanet(planet.id)}
+											className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
+										>
+											削除
+										</button>
+									</div>
 								</li>
 							))}
 						</ul>
