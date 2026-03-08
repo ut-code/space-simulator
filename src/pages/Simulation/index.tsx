@@ -1,8 +1,8 @@
 import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
@@ -26,6 +26,65 @@ useTexture.preload(planetTexturePaths);
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
+function CameraController({
+	followedPlanetId,
+	planetRegistry,
+	orbitControlsRef,
+}: {
+	followedPlanetId: string | null;
+	planetRegistry: React.MutableRefObject<
+		Map<
+			string,
+			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+		>
+	>;
+	orbitControlsRef: React.MutableRefObject<Controls | null>;
+}) {
+	const { camera } = useThree();
+	const previousPos = useRef(new THREE.Vector3());
+	const currentPos = useRef(new THREE.Vector3());
+	const delta = useRef(new THREE.Vector3());
+	const hasPrev = useRef(false);
+
+	const targetRef = useRef<{
+		mesh: THREE.Mesh;
+		position: React.MutableRefObject<number[]>;
+	} | null>(null);
+
+	useEffect(() => {
+		hasPrev.current = false;
+		if (followedPlanetId) {
+			targetRef.current = planetRegistry.current.get(followedPlanetId) ?? null;
+		} else {
+			targetRef.current = null;
+		}
+	}, [followedPlanetId, planetRegistry]);
+
+	useFrame(() => {
+		const target = targetRef.current;
+		const controls = orbitControlsRef.current;
+		if (!target || !controls) return;
+
+		// number[] を Vector3 にセット
+		const [x, y, z] = target.position.current;
+		currentPos.current.set(x, y, z);
+
+		if (hasPrev.current) {
+			delta.current.copy(currentPos.current).sub(previousPos.current);
+			camera.position.add(delta.current);
+		}
+
+		// OrbitControlsのターゲット更新
+		controls.target.copy(currentPos.current);
+		controls.update();
+
+		// 前回位置更新
+		previousPos.current.copy(currentPos.current);
+		hasPrev.current = true;
+	});
+	return null;
+}
+
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const planetRegistry = useRef<
@@ -37,6 +96,7 @@ export default function Page() {
 
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
+	const [followedPlanetId, setFollowedPlanetId] = useState<string | null>(null);
 
 	const [placementMode, setPlacementMode] = useState(false);
 	const [placementPanelOpen, setPlacementPanelOpen] = useState(true);
@@ -168,6 +228,12 @@ export default function Page() {
 				<ambientLight intensity={1.2} />
 				<pointLight position={[10, 10, 10]} intensity={3} />
 
+				<CameraController
+					followedPlanetId={followedPlanetId}
+					planetRegistry={planetRegistry}
+					orbitControlsRef={orbitControlsRef}
+				/>
+
 				<Physics gravity={[0, 0, 0]}>
 					{planets.map((planet) => (
 						<Suspense key={planet.id} fallback={null}>
@@ -175,6 +241,7 @@ export default function Page() {
 								planet={planet}
 								planetRegistry={planetRegistry}
 								onExplosion={handleExplosion}
+								onSelect={setFollowedPlanetId}
 							/>
 						</Suspense>
 					))}
@@ -237,6 +304,36 @@ export default function Page() {
 						<p className="mb-3 mt-2 opacity-[0.85]">
 							ONの間は水色の面をクリックすると、座標が自動入力されます。
 						</p>
+
+						{followedPlanetId && (
+							<div className="mb-3 mt-2 rounded border border-blue-500/30 bg-blue-500/10 p-2">
+								<div className="flex items-center justify-between">
+									<span className="text-blue-200">
+										追尾中: {(() => {
+											const planet = planets.find(
+												(p) => p.id === followedPlanetId,
+											);
+											return planet ? (
+												<>
+													{planet.name}
+													<br />
+													(ID: {planet.id})
+												</>
+											) : (
+												"Unknown"
+											);
+										})()}
+									</span>
+									<button
+										type="button"
+										onClick={() => setFollowedPlanetId(null)}
+										className="cursor-pointer rounded bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200 hover:bg-blue-500/40"
+									>
+										解除
+									</button>
+								</div>
+							</div>
+						)}
 
 						<strong>追加済み惑星 ({planets.length})</strong>
 						<ul className="mb-0 mt-2.5 list-none p-0">

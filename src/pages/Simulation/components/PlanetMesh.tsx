@@ -16,12 +16,14 @@ type PlanetMeshProps = {
 		>
 	>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
+	onSelect?: (planetId: string) => void;
 };
 
 export function PlanetMesh({
 	planet,
 	planetRegistry,
 	onExplosion,
+	onSelect,
 }: PlanetMeshProps) {
 	const [ref, api] = useSphere<THREE.Mesh>(
 		() => ({
@@ -127,7 +129,14 @@ export function PlanetMesh({
 	});
 
 	return (
-		<mesh ref={ref}>
+		// biome-ignore lint: noStaticElementInteractions - Three.js mesh is not a DOM element
+		<mesh
+			ref={ref}
+			onDoubleClick={(e) => {
+				e.stopPropagation();
+				onSelect?.(planet.id);
+			}}
+		>
 			{/* args: [radius, widthSegments, heightSegments]
         Higher segments = smoother sphere
       */}
