@@ -14,9 +14,14 @@ type Fragment = {
 type ExplosionProps = {
 	explosion: ExplosionData;
 	onComplete?: () => void;
+	timeScale: number;
 };
 
-export function Explosion({ explosion, onComplete }: ExplosionProps) {
+export function Explosion({
+	explosion,
+	onComplete,
+	timeScale,
+}: ExplosionProps) {
 	const groupRef = useRef<THREE.Group | null>(null);
 	const [fragments, setFragments] = useState<Fragment[]>([]);
 
@@ -82,6 +87,8 @@ export function Explosion({ explosion, onComplete }: ExplosionProps) {
 	// フレームごとの更新
 	useFrame((_, delta) => {
 		if (fragments.length === 0) return;
+		const scaledDelta = delta * timeScale;
+		const damping = 0.98 ** timeScale;
 
 		setFragments((prev) => {
 			const alive: Fragment[] = [];
@@ -90,16 +97,16 @@ export function Explosion({ explosion, onComplete }: ExplosionProps) {
 				const f = prev[i];
 
 				// 位置更新
-				f.mesh.position.addScaledVector(f.velocity, delta);
+				f.mesh.position.addScaledVector(f.velocity, scaledDelta);
 
 				// 回転
-				f.mesh.rotateOnAxis(f.rotationAxis, delta * 5);
+				f.mesh.rotateOnAxis(f.rotationAxis, scaledDelta * 5);
 
 				// 減速（摩擦的）
-				f.velocity.multiplyScalar(0.98);
+				f.velocity.multiplyScalar(damping);
 
 				// 減衰
-				f.lifetime -= delta;
+				f.lifetime -= scaledDelta;
 
 				if (f.lifetime > 0) {
 					alive.push(f);

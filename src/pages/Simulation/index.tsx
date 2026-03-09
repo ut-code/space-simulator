@@ -31,7 +31,11 @@ export default function Page() {
 	const planetRegistry = useRef<
 		Map<
 			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+			{
+				mesh: THREE.Mesh;
+				position: React.MutableRefObject<number[]>;
+				velocity: React.MutableRefObject<number[]>;
+			}
 		>
 	>(new Map());
 
@@ -68,6 +72,9 @@ export default function Page() {
 			posY: { value: 0, min: -200, max: 200, step: 0.2 },
 			posZ: { value: 0, min: -200, max: 200, step: 0.2 },
 			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
+			velX: { value: 0, min: -10, max: 10, step: 0.1 },
+			velY: { value: 0, min: -10, max: 10, step: 0.1 },
+			velZ: { value: 0, min: -10, max: 10, step: 0.1 },
 		}),
 	);
 
@@ -83,6 +90,9 @@ export default function Page() {
 				posY: getPlanetControl("posY"),
 				posZ: getPlanetControl("posZ"),
 				rotationSpeedY: getPlanetControl("rotationSpeedY"),
+				velX: getPlanetControl("velX"),
+				velY: getPlanetControl("velY"),
+				velZ: getPlanetControl("velZ"),
 			};
 
 			setPlanets((prev) => [
@@ -100,7 +110,11 @@ export default function Page() {
 						settings.posY,
 						settings.posZ,
 					),
-					velocity: new THREE.Vector3(0, 0, 0),
+					velocity: new THREE.Vector3(
+						settings.velX,
+						settings.velY,
+						settings.velZ,
+					),
 					mass: template.mass,
 				},
 			]);
@@ -120,6 +134,10 @@ export default function Page() {
 		}),
 	});
 
+	const { timeScale } = useControls("Simulation", {
+		timeScale: { value: 1, min: 0.1, max: 5, step: 0.1 },
+	});
+
 	const previewPosition = useMemo<[number, number, number]>(
 		() => [planetControls.posX, planetControls.posY, planetControls.posZ],
 		[planetControls.posX, planetControls.posY, planetControls.posZ],
@@ -135,6 +153,37 @@ export default function Page() {
 
 	const removePlanet = (planetIndex: number) => {
 		setPlanets((prev) => prev.filter((_, index) => index !== planetIndex));
+	};
+
+	const updatePlanetRadius = (planetId: string, radius: number) => {
+		const registryEntry = planetRegistry.current.get(planetId);
+		const nextPosition = registryEntry?.position.current;
+		const nextVelocity = registryEntry?.velocity.current;
+
+		setPlanets((prev) =>
+			prev.map((planet) => {
+				if (planet.id !== planetId) return planet;
+
+				return {
+					...planet,
+					radius,
+					position: nextPosition
+						? new THREE.Vector3(
+								nextPosition[0],
+								nextPosition[1],
+								nextPosition[2],
+							)
+						: planet.position,
+					velocity: nextVelocity
+						? new THREE.Vector3(
+								nextVelocity[0],
+								nextVelocity[1],
+								nextVelocity[2],
+							)
+						: planet.velocity,
+				};
+			}),
+		);
 	};
 
 	const handleExplosion = (position: THREE.Vector3, radius: number) => {
@@ -171,10 +220,11 @@ export default function Page() {
 				<Physics gravity={[0, 0, 0]}>
 					{planets.map((planet) => (
 						<PlanetMesh
-							key={planet.id}
+							key={`${planet.id}-${planet.radius}`}
 							planet={planet}
 							planetRegistry={planetRegistry}
 							onExplosion={handleExplosion}
+							timeScale={timeScale}
 						/>
 					))}
 				</Physics>
@@ -195,7 +245,7 @@ export default function Page() {
 				{showAxes && <axesHelper args={[20]} />}
 
 				{explosions.map((exp) => (
-					<Explosion key={exp.id} explosion={exp} />
+					<Explosion key={exp.id} explosion={exp} timeScale={timeScale} />
 				))}
 
 				{/* Optional background and controls */}
@@ -251,6 +301,27 @@ export default function Page() {
 											{planet.position.x.toFixed(1)},
 											{planet.position.y.toFixed(1)},{" "}
 											{planet.position.z.toFixed(1)})
+										</div>
+										<div className="mt-2 flex items-center gap-2 text-xs">
+											<label className="flex flex-1 items-center gap-2">
+												半径
+												<input
+													type="range"
+													min={0.2}
+													max={20}
+													step={0.1}
+													value={planet.radius}
+													onChange={(event) =>
+														updatePlanetRadius(
+															planet.id,
+															Number(event.target.value),
+														)
+													}
+												/>
+											</label>
+											<span className="w-10 text-right">
+												{planet.radius.toFixed(1)}
+											</span>
 										</div>
 									</div>
 									<button
