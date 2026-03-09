@@ -1,5 +1,5 @@
 import { useSphere } from "@react-three/cannon";
-import { useTexture } from "@react-three/drei";
+import { Trail, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
@@ -129,19 +129,26 @@ export function PlanetMesh({
 	});
 
 	return (
-		// biome-ignore lint: noStaticElementInteractions - Three.js mesh is not a DOM element
-		<mesh
-			ref={ref}
-			onDoubleClick={(e) => {
-				e.stopPropagation();
-				onSelect(planet.id);
-			}}
+		<Trail
+			width={planet.radius}
+			length={80}
+			color="#88ccff"
+			attenuation={(t) => t}
 		>
-			{/* args: [radius, widthSegments, heightSegments]
+			{/* biome-ignore lint: noStaticElementInteractions - Three.js mesh is not a DOM element*/}
+			<mesh
+				ref={ref}
+				onDoubleClick={(e) => {
+					e.stopPropagation();
+					onSelect(planet.id);
+				}}
+			>
+				{/* args: [radius, widthSegments, heightSegments]
         Higher segments = smoother sphere
       */}
-			<sphereGeometry args={[planet.radius, planet.width, planet.height]} />
-			<meshStandardMaterial map={colorMap} />
-		</mesh>
+				<sphereGeometry args={[planet.radius, planet.width, planet.height]} />
+				<meshStandardMaterial map={colorMap} />
+			</mesh>
+		</Trail>
 	);
 }
