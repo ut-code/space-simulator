@@ -70,17 +70,25 @@ export default function Page() {
 				(get("planetType") as keyof typeof planetTemplates) ?? "earth";
 			const template = planetTemplates[selectedType] ?? earth;
 
+			// Defensive reads: fallback to template values if get(...) returns undefined
+			const rotationSpeedY =
+				(get("rotationSpeedY") as number) ?? template.rotationSpeedY ?? 0;
+			const radius = (get("radius") as number) ?? template.radius ?? 1;
+			const posX = (get("posX") as number) ?? 0;
+			const posY = (get("posY") as number) ?? 0;
+			const posZ = (get("posZ") as number) ?? 0;
+
 			setPlanets((prev) => [
 				...prev,
 				{
 					id: crypto.randomUUID(),
 					name: template.name,
 					texturePath: template.texturePath,
-					rotationSpeedY: get("rotationSpeedY"),
-					radius: get("radius"),
+					rotationSpeedY,
+					radius,
 					width: 64,
 					height: 64,
-					position: new THREE.Vector3(get("posX"), get("posY"), get("posZ")),
+					position: new THREE.Vector3(posX, posY, posZ),
 					velocity: new THREE.Vector3(0, 0, 0),
 					mass: template.mass,
 				},
