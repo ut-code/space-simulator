@@ -67,8 +67,7 @@ export default function Page() {
 		rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
 		addPlanet: button((get) => {
 			const selectedType =
-				(get("New Planet.planetType") as keyof typeof planetTemplates) ??
-				"earth";
+				(get("planetType") as keyof typeof planetTemplates) ?? "earth";
 			const template = planetTemplates[selectedType] ?? earth;
 
 			setPlanets((prev) => [
@@ -77,15 +76,11 @@ export default function Page() {
 					id: crypto.randomUUID(),
 					name: template.name,
 					texturePath: template.texturePath,
-					rotationSpeedY: get("New Planet.rotationSpeedY"),
-					radius: get("New Planet.radius"),
+					rotationSpeedY: get("rotationSpeedY"),
+					radius: get("radius"),
 					width: 64,
 					height: 64,
-					position: new THREE.Vector3(
-						get("New Planet.posX"),
-						get("New Planet.posY"),
-						get("New Planet.posZ"),
-					),
+					position: new THREE.Vector3(get("posX"), get("posY"), get("posZ")),
 					velocity: new THREE.Vector3(0, 0, 0),
 					mass: template.mass,
 				},
