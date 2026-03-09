@@ -41,49 +41,35 @@ export default function Page() {
 	const [placementMode, setPlacementMode] = useState(false);
 	const [placementPanelOpen, setPlacementPanelOpen] = useState(true);
 
-	const [planetControls, setPlanetControls, getPlanetControl] = useControls(
-		"New Planet",
-		() => ({
-			planetType: {
-				value: "earth",
-				options: {
-					Earth: "earth",
-					Sun: "sun",
-					Mars: "mars",
-					Jupiter: "jupiter",
-					Venus: "venus",
-				},
-				onChange: (value) => {
-					const selectedType =
-						(value as keyof typeof planetTemplates) ?? "earth";
-					const template = planetTemplates[selectedType] ?? earth;
-					setPlanetControls({
-						radius: template.radius,
-						rotationSpeedY: template.rotationSpeedY,
-					});
-				},
+	const [planetControls, setPlanetControls] = useControls("New Planet", () => ({
+		planetType: {
+			value: "earth",
+			options: {
+				Earth: "earth",
+				Sun: "sun",
+				Mars: "mars",
+				Jupiter: "jupiter",
+				Venus: "venus",
 			},
-			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
-			posX: { value: 0, min: -200, max: 200, step: 0.2 },
-			posY: { value: 0, min: -200, max: 200, step: 0.2 },
-			posZ: { value: 0, min: -200, max: 200, step: 0.2 },
-			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
-		}),
-	);
-
-	useControls("New Planet", {
-		addPlanet: button(() => {
+			onChange: (value) => {
+				const selectedType = (value as keyof typeof planetTemplates) ?? "earth";
+				const template = planetTemplates[selectedType] ?? earth;
+				setPlanetControls({
+					radius: template.radius,
+					rotationSpeedY: template.rotationSpeedY,
+				});
+			},
+		},
+		radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
+		posX: { value: 0, min: -200, max: 200, step: 0.2 },
+		posY: { value: 0, min: -200, max: 200, step: 0.2 },
+		posZ: { value: 0, min: -200, max: 200, step: 0.2 },
+		rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
+		addPlanet: button((get) => {
 			const selectedType =
-				(getPlanetControl("planetType") as keyof typeof planetTemplates) ??
+				(get("New Planet.planetType") as keyof typeof planetTemplates) ??
 				"earth";
 			const template = planetTemplates[selectedType] ?? earth;
-			const settings = {
-				radius: getPlanetControl("radius"),
-				posX: getPlanetControl("posX"),
-				posY: getPlanetControl("posY"),
-				posZ: getPlanetControl("posZ"),
-				rotationSpeedY: getPlanetControl("rotationSpeedY"),
-			};
 
 			setPlanets((prev) => [
 				...prev,
@@ -91,21 +77,21 @@ export default function Page() {
 					id: crypto.randomUUID(),
 					name: template.name,
 					texturePath: template.texturePath,
-					rotationSpeedY: settings.rotationSpeedY,
-					radius: settings.radius,
+					rotationSpeedY: get("New Planet.rotationSpeedY"),
+					radius: get("New Planet.radius"),
 					width: 64,
 					height: 64,
 					position: new THREE.Vector3(
-						settings.posX,
-						settings.posY,
-						settings.posZ,
+						get("New Planet.posX"),
+						get("New Planet.posY"),
+						get("New Planet.posZ"),
 					),
 					velocity: new THREE.Vector3(0, 0, 0),
 					mass: template.mass,
 				},
 			]);
 		}),
-	});
+	}));
 
 	const { showGrid, showAxes, showPreview } = useControls("Helpers", {
 		showGrid: true,

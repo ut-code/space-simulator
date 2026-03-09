@@ -23,6 +23,7 @@ export function PlanetMesh({
 	planetRegistry,
 	onExplosion,
 }: PlanetMeshProps) {
+	const meshRef = useRef<THREE.Mesh>(null);
 	const [ref, api] = useSphere<THREE.Mesh>(
 		() => ({
 			mass: planet.mass,
@@ -44,7 +45,7 @@ export function PlanetMesh({
 				}
 			},
 		}),
-		useRef<THREE.Mesh>(null),
+		meshRef,
 	);
 
 	// Load the texture (you can use any public Earth texture URL)
