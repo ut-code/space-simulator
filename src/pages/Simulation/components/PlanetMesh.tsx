@@ -12,16 +12,22 @@ type PlanetMeshProps = {
 	planetRegistry: React.MutableRefObject<
 		Map<
 			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+			{
+				mesh: THREE.Mesh;
+				position: React.MutableRefObject<number[]>;
+				velocity: React.MutableRefObject<number[]>;
+			}
 		>
 	>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
+	timeScale: number;
 };
 
 export function PlanetMesh({
 	planet,
 	planetRegistry,
 	onExplosion,
+	timeScale,
 }: PlanetMeshProps) {
 	const [ref, api] = useSphere<THREE.Mesh>(
 		() => ({
@@ -56,12 +62,23 @@ export function PlanetMesh({
 		planet.position.y,
 		planet.position.z,
 	]);
+	const velocity = useRef([
+		planet.velocity.x,
+		planet.velocity.y,
+		planet.velocity.z,
+	]);
 	useEffect(() => {
 		const unsubscribe = api.position.subscribe((v) => {
 			position.current = v;
 		});
 		return () => unsubscribe(); // アンマウント時に購読解除
 	}, [api.position]);
+	useEffect(() => {
+		const unsubscribe = api.velocity.subscribe((v) => {
+			velocity.current = v;
+		});
+		return () => unsubscribe();
+	}, [api.velocity]);
 
 	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
 	useEffect(() => {
@@ -77,6 +94,7 @@ export function PlanetMesh({
 			planetRegistry.current.set(planet.id, {
 				mesh: ref.current,
 				position,
+				velocity,
 			});
 		}
 		return () => {
@@ -96,7 +114,7 @@ export function PlanetMesh({
 		if (!ref.current || !planetRegistry.current) return;
 
 		// 誤差による自転速度の異常上昇を防ぐ
-		api.angularVelocity.set(0, planet.rotationSpeedY, 0);
+		api.angularVelocity.set(0, planet.rotationSpeedY * timeScale, 0);
 
 		// ref.current.positionの代わりに、物理エンジンから取得した位置を使用
 		myPosVec.fromArray(position.current);
@@ -123,6 +141,7 @@ export function PlanetMesh({
 		}
 
 		// 計算した力を重心に適用
+		forceAccumulator.multiplyScalar(timeScale);
 		api.applyForce(forceAccumulator.toArray(), myPosVec.toArray());
 	});
 
