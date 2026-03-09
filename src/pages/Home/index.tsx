@@ -21,11 +21,7 @@ export default function Page() {
 				<HomeScene />
 			</ThreeCanvas>
 
-			<div
-				className={
-					"absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-white"
-				}
-			>
+			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-white">
 				<h1
 					className="
 						text-7xl
@@ -56,7 +52,7 @@ export default function Page() {
 						active:scale-95
 					"
 				>
-					[Start Simulation]
+					Start Simulation
 				</button>
 			</div>
 		</div>

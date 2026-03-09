@@ -4,8 +4,9 @@ import * as THREE from "three";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { Planet } from "@/types/planet";
 
+const planets = [earth, jupiter, mars, sun, venus];
+
 export default function HomeScene() {
-	const planets = [earth, jupiter, mars, sun, venus];
 	const planet: Planet = planets[Math.floor(Math.random() * planets.length)];
 	const texture = useLoader(THREE.TextureLoader, planet.texturePath);
 	const planetRef = useRef<THREE.Mesh>(null);
