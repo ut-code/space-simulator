@@ -2,7 +2,7 @@ import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
@@ -119,27 +119,30 @@ export default function Page() {
 		});
 	};
 
-	const removePlanet = (planetIndex: number) => {
-		setPlanets((prev) => prev.filter((_, index) => index !== planetIndex));
-	};
+	const removePlanet = useCallback((planetId: string) => {
+		setPlanets((prev) => prev.filter((p) => p.id !== planetId));
+	}, []);
 
-	const handleExplosion = (position: THREE.Vector3, radius: number) => {
-		// 連続爆発を防ぐための簡易的なデバウンス処理などをここに追加しても良い
-		setExplosions((prev) => {
-			// 同じ場所での重複爆発を簡易的に防ぐ
-			if (prev.some((e) => e.position.distanceTo(position) < 2)) return prev;
+	const handleExplosion = useCallback(
+		(position: THREE.Vector3, radius: number) => {
+			// 連続爆発を防ぐための簡易的なデバウンス処理などをここに追加しても良い
+			setExplosions((prev) => {
+				// 同じ場所での重複爆発を簡易的に防ぐ
+				if (prev.some((e) => e.position.distanceTo(position) < 2)) return prev;
 
-			return [
-				...prev,
-				{
-					id: crypto.randomUUID(),
-					radius: radius * 1.5,
-					position: position.clone(),
-					fragmentCount: 50,
-				},
-			];
-		});
-	};
+				return [
+					...prev,
+					{
+						id: crypto.randomUUID(),
+						radius: radius * 1.5,
+						position: position.clone(),
+						fragmentCount: 50,
+					},
+				];
+			});
+		},
+		[],
+	);
 
 	const camera = useMemo(
 		() => ({ position: [0, 0, 6] as [number, number, number] }),
@@ -159,12 +162,13 @@ export default function Page() {
 
 				<Physics gravity={[0, 0, 0]}>
 					{planets.map((planet) => (
-						<PlanetMesh
-							key={planet.id}
-							planet={planet}
-							planetRegistry={planetRegistry}
-							onExplosion={handleExplosion}
-						/>
+						<Suspense key={planet.id} fallback={null}>
+							<PlanetMesh
+								planet={planet}
+								planetRegistry={planetRegistry}
+								onExplosion={handleExplosion}
+							/>
+						</Suspense>
 					))}
 				</Physics>
 
@@ -244,9 +248,7 @@ export default function Page() {
 									</div>
 									<button
 										type="button"
-										onClick={() =>
-											removePlanet(planets.findIndex((p) => p.id === planet.id))
-										}
+										onClick={() => removePlanet(planet.id)}
 										className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-white"
 									>
 										削除
