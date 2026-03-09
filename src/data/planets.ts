@@ -3,13 +3,13 @@ import jupiterTexture from "@/assets/2k_jupiter.jpg";
 import marsTexture from "@/assets/2k_mars.jpg";
 import sunTexture from "@/assets/2k_sun.jpg";
 import venusTexture from "@/assets/2k_venus_atmosphere.jpg";
-import earthTexture from "@/assets/earth_atmos_2048.jpg";
 import type { Planet } from "@/types/planet";
 
 export const earth: Planet = {
 	id: "initial-earth",
 	name: "Earth",
-	texturePath: earthTexture,
+	texturePath:
+		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
 	rotationSpeedY: 2,
 	radius: 2,
 	width: 64,
@@ -22,7 +22,8 @@ export const earth: Planet = {
 export const testPlanet: Planet = {
 	id: "test-planet",
 	name: "TestPlanet",
-	texturePath: earthTexture,
+	texturePath:
+		"https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
 	rotationSpeedY: 2,
 	radius: 2,
 	width: 64,

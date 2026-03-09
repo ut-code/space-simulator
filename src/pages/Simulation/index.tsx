@@ -144,18 +144,15 @@ export default function Page() {
 		[],
 	);
 
-	const camera = useMemo(
-		() => ({ position: [0, 0, 6] as [number, number, number] }),
-		[],
-	);
-	const canvasStyle = useMemo(() => ({ width: "100vw", height: "100vh" }), []);
-	const handleCreated = useCallback(({ gl }: { gl: THREE.WebGLRenderer }) => {
-		gl.setClearColor("#000000", 1);
-	}, []);
-
 	return (
 		<div className="relative h-screen w-screen">
-			<Canvas camera={camera} onCreated={handleCreated} style={canvasStyle}>
+			<Canvas
+				camera={{ position: [0, 0, 6] }}
+				onCreated={({ gl }) => {
+					gl.setClearColor("#000000", 1);
+				}}
+				style={{ width: "100vw", height: "100vh" }}
+			>
 				{/* Adds ambient and directional light so we can see the 3D shape */}
 				<ambientLight intensity={1.2} />
 				<pointLight position={[10, 10, 10]} intensity={3} />
