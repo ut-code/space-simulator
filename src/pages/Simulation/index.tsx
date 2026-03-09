@@ -2,7 +2,7 @@ import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
@@ -155,15 +155,18 @@ export default function Page() {
 		});
 	};
 
+	const camera = useMemo(
+		() => ({ position: [0, 0, 6] as [number, number, number] }),
+		[],
+	);
+	const canvasStyle = useMemo(() => ({ width: "100vw", height: "100vh" }), []);
+	const handleCreated = useCallback(({ gl }: { gl: THREE.WebGLRenderer }) => {
+		gl.setClearColor("#000000", 1);
+	}, []);
+
 	return (
 		<div className="relative h-screen w-screen">
-			<Canvas
-				camera={{ position: [0, 0, 6] }}
-				onCreated={({ gl }) => {
-					gl.setClearColor("#000000", 1);
-				}}
-				style={{ width: "100vw", height: "100vh" }}
-			>
+			<Canvas camera={camera} onCreated={handleCreated} style={canvasStyle}>
 				{/* Adds ambient and directional light so we can see the 3D shape */}
 				<ambientLight intensity={1.2} />
 				<pointLight position={[10, 10, 10]} intensity={3} />
