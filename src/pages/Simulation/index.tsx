@@ -67,16 +67,16 @@ export default function Page() {
 		rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
 		addPlanet: button((get) => {
 			const selectedType =
-				(get("planetType") as keyof typeof planetTemplates) ?? "earth";
+				(get("New Planet.planetType") as keyof typeof planetTemplates) ??
+				"earth";
 			const template = planetTemplates[selectedType] ?? earth;
 
-			// Defensive reads: fallback to template values if get(...) returns undefined
 			const rotationSpeedY =
-				(get("rotationSpeedY") as number) ?? template.rotationSpeedY ?? 0;
-			const radius = (get("radius") as number) ?? template.radius ?? 1;
-			const posX = (get("posX") as number) ?? 0;
-			const posY = (get("posY") as number) ?? 0;
-			const posZ = (get("posZ") as number) ?? 0;
+				(get("New Planet.rotationSpeedY") as number) ?? template.rotationSpeedY;
+			const radius = (get("New Planet.radius") as number) ?? template.radius;
+			const posX = (get("New Planet.posX") as number) ?? 0;
+			const posY = (get("New Planet.posY") as number) ?? 0;
+			const posZ = (get("New Planet.posZ") as number) ?? 0;
 
 			setPlanets((prev) => [
 				...prev,
