@@ -8,6 +8,7 @@ import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
+import { CameraController } from "./components/CameraController";
 import { Explosion } from "./components/Explosion";
 import { PlanetMesh } from "./components/PlanetMesh";
 import {
@@ -37,6 +38,7 @@ export default function Page() {
 
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
+	const [followedPlanetId, setFollowedPlanetId] = useState<string | null>(null);
 
 	const [placementMode, setPlacementMode] = useState(false);
 	const [placementPanelOpen, setPlacementPanelOpen] = useState(true);
@@ -133,8 +135,11 @@ export default function Page() {
 		});
 	};
 
-	const removePlanet = (planetIndex: number) => {
-		setPlanets((prev) => prev.filter((_, index) => index !== planetIndex));
+	const removePlanet = (planetId: string) => {
+		setPlanets((prev) => prev.filter((p) => p.id !== planetId));
+		if (followedPlanetId === planetId) {
+			setFollowedPlanetId(null);
+		}
 	};
 
 	const handleExplosion = (position: THREE.Vector3, radius: number) => {
@@ -168,6 +173,12 @@ export default function Page() {
 				<ambientLight intensity={1.2} />
 				<pointLight position={[10, 10, 10]} intensity={3} />
 
+				<CameraController
+					followedPlanetId={followedPlanetId}
+					planetRegistry={planetRegistry}
+					orbitControlsRef={orbitControlsRef}
+				/>
+
 				<Physics gravity={[0, 0, 0]}>
 					{planets.map((planet) => (
 						<Suspense key={planet.id} fallback={null}>
@@ -175,6 +186,7 @@ export default function Page() {
 								planet={planet}
 								planetRegistry={planetRegistry}
 								onExplosion={handleExplosion}
+								onSelect={(id) => setFollowedPlanetId(id)}
 							/>
 						</Suspense>
 					))}
@@ -238,6 +250,36 @@ export default function Page() {
 							ONの間は水色の面をクリックすると、座標が自動入力されます。
 						</p>
 
+						{followedPlanetId && (
+							<div className="mb-3 mt-2 rounded border border-blue-500/30 bg-blue-500/10 p-2">
+								<div className="flex items-center justify-between">
+									<span className="text-blue-200">
+										追尾中: {(() => {
+											const planet = planets.find(
+												(p) => p.id === followedPlanetId,
+											);
+											return planet ? (
+												<>
+													{planet.name}
+													<br />
+													(ID: {planet.id})
+												</>
+											) : (
+												"Unknown"
+											);
+										})()}
+									</span>
+									<button
+										type="button"
+										onClick={() => setFollowedPlanetId(null)}
+										className="cursor-pointer rounded bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200 hover:bg-blue-500/40"
+									>
+										解除
+									</button>
+								</div>
+							</div>
+						)}
+
 						<strong>追加済み惑星 ({planets.length})</strong>
 						<ul className="mb-0 mt-2.5 list-none p-0">
 							{planets.map((planet) => (
@@ -254,15 +296,28 @@ export default function Page() {
 											{planet.position.z.toFixed(1)})
 										</div>
 									</div>
-									<button
-										type="button"
-										onClick={() =>
-											removePlanet(planets.findIndex((p) => p.id === planet.id))
-										}
-										className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-white"
-									>
-										削除
-									</button>
+									<div className="flex shrink-0 items-center gap-2">
+										{followedPlanetId === planet.id ? (
+											<span className="px-2 py-1 text-xs text-blue-300">
+												追尾中
+											</span>
+										) : (
+											<button
+												type="button"
+												onClick={() => setFollowedPlanetId(planet.id)}
+												className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
+											>
+												追尾
+											</button>
+										)}
+										<button
+											type="button"
+											onClick={() => removePlanet(planet.id)}
+											className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
+										>
+											削除
+										</button>
+									</div>
 								</li>
 							))}
 						</ul>
