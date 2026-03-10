@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import type { OrbitControls as Controls } from "three-stdlib";
+import type { OrbitControls } from "three-stdlib";
 
 // 惑星レジストリのエントリの型を定義
 type PlanetRegistryEntry = {
@@ -12,7 +12,7 @@ type PlanetRegistryEntry = {
 type CameraControllerProps = {
 	followedPlanetId: string | null;
 	planetRegistry: React.MutableRefObject<Map<string, PlanetRegistryEntry>>;
-	orbitControlsRef: React.MutableRefObject<Controls | null>;
+	orbitControlsRef: React.MutableRefObject<OrbitControls | null>;
 };
 
 export function CameraController({
