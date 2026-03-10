@@ -2,7 +2,7 @@ import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { useMemo, useRef, useState } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
@@ -170,12 +170,13 @@ export default function Page() {
 
 				<Physics gravity={[0, 0, 0]}>
 					{planets.map((planet) => (
-						<PlanetMesh
-							key={planet.id}
-							planet={planet}
-							planetRegistry={planetRegistry}
-							onExplosion={handleExplosion}
-						/>
+						<Suspense key={planet.id} fallback={null}>
+							<PlanetMesh
+								planet={planet}
+								planetRegistry={planetRegistry}
+								onExplosion={handleExplosion}
+							/>
+						</Suspense>
 					))}
 				</Physics>
 
