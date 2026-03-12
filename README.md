@@ -17,7 +17,7 @@ A small interactive 3D space simulator built with React + Three.js. It lets you 
 ## Prerequisites
 - Node.js >= 18 (or a recent LTS)
 
-Getting started
+## Getting started
 
 1. Install dependencies
 
