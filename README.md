@@ -15,7 +15,7 @@ A small interactive 3D space simulator built with React + Three.js. It lets you 
 - Leva for debug/control panels
 
 ## Prerequisites
-- Node.js >= 18 (or a recent LTS)
+- Node.js >= 24 
 
 ## Getting started
 
