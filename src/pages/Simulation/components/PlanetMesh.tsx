@@ -89,7 +89,6 @@ export function PlanetMesh({
 	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref]);
 
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
-	const force = useMemo(() => new THREE.Vector3(), []);
 	const forceAccumulator = useMemo(() => new THREE.Vector3(), []);
 	const myPosVec = useMemo(() => new THREE.Vector3(), []);
 	const otherPosVec = useMemo(() => new THREE.Vector3(), []);
@@ -114,14 +113,13 @@ export function PlanetMesh({
 			const otherMass = otherMesh.userData.mass || 1;
 			const otherRadius = otherMesh.userData.radius || 0.1;
 
-			calcGravityForce(
+			const force = calcGravityForce(
 				myPosVec,
 				planet.mass,
 				planet.radius,
 				otherPosVec,
 				otherMass,
 				otherRadius,
-				force,
 			);
 			forceAccumulator.add(force);
 		}
