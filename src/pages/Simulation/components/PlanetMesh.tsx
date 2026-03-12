@@ -5,7 +5,7 @@ import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
-import { calc_gravity_force } from "../utils/gravityUtils";
+import { calcGravityForce } from "../utils/gravityUtils";
 
 type PlanetMeshProps = {
 	planet: Planet;
@@ -113,7 +113,7 @@ export function PlanetMesh({
 			const otherMass = otherMesh.userData.mass || 1;
 			const otherRadius = otherMesh.userData.radius || 0.1;
 
-			const force = calc_gravity_force(
+			const force = calcGravityForce(
 				myPosVec,
 				planet.mass,
 				planet.radius,
