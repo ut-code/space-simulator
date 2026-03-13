@@ -5,6 +5,10 @@ import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
+import {
+	CollisionType,
+	decideCollisionOutcome,
+} from "../utils/decideCollisionOutcome";
 import { calcGravityForce } from "../utils/gravityUtils";
 
 type PlanetMeshProps = {
@@ -12,7 +16,11 @@ type PlanetMeshProps = {
 	planetRegistry: React.MutableRefObject<
 		Map<
 			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+			{
+				mesh: THREE.Mesh;
+				position: React.MutableRefObject<number[]>;
+				velocity: React.MutableRefObject<number[]>;
+			}
 		>
 	>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
@@ -35,7 +43,38 @@ export function PlanetMesh({
 			linearDamping: 0, // 宇宙空間なので抵抗なし
 			angularDamping: 0, // 宇宙空間なので回転の減衰もない
 			onCollide: (e) => {
-				// 衝突時の衝撃が一定以上なら爆発とみなす
+				const myId = e.target.userData.id;
+				const otherId = e.body.userData.id;
+				// 相手のIDが取得できない、または自分のIDの方が大きい場合は処理をスキップして重複を防ぐ
+				if (!otherId || myId > otherId) {
+					return;
+				}
+				if (
+					!planetRegistry.current.has(myId) ||
+					!planetRegistry.current.has(otherId)
+				) {
+					return;
+				}
+				const myPlanet = planetRegistry.current.get(myId);
+				const otherPlanet = planetRegistry.current.get(otherId);
+				if (!myPlanet || !otherPlanet) return;
+				const result: string = decideCollisionOutcome(
+					myPlanet.mesh.userData.mass,
+					myPlanet.mesh.userData.radius,
+					new THREE.Vector3().fromArray(myPlanet.position.current),
+					new THREE.Vector3().fromArray(myPlanet.velocity.current),
+					otherPlanet.mesh.userData.mass,
+					otherPlanet.mesh.userData.radius,
+					new THREE.Vector3().fromArray(otherPlanet.position.current),
+					new THREE.Vector3().fromArray(otherPlanet.velocity.current),
+				);
+
+				if (result === CollisionType.Merge) {
+					console.log(CollisionType.Merge);
+				} else {
+					console.log(CollisionType.Explode);
+				}
+
 				if (e.contact.impactVelocity > 0.5) {
 					const contactPoint = new THREE.Vector3(
 						e.contact.contactPoint[0],
@@ -65,6 +104,18 @@ export function PlanetMesh({
 		return () => unsubscribe(); // アンマウント時に購読解除
 	}, [api.position]);
 
+	const velocity = useRef([
+		planet.velocity.x,
+		planet.velocity.y,
+		planet.velocity.z,
+	]);
+	useEffect(() => {
+		const unsubscribe = api.velocity.subscribe((v) => {
+			velocity.current = v;
+		});
+		return () => unsubscribe(); // アンマウント時に購読解除
+	}, [api.velocity]);
+
 	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
 	useEffect(() => {
 		if (!planetRegistry.current) return;
@@ -79,6 +130,7 @@ export function PlanetMesh({
 			planetRegistry.current.set(planet.id, {
 				mesh: ref.current,
 				position,
+				velocity,
 			});
 		}
 		return () => {

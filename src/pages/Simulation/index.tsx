@@ -2,6 +2,7 @@ import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
+import type React from "react";
 import { Suspense, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
@@ -32,7 +33,11 @@ export default function Page() {
 	const planetRegistry = useRef<
 		Map<
 			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+			{
+				mesh: THREE.Mesh;
+				position: React.MutableRefObject<number[]>;
+				velocity: React.MutableRefObject<number[]>;
+			}
 		>
 	>(new Map());
 

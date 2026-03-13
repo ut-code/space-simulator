@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-const G = 1;
+export const G = 1;
 const softeningFactor = 0.005;
 
 export function calcGravityForce(
