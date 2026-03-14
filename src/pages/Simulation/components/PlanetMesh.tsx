@@ -10,6 +10,7 @@ import {
 	decideCollisionOutcome,
 } from "../utils/decideCollisionOutcome";
 import { calcGravityForce } from "../utils/gravityUtils";
+import { mergePlanets } from "../utils/mergePlanets";
 
 type PlanetMeshProps = {
 	planet: Planet;
@@ -25,6 +26,11 @@ type PlanetMeshProps = {
 	>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
 	onSelect: (planetId: string) => void;
+	onMerge: (
+		obsoletePlanetIdA: string,
+		obsoletePlanetIdB: string,
+		newPlanetData: Planet,
+	) => void;
 };
 
 export function PlanetMesh({
@@ -32,6 +38,7 @@ export function PlanetMesh({
 	planetRegistry,
 	onExplosion,
 	onSelect,
+	onMerge,
 }: PlanetMeshProps) {
 	const [ref, api] = useSphere<THREE.Mesh>(
 		() => ({
@@ -45,32 +52,61 @@ export function PlanetMesh({
 			onCollide: (e) => {
 				const myId = e.target.userData.id;
 				const otherId = e.body.userData.id;
+
 				// 相手のIDが取得できない、または自分のIDの方が大きい場合は処理をスキップして重複を防ぐ
 				if (!otherId || myId > otherId) {
 					return;
 				}
+
 				if (
 					!planetRegistry.current.has(myId) ||
 					!planetRegistry.current.has(otherId)
 				) {
 					return;
 				}
+
 				const myPlanet = planetRegistry.current.get(myId);
 				const otherPlanet = planetRegistry.current.get(otherId);
+
 				if (!myPlanet || !otherPlanet) return;
+				if (!myPlanet.position || !otherPlanet.position) return;
+				if (!myPlanet.velocity || !otherPlanet.velocity) return;
+
+				const myPos = new THREE.Vector3().fromArray(myPlanet.position.current);
+				const myVel = new THREE.Vector3().fromArray(myPlanet.velocity.current);
+				const otherPos = new THREE.Vector3().fromArray(
+					otherPlanet.position.current,
+				);
+				const otherVel = new THREE.Vector3().fromArray(
+					otherPlanet.velocity.current,
+				);
+
 				const result: string = decideCollisionOutcome(
 					myPlanet.mesh.userData.mass,
 					myPlanet.mesh.userData.radius,
-					new THREE.Vector3().fromArray(myPlanet.position.current),
-					new THREE.Vector3().fromArray(myPlanet.velocity.current),
+					myPos,
+					myVel,
 					otherPlanet.mesh.userData.mass,
 					otherPlanet.mesh.userData.radius,
-					new THREE.Vector3().fromArray(otherPlanet.position.current),
-					new THREE.Vector3().fromArray(otherPlanet.velocity.current),
+					otherPos,
+					otherVel,
 				);
 
 				if (result === CollisionType.Merge) {
 					console.log(CollisionType.Merge);
+					const newPlanetData = mergePlanets(
+						myPlanet.mesh.userData.mass,
+						myPlanet.mesh.userData.radius,
+						myPos,
+						myVel,
+						myPlanet.mesh.userData.rotationSpeedY,
+						otherPlanet.mesh.userData.mass,
+						otherPlanet.mesh.userData.radius,
+						otherPos,
+						otherVel,
+						otherPlanet.mesh.userData.rotationSpeedY,
+					);
+					onMerge(myId, otherId, newPlanetData);
 				} else {
 					console.log(CollisionType.Explode);
 				}
@@ -126,6 +162,7 @@ export function PlanetMesh({
 				mass: planet.mass,
 				id: planet.id,
 				radius: planet.radius,
+				rotationSpeedY: planet.rotationSpeedY,
 			};
 			planetRegistry.current.set(planet.id, {
 				mesh: ref.current,
@@ -138,7 +175,14 @@ export function PlanetMesh({
 				planetRegistry.current.delete(planet.id);
 			}
 		};
-	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref]);
+	}, [
+		planet.id,
+		planetRegistry,
+		planet.mass,
+		planet.radius,
+		planet.rotationSpeedY,
+		ref,
+	]);
 
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
 	const forceAccumulator = useMemo(() => new THREE.Vector3(), []);
