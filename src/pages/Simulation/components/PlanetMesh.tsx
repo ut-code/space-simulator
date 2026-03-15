@@ -24,6 +24,7 @@ type PlanetMeshProps = {
 			}
 		>
 	>;
+	mergingPlanets: React.MutableRefObject<Set<string>>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
 	onSelect: (planetId: string) => void;
 	onMerge: (
@@ -36,6 +37,7 @@ type PlanetMeshProps = {
 export function PlanetMesh({
 	planet,
 	planetRegistry,
+	mergingPlanets,
 	onExplosion,
 	onSelect,
 	onMerge,
@@ -52,6 +54,14 @@ export function PlanetMesh({
 			onCollide: (e) => {
 				const myId = e.target.userData.id;
 				const otherId = e.body.userData.id;
+
+				// どちらかが合体処理中なら即リターン
+				if (
+					mergingPlanets.current.has(myId) ||
+					mergingPlanets.current.has(otherId)
+				) {
+					return;
+				}
 
 				// 相手のIDが取得できない、または自分のIDの方が大きい場合は処理をスキップして重複を防ぐ
 				if (!otherId || myId > otherId) {

@@ -41,6 +41,7 @@ export default function Page() {
 			}
 		>
 	>(new Map());
+	const mergingPlanets = useRef<Set<string>>(new Set());
 
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
@@ -172,6 +173,8 @@ export default function Page() {
 		obsoletePlanetIdB: string,
 		newPlanetData: Planet,
 	) => {
+		mergingPlanets.current.add(obsoletePlanetIdA);
+		mergingPlanets.current.add(obsoletePlanetIdB);
 		planetRegistry.current.delete(obsoletePlanetIdA);
 		planetRegistry.current.delete(obsoletePlanetIdB);
 		setPlanets((prev) => {
@@ -215,6 +218,7 @@ export default function Page() {
 							<PlanetMesh
 								planet={planet}
 								planetRegistry={planetRegistry}
+								mergingPlanets={mergingPlanets}
 								onExplosion={handleExplosion}
 								onSelect={(id) => setFollowedPlanetId(id)}
 								onMerge={(
