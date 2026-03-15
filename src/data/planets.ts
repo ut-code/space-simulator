@@ -3,6 +3,7 @@ import jupiterTexture from "@/assets/2k_jupiter.jpg";
 import marsTexture from "@/assets/2k_mars.jpg";
 import sunTexture from "@/assets/2k_sun.jpg";
 import venusTexture from "@/assets/2k_venus_atmosphere.jpg";
+import moonTexture from "@/assets/960px-Moon_texture.jpg";
 import earthTexture from "@/assets/earth_atmos_2048.jpg";
 import type { Planet } from "@/types/planet";
 
@@ -19,17 +20,17 @@ export const earth: Planet = {
 	mass: 1,
 };
 
-export const testPlanet: Planet = {
-	id: "test-planet",
-	name: "TestPlanet",
-	texturePath: earthTexture,
-	rotationSpeedY: 2,
-	radius: 2,
+export const moon: Planet = {
+	id: "moon",
+	name: "Moon",
+	texturePath: moonTexture,
+	rotationSpeedY: 0.07,
+	radius: 0.546,
 	width: 64,
 	height: 64,
 	position: new THREE.Vector3(100, 0, 0),
 	velocity: new THREE.Vector3(-10, 0, 0),
-	mass: 1,
+	mass: 0.0123,
 };
 
 export const sun: Planet = {

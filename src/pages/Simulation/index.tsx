@@ -2,10 +2,11 @@ import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
+import type React from "react";
 import { Suspense, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
-import { earth, jupiter, mars, sun, venus } from "@/data/planets";
+import { earth, jupiter, mars, moon, sun, venus } from "@/data/planets";
 import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
 import { CameraController } from "./components/CameraController";
@@ -18,6 +19,7 @@ import {
 
 const planetTexturePaths = [
 	earth.texturePath,
+	moon.texturePath,
 	sun.texturePath,
 	mars.texturePath,
 	jupiter.texturePath,
@@ -25,16 +27,21 @@ const planetTexturePaths = [
 ];
 useTexture.preload(planetTexturePaths);
 
-const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
+const planetTemplates = { earth, moon, sun, mars, jupiter, venus } as const;
 
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const planetRegistry = useRef<
 		Map<
 			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
+			{
+				mesh: THREE.Mesh;
+				position: React.MutableRefObject<number[]>;
+				velocity: React.MutableRefObject<number[]>;
+			}
 		>
 	>(new Map());
+	const mergingPlanets = useRef<Set<string>>(new Set());
 
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
@@ -50,6 +57,7 @@ export default function Page() {
 				value: "earth",
 				options: {
 					Earth: "earth",
+					Moon: "moon",
 					Sun: "sun",
 					Mars: "mars",
 					Jupiter: "jupiter",
@@ -160,6 +168,31 @@ export default function Page() {
 		});
 	};
 
+	const handleMerge = (
+		obsoletePlanetIdA: string,
+		obsoletePlanetIdB: string,
+		newPlanetData: Planet,
+	) => {
+		mergingPlanets.current.add(obsoletePlanetIdA);
+		mergingPlanets.current.add(obsoletePlanetIdB);
+		planetRegistry.current.delete(obsoletePlanetIdA);
+		planetRegistry.current.delete(obsoletePlanetIdB);
+		setPlanets((prev) => {
+			// 削除して追加
+			return prev
+				.filter((p) => p.id !== obsoletePlanetIdA && p.id !== obsoletePlanetIdB)
+				.concat(newPlanetData);
+		});
+
+		// フォロー中の惑星が削除対象なら解除
+		if (
+			followedPlanetId === obsoletePlanetIdA ||
+			followedPlanetId === obsoletePlanetIdB
+		) {
+			setFollowedPlanetId(null);
+		}
+	};
+
 	return (
 		<div className="relative h-screen w-screen">
 			<Canvas
@@ -185,8 +218,20 @@ export default function Page() {
 							<PlanetMesh
 								planet={planet}
 								planetRegistry={planetRegistry}
+								mergingPlanets={mergingPlanets}
 								onExplosion={handleExplosion}
 								onSelect={(id) => setFollowedPlanetId(id)}
+								onMerge={(
+									obsoletePlanetIdA,
+									obsoletePlanetIdB,
+									newPlanetData,
+								) =>
+									handleMerge(
+										obsoletePlanetIdA,
+										obsoletePlanetIdB,
+										newPlanetData,
+									)
+								}
 							/>
 						</Suspense>
 					))}
