@@ -98,8 +98,6 @@ export default function Page() {
 				settings.radius,
 			);
 
-			console.log(newMass);
-
 			setPlanets((prev) => [
 				...prev,
 				{
