@@ -27,6 +27,11 @@ useTexture.preload(planetTexturePaths);
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
+function computeMass(radius: number, mass: number, newRadius: number) {
+	const newMass = mass * (newRadius / radius) ** 3;
+	return newMass;
+}
+
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const planetRegistry = useRef<
@@ -87,6 +92,12 @@ export default function Page() {
 				rotationSpeedY: getPlanetControl("rotationSpeedY"),
 			};
 
+			const newMass = computeMass(
+				template.radius,
+				template.mass,
+				settings.radius,
+			);
+
 			setPlanets((prev) => [
 				...prev,
 				{
@@ -103,7 +114,7 @@ export default function Page() {
 						settings.posZ,
 					),
 					velocity: new THREE.Vector3(0, 0, 0),
-					mass: template.mass,
+					mass: newMass,
 				},
 			]);
 		}),
