@@ -15,6 +15,7 @@ import {
 	PlacementSurface,
 	PreviewPlanet,
 } from "./components/PlanetPlacementView";
+import { PlanetRegistry } from "./core/PlanetRegistry";
 
 const planetTexturePaths = [
 	earth.texturePath,
@@ -34,12 +35,7 @@ function computeMass(radius: number, mass: number, newRadius: number) {
 
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
-	const planetRegistry = useRef<
-		Map<
-			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
-		>
-	>(new Map());
+	const planetRegistry = useMemo(() => new PlanetRegistry(), []);
 
 	const [planets, setPlanets] = useState<Planet[]>([earth]);
 	const [explosions, setExplosions] = useState<ExplosionData[]>([]);

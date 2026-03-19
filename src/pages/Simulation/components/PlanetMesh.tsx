@@ -1,20 +1,15 @@
 import { useSphere } from "@react-three/cannon";
 import { Trail, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
+import type { PlanetRegistry } from "../core/PlanetRegistry";
 import { calcGravityForce } from "../utils/gravityUtils";
 
 type PlanetMeshProps = {
 	planet: Planet;
-	planetRegistry: React.MutableRefObject<
-		Map<
-			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
-		>
-	>;
+	planetRegistry: PlanetRegistry;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
 	onSelect: (planetId: string) => void;
 };
@@ -67,8 +62,6 @@ export function PlanetMesh({
 
 	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
 	useEffect(() => {
-		if (!planetRegistry.current) return;
-
 		if (ref.current) {
 			// 質量計算用にuserDataに保存
 			ref.current.userData = {
@@ -76,15 +69,13 @@ export function PlanetMesh({
 				id: planet.id,
 				radius: planet.radius,
 			};
-			planetRegistry.current.set(planet.id, {
+			planetRegistry.register(planet.id, {
 				mesh: ref.current,
 				position,
 			});
 		}
 		return () => {
-			if (planetRegistry.current) {
-				planetRegistry.current.delete(planet.id);
-			}
+			planetRegistry.unregister(planet.id);
 		};
 	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref]);
 
@@ -95,7 +86,7 @@ export function PlanetMesh({
 
 	// This hook runs every frame (approx 60fps)
 	useFrame(() => {
-		if (!ref.current || !planetRegistry.current) return;
+		if (!ref.current) return;
 
 		// 誤差による自転速度の異常上昇を防ぐ
 		api.angularVelocity.set(0, planet.rotationSpeedY, 0);
@@ -105,7 +96,7 @@ export function PlanetMesh({
 		forceAccumulator.set(0, 0, 0); // 毎フレームリセットして使い回す
 
 		// 他のすべての惑星からの引力を計算して合算
-		for (const [otherId, other] of planetRegistry.current) {
+		for (const [otherId, other] of planetRegistry) {
 			if (otherId === planet.id) continue;
 
 			const { mesh: otherMesh, position: otherPosition } = other;
