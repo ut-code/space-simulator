@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# Space Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small interactive 3D space simulator built with React + Three.js. It lets you place planets, tweak physical parameters, and watch a simple gravity/physics-driven scene with explosions and camera controls.
 
-Currently, two official plugins are available:
+## Key ideas
+- Real-time 3D rendering with `three` and `@react-three/fiber`.
+- Simple physics/interaction via `@react-three/cannon` and custom gravity utilities.
+- Fast authoring controls using `leva` for spawning and tuning planets.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech stack
+- Vite + React (TypeScript)
+- three, @react-three/fiber, @react-three/drei
+- @react-three/cannon for physics
+- Tailwind CSS for UI utilities
+- Leva for debug/control panels
 
-## React Compiler
+## Prerequisites
+- Node.js >= 24 
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting started
 
-## Expanding the ESLint configuration
+1. Install dependencies
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Run the dev server
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm run dev
 ```
+
+3. Build for production
+
+```bash
+npm run build
+```
+
+4. Preview the production build
+
+```bash
+npm run preview
+```
+
+## Checks and formatting
+- A Biome check is available: `npm run check` (project includes `@biomejs/biome`).
+- A pre-commit hook tool (`lefthook`) is present in devDependencies — follow the repository conventions when committing.
+

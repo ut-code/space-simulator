@@ -1,11 +1,11 @@
 import { useSphere } from "@react-three/cannon";
-import { useTexture } from "@react-three/drei";
+import { Trail, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
-import { calc_gravity_force } from "../utils/gravityUtils";
+import { calcGravityForce } from "../utils/gravityUtils";
 
 type PlanetMeshProps = {
 	planet: Planet;
@@ -20,6 +20,7 @@ type PlanetMeshProps = {
 		>
 	>;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
+	onSelect: (planetId: string) => void;
 	timeScale: number;
 };
 
@@ -27,6 +28,7 @@ export function PlanetMesh({
 	planet,
 	planetRegistry,
 	onExplosion,
+	onSelect,
 	timeScale,
 }: PlanetMeshProps) {
 	const [ref, api] = useSphere<THREE.Mesh>(
@@ -129,7 +131,7 @@ export function PlanetMesh({
 			const otherMass = otherMesh.userData.mass || 1;
 			const otherRadius = otherMesh.userData.radius || 0.1;
 
-			const force = calc_gravity_force(
+			const force = calcGravityForce(
 				myPosVec,
 				planet.mass,
 				planet.radius,
@@ -146,12 +148,26 @@ export function PlanetMesh({
 	});
 
 	return (
-		<mesh ref={ref}>
-			{/* args: [radius, widthSegments, heightSegments]
+		<Trail
+			width={planet.radius}
+			length={80}
+			color="#88ccff"
+			attenuation={(t) => t}
+		>
+			{/* biome-ignore lint: noStaticElementInteractions - Three.js mesh is not a DOM element*/}
+			<mesh
+				ref={ref}
+				onDoubleClick={(e) => {
+					e.stopPropagation();
+					onSelect(planet.id);
+				}}
+			>
+				{/* args: [radius, widthSegments, heightSegments]
         Higher segments = smoother sphere
       */}
-			<sphereGeometry args={[planet.radius, planet.width, planet.height]} />
-			<meshStandardMaterial map={colorMap} />
-		</mesh>
+				<sphereGeometry args={[planet.radius, planet.width, planet.height]} />
+				<meshStandardMaterial map={colorMap} />
+			</mesh>
+		</Trail>
 	);
 }
