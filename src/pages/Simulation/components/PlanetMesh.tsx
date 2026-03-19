@@ -4,8 +4,8 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
+import { GravitySystem } from "../core/GravitySystem";
 import type { PlanetRegistry } from "../core/PlanetRegistry";
-import { calcGravityForce } from "../utils/gravityUtils";
 
 type PlanetMeshProps = {
 	planet: Planet;
@@ -80,9 +80,9 @@ export function PlanetMesh({
 	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref]);
 
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
+	const gravitySystem = useMemo(() => new GravitySystem(), []);
 	const forceAccumulator = useMemo(() => new THREE.Vector3(), []);
 	const myPosVec = useMemo(() => new THREE.Vector3(), []);
-	const otherPosVec = useMemo(() => new THREE.Vector3(), []);
 
 	// This hook runs every frame (approx 60fps)
 	useFrame(() => {
@@ -93,27 +93,15 @@ export function PlanetMesh({
 
 		// ref.current.positionの代わりに、物理エンジンから取得した位置を使用
 		myPosVec.fromArray(position.current);
-		forceAccumulator.set(0, 0, 0); // 毎フレームリセットして使い回す
 
-		// 他のすべての惑星からの引力を計算して合算
-		for (const [otherId, other] of planetRegistry) {
-			if (otherId === planet.id) continue;
-
-			const { mesh: otherMesh, position: otherPosition } = other;
-			otherPosVec.fromArray(otherPosition.current);
-			const otherMass = otherMesh.userData.mass || 1;
-			const otherRadius = otherMesh.userData.radius || 0.1;
-
-			const force = calcGravityForce(
-				myPosVec,
-				planet.mass,
-				planet.radius,
-				otherPosVec,
-				otherMass,
-				otherRadius,
-			);
-			forceAccumulator.add(force);
-		}
+		gravitySystem.accumulateForPlanet({
+			planetId: planet.id,
+			targetMass: planet.mass,
+			targetRadius: planet.radius,
+			targetPosition: myPosVec,
+			planetRegistry,
+			outForce: forceAccumulator,
+		});
 
 		// 計算した力を重心に適用
 		api.applyForce(forceAccumulator.toArray(), myPosVec.toArray());
