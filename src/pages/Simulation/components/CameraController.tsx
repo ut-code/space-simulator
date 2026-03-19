@@ -7,13 +7,13 @@ import type { PlanetRegistry } from "../core/PlanetRegistry";
 type CameraControllerProps = {
 	followedPlanetId: string | null;
 	planetRegistry: PlanetRegistry;
-	orbitControls: OrbitControls | null;
+	orbitControlsRef: React.MutableRefObject<OrbitControls | null>;
 };
 
 export function CameraController({
 	followedPlanetId,
 	planetRegistry,
-	orbitControls,
+	orbitControlsRef,
 }: CameraControllerProps) {
 	const { camera } = useThree();
 	const followController = useMemo(() => new CameraFollowController(), []);
@@ -27,7 +27,7 @@ export function CameraController({
 			followedPlanetId,
 			planetRegistry,
 			camera,
-			controls: orbitControls,
+			controls: orbitControlsRef.current,
 		});
 	});
 	return null;
