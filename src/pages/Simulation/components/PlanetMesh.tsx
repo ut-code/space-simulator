@@ -106,6 +106,10 @@ export function PlanetMesh({
 		};
 	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref]);
 
+	useEffect(() => {
+		api.angularVelocity.set(0, planet.rotationSpeedY * timeScale, 0);
+	}, [api.angularVelocity, planet.rotationSpeedY, timeScale]);
+
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
 	const forceAccumulator = useMemo(() => new THREE.Vector3(), []);
 	const myPosVec = useMemo(() => new THREE.Vector3(), []);
@@ -114,9 +118,6 @@ export function PlanetMesh({
 	// This hook runs every frame (approx 60fps)
 	useFrame(() => {
 		if (!ref.current || !planetRegistry.current) return;
-
-		// 誤差による自転速度の異常上昇を防ぐ
-		api.angularVelocity.set(0, planet.rotationSpeedY * timeScale, 0);
 
 		// ref.current.positionの代わりに、物理エンジンから取得した位置を使用
 		myPosVec.fromArray(position.current);
@@ -143,7 +144,7 @@ export function PlanetMesh({
 		}
 
 		// 計算した力を重心に適用
-		forceAccumulator.multiplyScalar(timeScale);
+		forceAccumulator.multiplyScalar(timeScale * timeScale);
 		api.applyForce(forceAccumulator.toArray(), myPosVec.toArray());
 	});
 
