@@ -83,6 +83,12 @@ export class SimulationWorld {
 		];
 	}
 
+	completeExplosion(explosionId: string) {
+		this.explosions = this.explosions.filter(
+			(explosion) => explosion.id !== explosionId,
+		);
+	}
+
 	getSnapshot(): SimulationWorldSnapshot {
 		return {
 			planets: this.planets.map(clonePlanet),

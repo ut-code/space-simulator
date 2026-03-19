@@ -185,7 +185,14 @@ export default function Page() {
 				{showAxes && <axesHelper args={[20]} />}
 
 				{worldState.explosions.map((exp) => (
-					<Explosion key={exp.id} explosion={exp} />
+					<Explosion
+						key={exp.id}
+						explosion={exp}
+						onComplete={() => {
+							simulationWorld.completeExplosion(exp.id);
+							syncWorld();
+						}}
+					/>
 				))}
 
 				{/* Optional background and controls */}
