@@ -1,11 +1,11 @@
 import { useSphere } from "@react-three/cannon";
 import { Trail, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
 import { GravitySystem } from "../core/GravitySystem";
-import type { PlanetRegistry } from "../core/PlanetRegistry";
+import type { PlanetRegistry, PositionRef } from "../core/PlanetRegistry";
 
 type PlanetMeshProps = {
 	planet: Planet;
@@ -20,45 +20,42 @@ export function PlanetMesh({
 	onExplosion,
 	onSelect,
 }: PlanetMeshProps) {
-	const [ref, api] = useSphere<THREE.Mesh>(
-		() => ({
-			mass: planet.mass,
-			args: [planet.radius],
-			position: [planet.position.x, planet.position.y, planet.position.z],
-			velocity: [planet.velocity.x, planet.velocity.y, planet.velocity.z],
-			angularVelocity: [0, planet.rotationSpeedY, 0], // 物理エンジンでY軸周りの角速度を設定
-			linearDamping: 0, // 宇宙空間なので抵抗なし
-			angularDamping: 0, // 宇宙空間なので回転の減衰もない
-			onCollide: (e) => {
-				// 衝突時の衝撃が一定以上なら爆発とみなす
-				if (e.contact.impactVelocity > 0.5) {
-					const contactPoint = new THREE.Vector3(
-						e.contact.contactPoint[0],
-						e.contact.contactPoint[1],
-						e.contact.contactPoint[2],
-					);
-					onExplosion(contactPoint, planet.radius);
-				}
-			},
-		}),
-		useRef<THREE.Mesh>(null),
-	);
+	const [ref, api] = useSphere<THREE.Mesh>(() => ({
+		mass: planet.mass,
+		args: [planet.radius],
+		position: [planet.position.x, planet.position.y, planet.position.z],
+		velocity: [planet.velocity.x, planet.velocity.y, planet.velocity.z],
+		angularVelocity: [0, planet.rotationSpeedY, 0], // 物理エンジンでY軸周りの角速度を設定
+		linearDamping: 0, // 宇宙空間なので抵抗なし
+		angularDamping: 0, // 宇宙空間なので回転の減衰もない
+		onCollide: (e) => {
+			// 衝突時の衝撃が一定以上なら爆発とみなす
+			if (e.contact.impactVelocity > 0.5) {
+				const contactPoint = new THREE.Vector3(
+					e.contact.contactPoint[0],
+					e.contact.contactPoint[1],
+					e.contact.contactPoint[2],
+				);
+				onExplosion(contactPoint, planet.radius);
+			}
+		},
+	}));
 
 	// Load the texture (you can use any public Earth texture URL)
 	const [colorMap] = useTexture([planet.texturePath]);
 
-	// 物理エンジンの位置を追跡するためのref
-	const position = useRef([
-		planet.position.x,
-		planet.position.y,
-		planet.position.z,
-	]);
+	const position = useMemo<PositionRef>(
+		() => ({
+			current: [planet.position.x, planet.position.y, planet.position.z],
+		}),
+		[planet.position.x, planet.position.y, planet.position.z],
+	);
 	useEffect(() => {
 		const unsubscribe = api.position.subscribe((v) => {
 			position.current = v;
 		});
 		return () => unsubscribe(); // アンマウント時に購読解除
-	}, [api.position]);
+	}, [api.position, position]);
 
 	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
 	useEffect(() => {
@@ -77,7 +74,7 @@ export function PlanetMesh({
 		return () => {
 			planetRegistry.unregister(planet.id);
 		};
-	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref]);
+	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref, position]);
 
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
 	const gravitySystem = useMemo(() => new GravitySystem(), []);

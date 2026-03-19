@@ -2,7 +2,7 @@ import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import { CameraController } from "./components/CameraController";
@@ -27,7 +27,7 @@ useTexture.preload(planetTexturePaths);
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
 export default function Page() {
-	const orbitControlsRef = useRef<Controls | null>(null);
+	const [orbitControls, setOrbitControls] = useState<Controls | null>(null);
 	const planetRegistry = useMemo(() => new PlanetRegistry(), []);
 	const simulationWorld = useMemo(() => new SimulationWorld([earth]), []);
 
@@ -100,10 +100,10 @@ export default function Page() {
 		showAxes: true,
 		showPreview: true,
 		resetCameraPosition: button(() => {
-			if (orbitControlsRef.current) {
-				orbitControlsRef.current.reset();
-				orbitControlsRef.current.target.set(0, 0, 0);
-				orbitControlsRef.current.update();
+			if (orbitControls) {
+				orbitControls.reset();
+				orbitControls.target.set(0, 0, 0);
+				orbitControls.update();
 			}
 		}),
 	});
@@ -150,7 +150,7 @@ export default function Page() {
 				<CameraController
 					followedPlanetId={worldState.followedPlanetId}
 					planetRegistry={planetRegistry}
-					orbitControlsRef={orbitControlsRef}
+					orbitControls={orbitControls}
 				/>
 
 				<Physics gravity={[0, 0, 0]}>
@@ -205,7 +205,7 @@ export default function Page() {
 					fade
 					speed={1}
 				/>
-				<OrbitControls ref={orbitControlsRef} enableZoom={true} />
+				<OrbitControls ref={setOrbitControls} enableZoom={true} />
 			</Canvas>
 			<div className="absolute left-4 top-4 w-80 max-h-[75vh] overflow-y-auto rounded-lg bg-black/70 p-3 text-sm text-white backdrop-blur-sm">
 				<div className="flex items-center justify-between">

@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as THREE from "three";
 import type { ExplosionData } from "@/types/Explosion";
 
@@ -17,7 +17,6 @@ type ExplosionProps = {
 };
 
 export function Explosion({ explosion, onComplete }: ExplosionProps) {
-	const groupRef = useRef<THREE.Group | null>(null);
 	const [fragments, setFragments] = useState<Fragment[]>([]);
 
 	// 爆発初期化
@@ -118,7 +117,7 @@ export function Explosion({ explosion, onComplete }: ExplosionProps) {
 	});
 
 	return (
-		<group ref={groupRef}>
+		<group>
 			{fragments.map((f) => (
 				<primitive key={f.id} object={f.mesh} />
 			))}
