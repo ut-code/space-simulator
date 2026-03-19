@@ -113,6 +113,7 @@ export default function Page() {
 				{
 					id: crypto.randomUUID(),
 					name: template.name,
+					kind: template.kind,
 					texturePath: template.texturePath,
 					rotationSpeedY: settings.rotationSpeedY,
 					radius: settings.radius,

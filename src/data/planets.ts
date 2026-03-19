@@ -9,6 +9,7 @@ import type { Planet } from "@/types/planet";
 export const earth: Planet = {
 	id: "initial-earth",
 	name: "Earth",
+	kind: "rocky",
 	texturePath: earthTexture,
 	rotationSpeedY: 2,
 	radius: 2,
@@ -22,6 +23,7 @@ export const earth: Planet = {
 export const testPlanet: Planet = {
 	id: "test-planet",
 	name: "TestPlanet",
+	kind: "rocky",
 	texturePath: earthTexture,
 	rotationSpeedY: 2,
 	radius: 2,
@@ -35,6 +37,7 @@ export const testPlanet: Planet = {
 export const sun: Planet = {
 	id: "sun",
 	name: "Sun",
+	kind: "star",
 	texturePath: sunTexture,
 	rotationSpeedY: 0.1,
 	radius: 10,
@@ -48,6 +51,7 @@ export const sun: Planet = {
 export const mars: Planet = {
 	id: "mars",
 	name: "Mars",
+	kind: "rocky",
 	texturePath: marsTexture,
 	rotationSpeedY: 1.5,
 	radius: 1.5,
@@ -61,6 +65,7 @@ export const mars: Planet = {
 export const jupiter: Planet = {
 	id: "jupiter",
 	name: "Jupiter",
+	kind: "gas",
 	texturePath: jupiterTexture,
 	rotationSpeedY: 1.2,
 	radius: 5,
@@ -74,6 +79,7 @@ export const jupiter: Planet = {
 export const venus: Planet = {
 	id: "venus",
 	name: "Venus",
+	kind: "rocky",
 	texturePath: venusTexture,
 	rotationSpeedY: 1.8,
 	radius: 1.8,

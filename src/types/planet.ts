@@ -1,7 +1,11 @@
 import type * as THREE from "three";
+
+export type PlanetKind = "rocky" | "gas" | "star";
+
 export type Planet = {
 	id: string;
 	name: string;
+	kind: PlanetKind;
 	texturePath: string;
 	rotationSpeedY: number;
 	radius: number;
