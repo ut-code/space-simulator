@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import { Suspense, useMemo, useState } from "react";
 import type { OrbitControls as Controls } from "three-stdlib";
+import type { Vector3 } from "three";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import { CameraController } from "./components/CameraController";
 import { Explosion } from "./components/Explosion";
@@ -126,10 +127,7 @@ export default function Page() {
 		syncWorld();
 	};
 
-	const handleExplosion = (
-		position: import("three").Vector3,
-		radius: number,
-	) => {
+	const handleExplosion = (position: Vector3, radius: number) => {
 		simulationWorld.registerExplosion(position, radius);
 		syncWorld();
 	};
