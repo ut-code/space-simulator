@@ -30,15 +30,28 @@ export class SimulationWorld {
 	private planets: Planet[];
 	private explosions: ExplosionData[] = [];
 	private followedPlanetId: string | null = null;
+	private snapshot: SimulationWorldSnapshot;
 
 	constructor(initialPlanets: Planet[]) {
 		this.planets = initialPlanets.map(clonePlanet);
+		this.snapshot = this.buildSnapshot();
+	}
+
+	private buildSnapshot(): SimulationWorldSnapshot {
+		return {
+			planets: this.planets,
+			explosions: this.explosions,
+			followedPlanetId: this.followedPlanetId,
+		};
+	}
+
+	private updateSnapshot() {
+		this.snapshot = this.buildSnapshot();
 	}
 
 	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings) {
 		const [posX, posY, posZ] = settings.position;
 		const mass = computeMass(template.radius, template.mass, settings.radius);
-
 		this.planets = [
 			...this.planets,
 			{
@@ -54,6 +67,7 @@ export class SimulationWorld {
 				mass,
 			},
 		];
+		this.updateSnapshot();
 	}
 
 	removePlanet(planetId: string) {
@@ -61,17 +75,18 @@ export class SimulationWorld {
 		if (this.followedPlanetId === planetId) {
 			this.followedPlanetId = null;
 		}
+		this.updateSnapshot();
 	}
 
 	setFollowedPlanetId(planetId: string | null) {
 		this.followedPlanetId = planetId;
+		this.updateSnapshot();
 	}
 
 	registerExplosion(position: THREE.Vector3, radius: number) {
 		if (this.explosions.some((e) => e.position.distanceTo(position) < 2)) {
 			return;
 		}
-
 		this.explosions = [
 			...this.explosions,
 			{
@@ -81,22 +96,17 @@ export class SimulationWorld {
 				fragmentCount: 50,
 			},
 		];
+		this.updateSnapshot();
 	}
 
 	completeExplosion(explosionId: string) {
 		this.explosions = this.explosions.filter(
 			(explosion) => explosion.id !== explosionId,
 		);
+		this.updateSnapshot();
 	}
 
 	getSnapshot(): SimulationWorldSnapshot {
-		return {
-			planets: this.planets.map(clonePlanet),
-			explosions: this.explosions.map((explosion) => ({
-				...explosion,
-				position: explosion.position.clone(),
-			})),
-			followedPlanetId: this.followedPlanetId,
-		};
+		return this.snapshot;
 	}
 }
