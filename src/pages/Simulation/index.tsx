@@ -3,11 +3,9 @@ import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import { Suspense, useMemo, useRef, useState } from "react";
-import * as THREE from "three";
+import type { Vector3 } from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
-import type { ExplosionData } from "@/types/Explosion";
-import type { Planet } from "@/types/planet";
 import { CameraController } from "./components/CameraController";
 import { Explosion } from "./components/Explosion";
 import { PlanetMesh } from "./components/PlanetMesh";
@@ -15,6 +13,8 @@ import {
 	PlacementSurface,
 	PreviewPlanet,
 } from "./components/PlanetPlacementView";
+import { PlanetRegistry } from "./core/PlanetRegistry";
+import { SimulationWorld } from "./core/SimulationWorld";
 
 const planetTexturePaths = [
 	earth.texturePath,
@@ -27,26 +27,21 @@ useTexture.preload(planetTexturePaths);
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
-function computeMass(radius: number, mass: number, newRadius: number) {
-	const newMass = mass * (newRadius / radius) ** 3;
-	return newMass;
-}
-
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
-	const planetRegistry = useRef<
-		Map<
-			string,
-			{ mesh: THREE.Mesh; position: React.MutableRefObject<number[]> }
-		>
-	>(new Map());
+	const planetRegistry = useMemo(() => new PlanetRegistry(), []);
+	const simulationWorld = useMemo(() => new SimulationWorld([earth]), []);
 
-	const [planets, setPlanets] = useState<Planet[]>([earth]);
-	const [explosions, setExplosions] = useState<ExplosionData[]>([]);
-	const [followedPlanetId, setFollowedPlanetId] = useState<string | null>(null);
+	const [worldState, setWorldState] = useState(() =>
+		simulationWorld.getSnapshot(),
+	);
 
 	const [placementMode, setPlacementMode] = useState(false);
 	const [placementPanelOpen, setPlacementPanelOpen] = useState(true);
+
+	const syncWorld = () => {
+		setWorldState(simulationWorld.getSnapshot());
+	};
 
 	const [planetControls, setPlanetControls, getPlanetControl] = useControls(
 		"New Planet",
@@ -92,31 +87,12 @@ export default function Page() {
 				rotationSpeedY: getPlanetControl("rotationSpeedY"),
 			};
 
-			const newMass = computeMass(
-				template.radius,
-				template.mass,
-				settings.radius,
-			);
-
-			setPlanets((prev) => [
-				...prev,
-				{
-					id: crypto.randomUUID(),
-					name: template.name,
-					texturePath: template.texturePath,
-					rotationSpeedY: settings.rotationSpeedY,
-					radius: settings.radius,
-					width: 64,
-					height: 64,
-					position: new THREE.Vector3(
-						settings.posX,
-						settings.posY,
-						settings.posZ,
-					),
-					velocity: new THREE.Vector3(0, 0, 0),
-					mass: newMass,
-				},
-			]);
+			simulationWorld.addPlanetFromTemplate(template, {
+				radius: settings.radius,
+				position: [settings.posX, settings.posY, settings.posZ],
+				rotationSpeedY: settings.rotationSpeedY,
+			});
+			syncWorld();
 		}),
 	});
 
@@ -147,28 +123,13 @@ export default function Page() {
 	};
 
 	const removePlanet = (planetId: string) => {
-		setPlanets((prev) => prev.filter((p) => p.id !== planetId));
-		if (followedPlanetId === planetId) {
-			setFollowedPlanetId(null);
-		}
+		simulationWorld.removePlanet(planetId);
+		syncWorld();
 	};
 
-	const handleExplosion = (position: THREE.Vector3, radius: number) => {
-		// 連続爆発を防ぐための簡易的なデバウンス処理などをここに追加しても良い
-		setExplosions((prev) => {
-			// 同じ場所での重複爆発を簡易的に防ぐ
-			if (prev.some((e) => e.position.distanceTo(position) < 2)) return prev;
-
-			return [
-				...prev,
-				{
-					id: crypto.randomUUID(),
-					radius: radius * 1.5,
-					position: position.clone(),
-					fragmentCount: 50,
-				},
-			];
-		});
+	const handleExplosion = (position: Vector3, radius: number) => {
+		simulationWorld.registerExplosion(position, radius);
+		syncWorld();
 	};
 
 	return (
@@ -185,19 +146,22 @@ export default function Page() {
 				<pointLight position={[10, 10, 10]} intensity={3} />
 
 				<CameraController
-					followedPlanetId={followedPlanetId}
+					followedPlanetId={worldState.followedPlanetId}
 					planetRegistry={planetRegistry}
 					orbitControlsRef={orbitControlsRef}
 				/>
 
 				<Physics gravity={[0, 0, 0]}>
-					{planets.map((planet) => (
+					{worldState.planets.map((planet) => (
 						<Suspense key={planet.id} fallback={null}>
 							<PlanetMesh
 								planet={planet}
 								planetRegistry={planetRegistry}
 								onExplosion={handleExplosion}
-								onSelect={(id) => setFollowedPlanetId(id)}
+								onSelect={(id) => {
+									simulationWorld.setFollowedPlanetId(id);
+									syncWorld();
+								}}
 							/>
 						</Suspense>
 					))}
@@ -218,8 +182,15 @@ export default function Page() {
 				{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
 				{showAxes && <axesHelper args={[20]} />}
 
-				{explosions.map((exp) => (
-					<Explosion key={exp.id} explosion={exp} />
+				{worldState.explosions.map((exp) => (
+					<Explosion
+						key={exp.id}
+						explosion={exp}
+						onComplete={() => {
+							simulationWorld.completeExplosion(exp.id);
+							syncWorld();
+						}}
+					/>
 				))}
 
 				{/* Optional background and controls */}
@@ -261,13 +232,13 @@ export default function Page() {
 							ONの間は水色の面をクリックすると、座標が自動入力されます。
 						</p>
 
-						{followedPlanetId && (
+						{worldState.followedPlanetId && (
 							<div className="mb-3 mt-2 rounded border border-blue-500/30 bg-blue-500/10 p-2">
 								<div className="flex items-center justify-between">
 									<span className="text-blue-200">
 										追尾中: {(() => {
-											const planet = planets.find(
-												(p) => p.id === followedPlanetId,
+											const planet = worldState.planets.find(
+												(p) => p.id === worldState.followedPlanetId,
 											);
 											return planet ? (
 												<>
@@ -282,7 +253,10 @@ export default function Page() {
 									</span>
 									<button
 										type="button"
-										onClick={() => setFollowedPlanetId(null)}
+										onClick={() => {
+											simulationWorld.setFollowedPlanetId(null);
+											syncWorld();
+										}}
 										className="cursor-pointer rounded bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200 hover:bg-blue-500/40"
 									>
 										解除
@@ -291,9 +265,9 @@ export default function Page() {
 							</div>
 						)}
 
-						<strong>追加済み惑星 ({planets.length})</strong>
+						<strong>追加済み惑星 ({worldState.planets.length})</strong>
 						<ul className="mb-0 mt-2.5 list-none p-0">
-							{planets.map((planet) => (
+							{worldState.planets.map((planet) => (
 								<li
 									key={`planet-item-${planet.id}`}
 									className="mb-2 flex items-center justify-between gap-2 border-b border-white/15 pb-2"
@@ -308,14 +282,17 @@ export default function Page() {
 										</div>
 									</div>
 									<div className="flex shrink-0 items-center gap-2">
-										{followedPlanetId === planet.id ? (
+										{worldState.followedPlanetId === planet.id ? (
 											<span className="px-2 py-1 text-xs text-blue-300">
 												追尾中
 											</span>
 										) : (
 											<button
 												type="button"
-												onClick={() => setFollowedPlanetId(planet.id)}
+												onClick={() => {
+													simulationWorld.setFollowedPlanetId(planet.id);
+													syncWorld();
+												}}
 												className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
 											>
 												追尾
