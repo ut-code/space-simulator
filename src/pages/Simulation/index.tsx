@@ -1,4 +1,3 @@
-import { Physics } from "@react-three/cannon";
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
@@ -151,21 +150,19 @@ export default function Page() {
 					orbitControlsRef={orbitControlsRef}
 				/>
 
-				<Physics gravity={[0, 0, 0]}>
-					{worldState.planets.map((planet) => (
-						<Suspense key={planet.id} fallback={null}>
-							<PlanetMesh
-								planet={planet}
-								planetRegistry={planetRegistry}
-								onExplosion={handleExplosion}
-								onSelect={(id) => {
-									simulationWorld.setFollowedPlanetId(id);
-									syncWorld();
-								}}
-							/>
-						</Suspense>
-					))}
-				</Physics>
+				{worldState.planets.map((planet) => (
+					<Suspense key={planet.id} fallback={null}>
+						<PlanetMesh
+							planet={planet}
+							planetRegistry={planetRegistry}
+							onExplosion={handleExplosion}
+							onSelect={(id) => {
+								simulationWorld.setFollowedPlanetId(id);
+								syncWorld();
+							}}
+						/>
+					</Suspense>
+				))}
 
 				<PlacementSurface
 					enabled={placementMode}

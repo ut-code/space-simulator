@@ -1,7 +1,6 @@
-import { useSphere } from "@react-three/cannon";
 import { Trail, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
 import { GravitySystem } from "../core/GravitySystem";
@@ -20,88 +19,91 @@ export function PlanetMesh({
 	onExplosion,
 	onSelect,
 }: PlanetMeshProps) {
-	const [ref, api] = useSphere<THREE.Mesh>(() => ({
-		mass: planet.mass,
-		args: [planet.radius],
-		position: [planet.position.x, planet.position.y, planet.position.z],
-		velocity: [planet.velocity.x, planet.velocity.y, planet.velocity.z],
-		angularVelocity: [0, planet.rotationSpeedY, 0], // 物理エンジンでY軸周りの角速度を設定
-		linearDamping: 0, // 宇宙空間なので抵抗なし
-		angularDamping: 0, // 宇宙空間なので回転の減衰もない
-		onCollide: (e) => {
-			// 衝突時の衝撃が一定以上なら爆発とみなす
-			if (e.contact.impactVelocity > 0.5) {
-				const contactPoint = new THREE.Vector3(
-					e.contact.contactPoint[0],
-					e.contact.contactPoint[1],
-					e.contact.contactPoint[2],
-				);
-				onExplosion(contactPoint, planet.radius);
-			}
-		},
-	}));
+	const meshRef = useRef<THREE.Mesh>(null);
+
+	// 物理演算用の状態（再レンダリングでリセットされないようにRefで保持）
+	const velocityRef = useRef(
+		new THREE.Vector3(planet.velocity.x, planet.velocity.y, planet.velocity.z),
+	);
+	const positionVecRef = useRef(
+		new THREE.Vector3(planet.position.x, planet.position.y, planet.position.z),
+	);
 
 	// Load the texture (you can use any public Earth texture URL)
 	const [colorMap] = useTexture([planet.texturePath]);
 
-	const position = useMemo<PositionRef>(
+	// Registry参照用オブジェクト（他の惑星から参照される）
+	const positionRef = useMemo<PositionRef>(
 		() => ({
 			current: [planet.position.x, planet.position.y, planet.position.z],
 		}),
 		[planet.position.x, planet.position.y, planet.position.z],
 	);
-	useEffect(() => {
-		const unsubscribe = api.position.subscribe((v) => {
-			position.current = v;
-		});
-		return () => unsubscribe(); // アンマウント時に購読解除
-	}, [api.position, position]);
 
 	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
 	useEffect(() => {
-		if (ref.current) {
+		if (meshRef.current) {
 			// 質量計算用にuserDataに保存
-			ref.current.userData = {
+			meshRef.current.userData = {
 				mass: planet.mass,
 				id: planet.id,
 				radius: planet.radius,
 			};
 			planetRegistry.register(planet.id, {
-				mesh: ref.current,
-				position,
+				mesh: meshRef.current,
+				position: positionRef,
 			});
+			// 初期位置の設定
+			meshRef.current.position.copy(positionVecRef.current);
 		}
 		return () => {
 			planetRegistry.unregister(planet.id);
 		};
-	}, [planet.id, planetRegistry, planet.mass, planet.radius, ref, position]);
+	}, [planet.id, planetRegistry, planet.mass, planet.radius, positionRef]);
 
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
 	const gravitySystem = useMemo(() => new GravitySystem(), []);
 	const forceAccumulator = useMemo(() => new THREE.Vector3(), []);
-	const myPosVec = useMemo(() => new THREE.Vector3(), []);
 
 	// This hook runs every frame (approx 60fps)
-	useFrame(() => {
-		if (!ref.current) return;
+	useFrame((_, delta) => {
+		if (!meshRef.current) return;
 
-		// 誤差による自転速度の異常上昇を防ぐ
-		api.angularVelocity.set(0, planet.rotationSpeedY, 0);
+		// 力をリセット
+		forceAccumulator.set(0, 0, 0);
 
-		// ref.current.positionの代わりに、物理エンジンから取得した位置を使用
-		myPosVec.fromArray(position.current);
-
+		// 重力の計算
 		gravitySystem.accumulateForPlanet({
 			planetId: planet.id,
 			targetMass: planet.mass,
 			targetRadius: planet.radius,
-			targetPosition: myPosVec,
+			targetPosition: positionVecRef.current,
 			planetRegistry,
 			outForce: forceAccumulator,
 		});
 
-		// 計算した力を重心に適用
-		api.applyForce(forceAccumulator.toArray(), myPosVec.toArray());
+		// 物理更新 (オイラー法)
+		// a = F / m
+		const acceleration = forceAccumulator.divideScalar(planet.mass);
+
+		// v = v + a * dt
+		velocityRef.current.addScaledVector(acceleration, delta);
+
+		// p = p + v * dt
+		positionVecRef.current.addScaledVector(velocityRef.current, delta);
+
+		// Meshへの反映
+		meshRef.current.position.copy(positionVecRef.current);
+
+		// 自転
+		meshRef.current.rotation.y += planet.rotationSpeedY * delta;
+
+		//Registry用の位置参照を更新
+		positionRef.current = [
+			positionVecRef.current.x,
+			positionVecRef.current.y,
+			positionVecRef.current.z,
+		];
 	});
 
 	return (
@@ -113,7 +115,7 @@ export function PlanetMesh({
 		>
 			{/* biome-ignore lint: noStaticElementInteractions - Three.js mesh is not a DOM element*/}
 			<mesh
-				ref={ref}
+				ref={meshRef}
 				onDoubleClick={(e) => {
 					e.stopPropagation();
 					onSelect(planet.id);
