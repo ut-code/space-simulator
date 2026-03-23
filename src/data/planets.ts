@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import jupiterTexture from "@/assets/2k_jupiter.jpg";
-import marsTexture from "@/assets/2k_mars.jpg";
-import sunTexture from "@/assets/2k_sun.jpg";
-import venusTexture from "@/assets/2k_venus_atmosphere.jpg";
-import earthTexture from "@/assets/earth_atmos_2048.jpg";
+import jupiterTexture from "@/assets/2k_jupiter.webp";
+import marsTexture from "@/assets/2k_mars.webp";
+import sunTexture from "@/assets/2k_sun.webp";
+import venusTexture from "@/assets/2k_venus_atmosphere.webp";
+import earthTexture from "@/assets/earth_atmos_2048.webp";
 import type { Planet } from "@/types/planet";
 
 export const earth: Planet = {
