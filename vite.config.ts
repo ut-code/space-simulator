@@ -11,4 +11,16 @@ export default defineConfig({
 			"@": path.resolve(__dirname, "src"),
 		},
 	},
+	build: {
+		rolldownOptions: {
+			output: {
+				codeSplitting: {
+					groups: [
+						{ name: "three", test: /\/three\// },
+						{ name: "cannon", test: /@react-three\/cannon/ },
+					],
+				},
+			},
+		},
+	},
 });
