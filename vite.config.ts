@@ -12,6 +12,7 @@ export default defineConfig({
 		},
 	},
 	build: {
+		chunkSizeWarningLimit: 800,
 		rolldownOptions: {
 			output: {
 				codeSplitting: {
