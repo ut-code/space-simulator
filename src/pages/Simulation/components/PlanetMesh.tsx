@@ -92,6 +92,30 @@ export function PlanetMesh({
 		// p = p + v * dt
 		positionVecRef.current.addScaledVector(velocityRef.current, delta);
 
+		// ===== 衝突判定ここから =====
+		for (const [otherId, other] of planetRegistry) {
+			if (otherId === planet.id) continue;
+
+			const otherPos = other.position.current;
+
+			const dx = otherPos[0] - positionVecRef.current.x;
+			const dy = otherPos[1] - positionVecRef.current.y;
+			const dz = otherPos[2] - positionVecRef.current.z;
+
+			const distSq = dx * dx + dy * dy + dz * dz;
+
+			const otherRadius = other.mesh.userData.radius;
+			const minDist = planet.radius + otherRadius;
+
+			if (distSq <= minDist * minDist) {
+				// 衝突発生
+				const collisionPoint = positionVecRef.current.clone();
+
+				onExplosion(collisionPoint, minDist);
+			}
+		}
+		// ===== 衝突判定ここまで =====
+
 		// Meshへの反映
 		meshRef.current.position.copy(positionVecRef.current);
 
