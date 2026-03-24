@@ -11,6 +11,7 @@ type NewPlanetSettings = {
 export type SimulationWorldSnapshot = {
 	planets: Planet[];
 	explosions: ExplosionData[];
+	mergeQueue: { obsoleteIdA: string; obsoleteIdB: string; newData: Planet }[];
 	followedPlanetId: string | null;
 };
 
@@ -29,6 +30,11 @@ function clonePlanet(planet: Planet): Planet {
 export class SimulationWorld {
 	private planets: Planet[];
 	private explosions: ExplosionData[] = [];
+	private mergeQueue: {
+		obsoleteIdA: string;
+		obsoleteIdB: string;
+		newData: Planet;
+	}[] = [];
 	private followedPlanetId: string | null = null;
 	private snapshot: SimulationWorldSnapshot;
 
@@ -41,6 +47,7 @@ export class SimulationWorld {
 		return {
 			planets: this.planets,
 			explosions: this.explosions,
+			mergeQueue: this.mergeQueue,
 			followedPlanetId: this.followedPlanetId,
 		};
 	}
@@ -65,6 +72,16 @@ export class SimulationWorld {
 				position: new THREE.Vector3(posX, posY, posZ),
 				velocity: new THREE.Vector3(0, 0, 0),
 				mass,
+			},
+		];
+		this.updateSnapshot();
+	}
+
+	addPlanet(data: Planet) {
+		this.planets = [
+			...this.planets,
+			{
+				...data,
 			},
 		];
 		this.updateSnapshot();
@@ -102,6 +119,33 @@ export class SimulationWorld {
 	completeExplosion(explosionId: string) {
 		this.explosions = this.explosions.filter(
 			(explosion) => explosion.id !== explosionId,
+		);
+		this.updateSnapshot();
+	}
+
+	registerMergeQueue(
+		obsoleteIdA: string,
+		obsoleteIdB: string,
+		newData: Planet,
+	) {
+		this.mergeQueue = [
+			...this.mergeQueue,
+			{
+				obsoleteIdA: obsoleteIdA,
+				obsoleteIdB: obsoleteIdB,
+				newData: newData,
+			},
+		];
+		console.log(this.mergeQueue);
+		this.updateSnapshot();
+	}
+
+	completeMergeQueue(obsoleteIdA: string, obsoleteIdB: string) {
+		this.mergeQueue = this.mergeQueue.filter(
+			(queue) =>
+				!(
+					queue.obsoleteIdA === obsoleteIdA && queue.obsoleteIdB === obsoleteIdB
+				),
 		);
 		this.updateSnapshot();
 	}

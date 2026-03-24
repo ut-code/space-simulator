@@ -13,12 +13,14 @@ import {
 	CollisionType,
 	decideCollisionOutcome,
 } from "../utils/decideCollisionOutcome";
+import { mergePlanets } from "../utils/mergePlanets";
 
 type PlanetMeshProps = {
 	planet: Planet;
 	planetRegistry: PlanetRegistry;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
 	onSelect: (planetId: string) => void;
+	onMerge: (idA: string, idB: string, newData: Planet) => void;
 };
 
 export function PlanetMesh({
@@ -26,6 +28,7 @@ export function PlanetMesh({
 	planetRegistry,
 	onExplosion,
 	onSelect,
+	onMerge,
 }: PlanetMeshProps) {
 	const meshRef = useRef<THREE.Mesh>(null);
 
@@ -62,6 +65,7 @@ export function PlanetMesh({
 				mass: planet.mass,
 				id: planet.id,
 				radius: planet.radius,
+				rotationSpeedY: planet.rotationSpeedY,
 			};
 			planetRegistry.register(planet.id, {
 				mesh: meshRef.current,
@@ -79,6 +83,7 @@ export function PlanetMesh({
 		planetRegistry,
 		planet.mass,
 		planet.radius,
+		planet.rotationSpeedY,
 		positionRef,
 		velocityRef,
 	]);
@@ -153,7 +158,27 @@ export function PlanetMesh({
 					);
 
 					if (result === CollisionType.Merge) {
-						console.log(result);
+						const newData = mergePlanets(
+							planet.mass,
+							planet.radius,
+							positionVecRef.current.clone(),
+							velocityVecRef.current.clone(),
+							planet.rotationSpeedY,
+							other.mesh.userData.mass,
+							other.mesh.userData.radius,
+							new THREE.Vector3(
+								other.position.current[0],
+								other.position.current[1],
+								other.position.current[2],
+							),
+							new THREE.Vector3(
+								other.velocity.current[0],
+								other.velocity.current[1],
+								other.velocity.current[2],
+							),
+							other.mesh.userData.rotationSpeedY,
+						);
+						onMerge(planet.id, otherId, newData);
 					} else {
 						const collisionPoint = positionVecRef.current.clone();
 						onExplosion(collisionPoint, minDist);
@@ -180,7 +205,7 @@ export function PlanetMesh({
 			velocityVecRef.current.y,
 			velocityVecRef.current.z,
 		];
-	});
+	}, 0);
 
 	return (
 		<Trail

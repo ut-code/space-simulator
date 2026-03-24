@@ -5,8 +5,10 @@ import { Suspense, useMemo, useRef, useState } from "react";
 import type { Vector3 } from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
+import type { Planet } from "@/types/planet";
 import { CameraController } from "./components/CameraController";
 import { Explosion } from "./components/Explosion";
+import { MergeController } from "./components/MergeController";
 import { PlanetMesh } from "./components/PlanetMesh";
 import {
 	PlacementSurface,
@@ -131,6 +133,16 @@ export default function Page() {
 		syncWorld();
 	};
 
+	const handleMerge = (
+		obsoleteIdA: string,
+		obsoleteIdB: string,
+		newData: Planet,
+	) => {
+		console.log("呼んだ");
+		simulationWorld.registerMergeQueue(obsoleteIdA, obsoleteIdB, newData);
+		syncWorld();
+	};
+
 	return (
 		<div className="relative h-screen w-screen">
 			<Canvas
@@ -160,6 +172,7 @@ export default function Page() {
 								simulationWorld.setFollowedPlanetId(id);
 								syncWorld();
 							}}
+							onMerge={handleMerge}
 						/>
 					</Suspense>
 				))}
@@ -178,6 +191,25 @@ export default function Page() {
 				)}
 				{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
 				{showAxes && <axesHelper args={[20]} />}
+
+				{worldState.mergeQueue.map((queue) => (
+					<MergeController
+						key={crypto.randomUUID()}
+						mergeQueue={queue}
+						onAdd={(newData: Planet) => {
+							simulationWorld.addPlanet(newData);
+							syncWorld();
+						}}
+						onDelete={(obsoleteId: string) => {
+							simulationWorld.removePlanet(obsoleteId);
+							syncWorld();
+						}}
+						onComplete={(obsoleteIdA: string, obsoleteIdB: string) => {
+							simulationWorld.completeMergeQueue(obsoleteIdA, obsoleteIdB);
+							syncWorld();
+						}}
+					/>
+				))}
 
 				{worldState.explosions.map((exp) => (
 					<Explosion
