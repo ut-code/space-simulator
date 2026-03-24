@@ -192,22 +192,23 @@ export default function Page() {
 				{showAxes && <axesHelper args={[20]} />}
 
 				{worldState.mergeQueue.map((queue) => (
-					<MergeController
-						key={queue.id}
-						queueData={queue.data}
-						onAdd={(newData: Planet) => {
-							simulationWorld.addPlanet(newData);
-							syncWorld();
-						}}
-						onDelete={(obsoleteId: string) => {
-							simulationWorld.removePlanet(obsoleteId);
-							syncWorld();
-						}}
-						onComplete={(obsoleteIdA: string, obsoleteIdB: string) => {
-							simulationWorld.completeMergeQueue(obsoleteIdA, obsoleteIdB);
-							syncWorld();
-						}}
-					/>
+					<Suspense key={queue.id}>
+						<MergeController
+							queueData={queue.data}
+							onAdd={(newData: Planet) => {
+								simulationWorld.addPlanet(newData);
+								syncWorld();
+							}}
+							onDelete={(obsoleteId: string) => {
+								simulationWorld.removePlanet(obsoleteId);
+								syncWorld();
+							}}
+							onComplete={(obsoleteIdA: string, obsoleteIdB: string) => {
+								simulationWorld.completeMergeQueue(obsoleteIdA, obsoleteIdB);
+								syncWorld();
+							}}
+						/>
+					</Suspense>
 				))}
 
 				{worldState.explosions.map((exp) => (
