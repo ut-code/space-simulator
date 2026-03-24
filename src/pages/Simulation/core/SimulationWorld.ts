@@ -149,7 +149,6 @@ export class SimulationWorld {
 				},
 			},
 		];
-		console.log(this.mergeQueue);
 		this.updateSnapshot();
 	}
 

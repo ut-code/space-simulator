@@ -138,7 +138,6 @@ export default function Page() {
 		obsoleteIdB: string,
 		newData: Planet,
 	) => {
-		console.log("呼んだ");
 		simulationWorld.registerMergeQueue(obsoleteIdA, obsoleteIdB, newData);
 		syncWorld();
 	};
