@@ -4,9 +4,14 @@ export type PositionRef = {
 	current: number[];
 };
 
+export type VelocityRef = {
+	current: number[];
+};
+
 export type PlanetRegistryEntry = {
 	mesh: THREE.Mesh;
 	position: PositionRef;
+	velocity: VelocityRef;
 };
 
 export class PlanetRegistry implements Iterable<[string, PlanetRegistryEntry]> {

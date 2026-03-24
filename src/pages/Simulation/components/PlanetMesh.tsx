@@ -4,7 +4,15 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { Planet } from "@/types/planet";
 import { GravitySystem } from "../core/GravitySystem";
-import type { PlanetRegistry, PositionRef } from "../core/PlanetRegistry";
+import type {
+	PlanetRegistry,
+	PositionRef,
+	VelocityRef,
+} from "../core/PlanetRegistry";
+import {
+	CollisionType,
+	decideCollisionOutcome,
+} from "../utils/decideCollisionOutcome";
 
 type PlanetMeshProps = {
 	planet: Planet;
@@ -22,11 +30,11 @@ export function PlanetMesh({
 	const meshRef = useRef<THREE.Mesh>(null);
 
 	// 物理演算用の状態（再レンダリングでリセットされないようにRefで保持）
-	const velocityRef = useRef(
-		new THREE.Vector3(planet.velocity.x, planet.velocity.y, planet.velocity.z),
-	);
 	const positionVecRef = useRef(
 		new THREE.Vector3(planet.position.x, planet.position.y, planet.position.z),
+	);
+	const velocityVecRef = useRef(
+		new THREE.Vector3(planet.velocity.x, planet.velocity.y, planet.velocity.z),
 	);
 
 	// Load the texture (you can use any public Earth texture URL)
@@ -38,6 +46,12 @@ export function PlanetMesh({
 			current: [planet.position.x, planet.position.y, planet.position.z],
 		}),
 		[planet.position.x, planet.position.y, planet.position.z],
+	);
+	const velocityRef = useMemo<VelocityRef>(
+		() => ({
+			current: [planet.velocity.x, planet.velocity.y, planet.velocity.z],
+		}),
+		[planet.velocity.x, planet.velocity.y, planet.velocity.z],
 	);
 
 	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
@@ -52,6 +66,7 @@ export function PlanetMesh({
 			planetRegistry.register(planet.id, {
 				mesh: meshRef.current,
 				position: positionRef,
+				velocity: velocityRef,
 			});
 			// 初期位置の設定
 			meshRef.current.position.copy(positionVecRef.current);
@@ -59,7 +74,14 @@ export function PlanetMesh({
 		return () => {
 			planetRegistry.unregister(planet.id);
 		};
-	}, [planet.id, planetRegistry, planet.mass, planet.radius, positionRef]);
+	}, [
+		planet.id,
+		planetRegistry,
+		planet.mass,
+		planet.radius,
+		positionRef,
+		velocityRef,
+	]);
 
 	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
 	const gravitySystem = useMemo(() => new GravitySystem(), []);
@@ -87,10 +109,10 @@ export function PlanetMesh({
 		const acceleration = forceAccumulator.divideScalar(planet.mass);
 
 		// v = v + a * dt
-		velocityRef.current.addScaledVector(acceleration, delta);
+		velocityVecRef.current.addScaledVector(acceleration, delta);
 
 		// p = p + v * dt
-		positionVecRef.current.addScaledVector(velocityRef.current, delta);
+		positionVecRef.current.addScaledVector(velocityVecRef.current, delta);
 
 		// ===== 衝突判定ここから =====
 		for (const [otherId, other] of planetRegistry) {
@@ -109,9 +131,34 @@ export function PlanetMesh({
 
 			if (distSq <= minDist * minDist) {
 				// 衝突発生
-				const collisionPoint = positionVecRef.current.clone();
 
-				onExplosion(collisionPoint, minDist);
+				if (planet.id < otherId) {
+					const result: string = decideCollisionOutcome(
+						planet.mass,
+						planet.radius,
+						positionVecRef.current.clone(),
+						velocityVecRef.current.clone(),
+						other.mesh.userData.mass,
+						other.mesh.userData.radius,
+						new THREE.Vector3(
+							other.position.current[0],
+							other.position.current[1],
+							other.position.current[2],
+						),
+						new THREE.Vector3(
+							other.velocity.current[0],
+							other.velocity.current[1],
+							other.velocity.current[2],
+						),
+					);
+
+					if (result === CollisionType.Merge) {
+						console.log(result);
+					} else {
+						const collisionPoint = positionVecRef.current.clone();
+						onExplosion(collisionPoint, minDist);
+					}
+				}
 			}
 		}
 		// ===== 衝突判定ここまで =====
@@ -127,6 +174,11 @@ export function PlanetMesh({
 			positionVecRef.current.x,
 			positionVecRef.current.y,
 			positionVecRef.current.z,
+		];
+		velocityRef.current = [
+			velocityVecRef.current.x,
+			velocityVecRef.current.y,
+			velocityVecRef.current.z,
 		];
 	});
 
