@@ -194,8 +194,8 @@ export default function Page() {
 
 				{worldState.mergeQueue.map((queue) => (
 					<MergeController
-						key={crypto.randomUUID()}
-						mergeQueue={queue}
+						key={queue.id}
+						queueData={queue.data}
 						onAdd={(newData: Planet) => {
 							simulationWorld.addPlanet(newData);
 							syncWorld();

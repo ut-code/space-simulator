@@ -8,10 +8,16 @@ type NewPlanetSettings = {
 	rotationSpeedY: number;
 };
 
+export type mergeQueueProps = {
+	obsoleteIdA: string;
+	obsoleteIdB: string;
+	newData: Planet;
+};
+
 export type SimulationWorldSnapshot = {
 	planets: Planet[];
 	explosions: ExplosionData[];
-	mergeQueue: { obsoleteIdA: string; obsoleteIdB: string; newData: Planet }[];
+	mergeQueue: { id: string; data: mergeQueueProps }[];
 	followedPlanetId: string | null;
 };
 
@@ -30,11 +36,7 @@ function clonePlanet(planet: Planet): Planet {
 export class SimulationWorld {
 	private planets: Planet[];
 	private explosions: ExplosionData[] = [];
-	private mergeQueue: {
-		obsoleteIdA: string;
-		obsoleteIdB: string;
-		newData: Planet;
-	}[] = [];
+	private mergeQueue: { id: string; data: mergeQueueProps }[] = [];
 	private followedPlanetId: string | null = null;
 	private snapshot: SimulationWorldSnapshot;
 
@@ -128,12 +130,23 @@ export class SimulationWorld {
 		obsoleteIdB: string,
 		newData: Planet,
 	) {
+		if (
+			this.mergeQueue.some(
+				(queue) =>
+					queue.data.obsoleteIdA === obsoleteIdA &&
+					queue.data.obsoleteIdB === obsoleteIdB,
+			)
+		)
+			return;
 		this.mergeQueue = [
 			...this.mergeQueue,
 			{
-				obsoleteIdA: obsoleteIdA,
-				obsoleteIdB: obsoleteIdB,
-				newData: newData,
+				id: crypto.randomUUID(),
+				data: {
+					obsoleteIdA: obsoleteIdA,
+					obsoleteIdB: obsoleteIdB,
+					newData: newData,
+				},
 			},
 		];
 		console.log(this.mergeQueue);
@@ -144,7 +157,8 @@ export class SimulationWorld {
 		this.mergeQueue = this.mergeQueue.filter(
 			(queue) =>
 				!(
-					queue.obsoleteIdA === obsoleteIdA && queue.obsoleteIdB === obsoleteIdB
+					queue.data.obsoleteIdA === obsoleteIdA &&
+					queue.data.obsoleteIdB === obsoleteIdB
 				),
 		);
 		this.updateSnapshot();
