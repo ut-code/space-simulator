@@ -35,7 +35,7 @@ export class GravitySystem {
 				radius: otherRadius,
 				position: otherPosition,
 			} = other;
-			this.sourcePosition.fromArray(otherPosition.current);
+			this.sourcePosition.copy(otherPosition);
 			const sourceMass = otherMass || 1;
 			const sourceRadius = otherRadius || 0.1;
 

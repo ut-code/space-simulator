@@ -38,12 +38,8 @@ export function PlanetMesh({
 				mass: planet.mass,
 				radius: planet.radius,
 				rotationSpeedY: planet.rotationSpeedY,
-				position: {
-					current: [planet.position.x, planet.position.y, planet.position.z],
-				},
-				velocity: {
-					current: [planet.velocity.x, planet.velocity.y, planet.velocity.z],
-				},
+				position: planet.position,
+				velocity: planet.velocity,
 			});
 			// 初期位置の設定
 			meshRef.current.position.copy(
@@ -86,9 +82,8 @@ export function PlanetMesh({
 			planetId: planet.id,
 			targetMass: planet.mass,
 			targetRadius: planet.radius,
-			targetPosition: positionVec.fromArray(
-				planetRegistry.get(planet.id)?.position.current ?? [...planet.position],
-			),
+			targetPosition:
+				planetRegistry.get(planet.id)?.position ?? planet.position,
 			planetRegistry,
 			outForce: forceAccumulator,
 		});
@@ -96,27 +91,26 @@ export function PlanetMesh({
 		// 物理更新
 		planetRegistry.update(
 			planet.id,
-			forceAccumulator.divideScalar(planet.mass).toArray(),
+			forceAccumulator.divideScalar(planet.mass),
 			delta,
 		);
 
-		// positionVecを更新
-		positionVec.fromArray(
-			planetRegistry.get(planet.id)?.position.current ?? [...planet.position],
+		positionVec.copy(
+			planetRegistry.get(planet.id)?.position ?? planet.position,
 		);
-		velocityVec.fromArray(
-			planetRegistry.get(planet.id)?.velocity.current ?? [...planet.velocity],
+		velocityVec.copy(
+			planetRegistry.get(planet.id)?.velocity ?? planet.velocity,
 		);
 
 		// ===== 衝突判定ここから =====
 		for (const [otherId, other] of planetRegistry) {
 			if (otherId === planet.id) continue;
 
-			const otherPos = other.position.current;
+			const otherPos = other.position;
 
-			const dx = otherPos[0] - positionVec.x;
-			const dy = otherPos[1] - positionVec.y;
-			const dz = otherPos[2] - positionVec.z;
+			const dx = otherPos.x - positionVec.x;
+			const dy = otherPos.y - positionVec.y;
+			const dz = otherPos.z - positionVec.z;
 			const distSq = dx * dx + dy * dy + dz * dz;
 
 			const otherRadius = other.radius;
@@ -133,16 +127,8 @@ export function PlanetMesh({
 						velocityVec.clone(),
 						other.mass,
 						other.radius,
-						new THREE.Vector3(
-							other.position.current[0],
-							other.position.current[1],
-							other.position.current[2],
-						),
-						new THREE.Vector3(
-							other.velocity.current[0],
-							other.velocity.current[1],
-							other.velocity.current[2],
-						),
+						other.position.clone(),
+						other.velocity.clone(),
 					);
 
 					if (result === CollisionType.Merge) {
@@ -154,16 +140,8 @@ export function PlanetMesh({
 							planet.rotationSpeedY,
 							other.mass,
 							other.radius,
-							new THREE.Vector3(
-								other.position.current[0],
-								other.position.current[1],
-								other.position.current[2],
-							),
-							new THREE.Vector3(
-								other.velocity.current[0],
-								other.velocity.current[1],
-								other.velocity.current[2],
-							),
+							other.position.clone(),
+							other.velocity.clone(),
 							other.rotationSpeedY,
 						);
 						onMerge(planet.id, otherId, newData);
