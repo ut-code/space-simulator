@@ -80,6 +80,7 @@ export class SimulationWorld {
 	}
 
 	addPlanet(data: Planet) {
+		if (this.planets.some((planet) => planet.id === data.id)) return;
 		this.planets = [
 			...this.planets,
 			{
