@@ -1,5 +1,3 @@
-import type * as THREE from "three";
-
 export type PositionRef = {
 	current: number[];
 };
@@ -9,7 +7,9 @@ export type VelocityRef = {
 };
 
 export type PlanetRegistryEntry = {
-	mesh: THREE.Mesh;
+	mass: number;
+	radius: number;
+	rotationSpeedY: number;
 	position: PositionRef;
 	velocity: VelocityRef;
 };
@@ -39,6 +39,16 @@ export class PlanetRegistry implements Iterable<[string, PlanetRegistryEntry]> {
 
 	get size() {
 		return this.entries.size;
+	}
+
+	update(id: string, acceleration: number[], delta: number) {
+		const entry = this.entries.get(id);
+		if (!entry) return;
+		entry.velocity.current;
+		for (let i = 0; i < entry.velocity.current.length; i++) {
+			entry.velocity.current[i] += acceleration[i] * delta;
+			entry.position.current[i] += entry.velocity.current[i] * delta;
+		}
 	}
 
 	[Symbol.iterator](): Iterator<[string, PlanetRegistryEntry]> {
