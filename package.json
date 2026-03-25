@@ -7,7 +7,8 @@
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"check": "npx @biomejs/biome check --write",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"test": "vitest"
 	},
 	"dependencies": {
 		"@react-three/drei": "^10.7.7",
@@ -27,9 +28,11 @@
 		"@types/three": "^0.182.0",
 		"@vitejs/plugin-react": "^5.1.1",
 		"globals": "^16.5.0",
+		"happy-dom": "^20.8.8",
 		"lefthook": "^2.1.1",
 		"tailwindcss": "^4.1.18",
 		"typescript": "~5.9.3",
-		"vite": "^7.2.4"
+		"vite": "^7.2.4",
+		"vitest": "^4.1.1"
 	}
 }

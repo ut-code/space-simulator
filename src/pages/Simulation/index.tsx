@@ -9,7 +9,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import type { Vector3 } from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { Planet } from "@/types/planet";
@@ -21,6 +20,7 @@ import {
 	PlacementSurface,
 	PreviewPlanet,
 } from "./components/PlanetPlacementView";
+import { PhysicsEngine } from "./core/PhysicsEngine";
 import {
 	PlanetRegistry,
 	type PlanetRegistryEntry,
@@ -38,23 +38,23 @@ useTexture.preload(planetTexturePaths);
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
-type MergeEvent = {
-	idA: string;
-	idB: string;
-	newData: Planet;
-};
-
-type ExplosionEvent = {
-	position: Vector3;
-	radius: number;
-};
-
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
-	const planetRegistry = useMemo(() => new PlanetRegistry(), []);
+	const planetRegistry = useMemo(() => {
+		const registry = new PlanetRegistry();
+		registry.register(earth.id, earth);
+		return registry;
+	}, []);
 	const simulationWorld = useMemo(() => new SimulationWorld([earth]), []);
-	const pendingMerges = useRef<MergeEvent[]>([]);
-	const pendingExplosions = useRef<ExplosionEvent[]>([]);
+
+	// Initialize physics engine
+	const physicsEngine = useMemo(() => {
+		return new PhysicsEngine(planetRegistry, {
+			fixedTimestep: 1 / 60, // 60Hz physics
+			maxSubSteps: 5,
+			autoStart: true,
+		});
+	}, [planetRegistry]);
 
 	const [worldState, setWorldState] = useState(() =>
 		simulationWorld.getSnapshot(),
@@ -67,83 +67,61 @@ export default function Page() {
 		setWorldState(simulationWorld.getSnapshot());
 	}, [simulationWorld]);
 
+	// Listen to physics events
 	useEffect(() => {
-		if (!planetRegistry.has(earth.id)) {
-			planetRegistry.register(earth.id, earth);
-		}
-	}, [planetRegistry]);
-
-	useEffect(() => {
-		const id = setInterval(() => {
-			const merges = pendingMerges.current.splice(0);
-			const explosions = pendingExplosions.current.splice(0);
-			if (merges.length === 0 && explosions.length === 0) return;
-
-			for (const event of merges) {
-				simulationWorld.registerMerge(event.idA, event.idB, event.newData);
-			}
-			for (const event of explosions) {
+		const unsubscribe = physicsEngine.on((event) => {
+			if (event.type === "collision:merge") {
+				simulationWorld.registerMerge(event.idA, event.idB, event.newPlanet);
+				syncWorld();
+			} else if (event.type === "collision:explode") {
 				simulationWorld.registerExplosion(event.position, event.radius);
+				syncWorld();
 			}
-			syncWorld();
-		}, 100);
+		});
 
-		return () => clearInterval(id);
-	}, [simulationWorld, syncWorld]);
+		return () => {
+			unsubscribe();
+			physicsEngine.destroy();
+		};
+	}, [physicsEngine, simulationWorld, syncWorld]);
 
-	const [planetControls, setPlanetControls, getPlanetControl] = useControls(
-		"New Planet",
-		() => ({
-			planetType: {
-				value: "earth",
-				options: {
-					Earth: "earth",
-					Sun: "sun",
-					Mars: "mars",
-					Jupiter: "jupiter",
-					Venus: "venus",
-				},
-				onChange: (value) => {
-					const selectedType =
-						(value as keyof typeof planetTemplates) ?? "earth";
-					const template = planetTemplates[selectedType] ?? earth;
-					setPlanetControls({
-						radius: template.radius,
-						rotationSpeedY: template.rotationSpeedY,
-					});
-				},
+	const [planetControls, setPlanetControls] = useControls("New Planet", () => ({
+		planetType: {
+			value: "earth",
+			options: {
+				Earth: "earth",
+				Sun: "sun",
+				Mars: "mars",
+				Jupiter: "jupiter",
+				Venus: "venus",
 			},
-			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
-			posX: { value: 0, min: -200, max: 200, step: 0.2 },
-			posY: { value: 0, min: -200, max: 200, step: 0.2 },
-			posZ: { value: 0, min: -200, max: 200, step: 0.2 },
-			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
-		}),
-	);
-
-	useControls("New Planet", {
-		addPlanet: button(() => {
+			onChange: (value) => {
+				const selectedType = (value as keyof typeof planetTemplates) ?? "earth";
+				const template = planetTemplates[selectedType] ?? earth;
+				setPlanetControls({
+					radius: template.radius,
+					rotationSpeedY: template.rotationSpeedY,
+				});
+			},
+		},
+		radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
+		posX: { value: 0, min: -200, max: 200, step: 0.2 },
+		posY: { value: 0, min: -200, max: 200, step: 0.2 },
+		posZ: { value: 0, min: -200, max: 200, step: 0.2 },
+		rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
+		addPlanet: button((get) => {
 			const selectedType =
-				(getPlanetControl("planetType") as keyof typeof planetTemplates) ??
-				"earth";
+				(get("planetType") as keyof typeof planetTemplates) ?? "earth";
 			const template = planetTemplates[selectedType] ?? earth;
-			const settings = {
-				radius: getPlanetControl("radius"),
-				posX: getPlanetControl("posX"),
-				posY: getPlanetControl("posY"),
-				posZ: getPlanetControl("posZ"),
-				rotationSpeedY: getPlanetControl("rotationSpeedY"),
-			};
-
 			const newPlanet = simulationWorld.addPlanetFromTemplate(template, {
-				radius: settings.radius,
-				position: [settings.posX, settings.posY, settings.posZ],
-				rotationSpeedY: settings.rotationSpeedY,
+				radius: get("radius"),
+				position: [get("posX"), get("posY"), get("posZ")],
+				rotationSpeedY: get("rotationSpeedY"),
 			});
 			planetRegistry.register(newPlanet.id, newPlanet);
 			syncWorld();
 		}),
-	});
+	}));
 
 	const { showGrid, showAxes, showPreview } = useControls("Helpers", {
 		showGrid: true,
@@ -172,24 +150,10 @@ export default function Page() {
 	};
 
 	const removePlanet = (planetId: string) => {
+		planetRegistry.unregister(planetId);
 		simulationWorld.removePlanet(planetId);
 		syncWorld();
 	};
-
-	const handleExplosion = useCallback((position: Vector3, radius: number) => {
-		pendingExplosions.current.push({ position: position.clone(), radius });
-	}, []);
-
-	const handleMerge = useCallback(
-		(obsoleteIdA: string, obsoleteIdB: string, newData: Planet) => {
-			pendingMerges.current.push({
-				idA: obsoleteIdA,
-				idB: obsoleteIdB,
-				newData,
-			});
-		},
-		[],
-	);
 
 	const panelPlanets = worldState.planetIds
 		.map((planetId) => {
@@ -226,12 +190,10 @@ export default function Page() {
 						<PlanetMesh
 							planetId={planetId}
 							planetRegistry={planetRegistry}
-							onExplosion={handleExplosion}
 							onSelect={(id) => {
 								simulationWorld.setFollowedPlanetId(id);
 								syncWorld();
 							}}
-							onMerge={handleMerge}
 						/>
 					</Suspense>
 				))}
@@ -261,6 +223,7 @@ export default function Page() {
 								syncWorld();
 							}}
 							onDelete={(obsoleteId: string) => {
+								planetRegistry.unregister(obsoleteId);
 								simulationWorld.removePlanet(obsoleteId);
 								syncWorld();
 							}}
