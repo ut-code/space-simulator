@@ -30,10 +30,14 @@ export class GravitySystem {
 		for (const [otherId, other] of planetRegistry) {
 			if (otherId === planetId) continue;
 
-			const { mesh: otherMesh, position: otherPosition } = other;
-			this.sourcePosition.fromArray(otherPosition.current);
-			const sourceMass = otherMesh.userData.mass || 1;
-			const sourceRadius = otherMesh.userData.radius || 0.1;
+			const {
+				mass: otherMass,
+				radius: otherRadius,
+				position: otherPosition,
+			} = other;
+			this.sourcePosition.copy(otherPosition);
+			const sourceMass = otherMass || 1;
+			const sourceRadius = otherRadius || 0.1;
 
 			this.addPairForce(
 				outForce,

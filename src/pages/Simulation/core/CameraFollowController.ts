@@ -32,7 +32,7 @@ export class CameraFollowController {
 		const target = planetRegistry.get(followedPlanetId);
 		if (!target) return;
 
-		this.currentPos.fromArray(target.position.current);
+		this.currentPos.copy(target.position);
 
 		if (this.hasPrev) {
 			this.delta.copy(this.currentPos).sub(this.previousPos);

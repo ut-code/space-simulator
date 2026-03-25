@@ -8,9 +8,16 @@ type NewPlanetSettings = {
 	rotationSpeedY: number;
 };
 
+export type mergeQueueProps = {
+	obsoleteIdA: string;
+	obsoleteIdB: string;
+	newData: Planet;
+};
+
 export type SimulationWorldSnapshot = {
 	planets: Planet[];
 	explosions: ExplosionData[];
+	mergeQueue: { id: string; data: mergeQueueProps }[];
 	followedPlanetId: string | null;
 };
 
@@ -29,6 +36,7 @@ function clonePlanet(planet: Planet): Planet {
 export class SimulationWorld {
 	private planets: Planet[];
 	private explosions: ExplosionData[] = [];
+	private mergeQueue: { id: string; data: mergeQueueProps }[] = [];
 	private followedPlanetId: string | null = null;
 	private snapshot: SimulationWorldSnapshot;
 
@@ -41,6 +49,7 @@ export class SimulationWorld {
 		return {
 			planets: this.planets,
 			explosions: this.explosions,
+			mergeQueue: this.mergeQueue,
 			followedPlanetId: this.followedPlanetId,
 		};
 	}
@@ -65,6 +74,17 @@ export class SimulationWorld {
 				position: new THREE.Vector3(posX, posY, posZ),
 				velocity: new THREE.Vector3(0, 0, 0),
 				mass,
+			},
+		];
+		this.updateSnapshot();
+	}
+
+	addPlanet(data: Planet) {
+		if (this.planets.some((planet) => planet.id === data.id)) return;
+		this.planets = [
+			...this.planets,
+			{
+				...data,
 			},
 		];
 		this.updateSnapshot();
@@ -102,6 +122,46 @@ export class SimulationWorld {
 	completeExplosion(explosionId: string) {
 		this.explosions = this.explosions.filter(
 			(explosion) => explosion.id !== explosionId,
+		);
+		this.updateSnapshot();
+	}
+
+	registerMergeQueue(
+		obsoleteIdA: string,
+		obsoleteIdB: string,
+		newData: Planet,
+	) {
+		if (
+			this.mergeQueue.some(
+				(queue) =>
+					queue.data.obsoleteIdA === obsoleteIdA &&
+					queue.data.obsoleteIdB === obsoleteIdB,
+			)
+		)
+			return;
+		if (this.mergeQueue.some((queue) => queue.data.newData.id === newData.id))
+			return;
+		this.mergeQueue = [
+			...this.mergeQueue,
+			{
+				id: crypto.randomUUID(),
+				data: {
+					obsoleteIdA: obsoleteIdA,
+					obsoleteIdB: obsoleteIdB,
+					newData: newData,
+				},
+			},
+		];
+		this.updateSnapshot();
+	}
+
+	completeMergeQueue(obsoleteIdA: string, obsoleteIdB: string) {
+		this.mergeQueue = this.mergeQueue.filter(
+			(queue) =>
+				!(
+					queue.data.obsoleteIdA === obsoleteIdA &&
+					queue.data.obsoleteIdB === obsoleteIdB
+				),
 		);
 		this.updateSnapshot();
 	}
