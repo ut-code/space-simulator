@@ -11,8 +11,11 @@ import {
 } from "../utils/decideCollisionOutcome";
 import { mergePlanets } from "../utils/mergePlanets";
 
+const FALLBACK_TEXTURE =
+	"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+
 type PlanetMeshProps = {
-	planet: Planet;
+	planetId: string;
 	planetRegistry: PlanetRegistry;
 	onExplosion: (position: THREE.Vector3, radius: number) => void;
 	onSelect: (planetId: string) => void;
@@ -20,91 +23,60 @@ type PlanetMeshProps = {
 };
 
 export function PlanetMesh({
-	planet,
+	planetId,
 	planetRegistry,
 	onExplosion,
 	onSelect,
 	onMerge,
 }: PlanetMeshProps) {
 	const meshRef = useRef<THREE.Mesh>(null);
+	const texturePath =
+		planetRegistry.get(planetId)?.texturePath ?? FALLBACK_TEXTURE;
 
-	// Load the texture (you can use any public Earth texture URL)
-	const [colorMap] = useTexture([planet.texturePath]);
+	const [colorMap] = useTexture([texturePath]);
 
-	// マウント時に自分のMeshをレジストリに登録し、他の惑星から参照できるようにする
 	useEffect(() => {
-		if (meshRef.current) {
-			planetRegistry.register(planet.id, {
-				mass: planet.mass,
-				radius: planet.radius,
-				rotationSpeedY: planet.rotationSpeedY,
-				position: planet.position,
-				velocity: planet.velocity,
-			});
-			// 初期位置の設定
-			meshRef.current.position.copy(
-				new THREE.Vector3(
-					planet.position.x,
-					planet.position.y,
-					planet.position.z,
-				),
-			);
+		const entry = planetRegistry.get(planetId);
+		if (meshRef.current && entry) {
+			meshRef.current.position.copy(entry.position);
 		}
 		return () => {
-			planetRegistry.unregister(planet.id);
+			planetRegistry.unregister(planetId);
 		};
-	}, [
-		planet.id,
-		planetRegistry,
-		planet.mass,
-		planet.radius,
-		planet.rotationSpeedY,
-		planet.position,
-		planet.velocity,
-	]);
+	}, [planetId, planetRegistry]);
 
-	// 計算用ベクトルをメモリに保持しておく（毎フレームnewしないため）
-	//const planetInfo = useMemo(() => planetRegistry.get(planet.id), []);
 	const gravitySystem = useMemo(() => new GravitySystem(), []);
 	const forceAccumulator = useMemo(() => new THREE.Vector3(), []);
 	const positionVec = useMemo(() => new THREE.Vector3(), []);
 	const velocityVec = useMemo(() => new THREE.Vector3(), []);
 
-	// This hook runs every frame (approx 60fps)
 	useFrame((_, delta) => {
 		if (!meshRef.current) return;
+		const current = planetRegistry.get(planetId);
+		if (!current) return;
 
-		// 力をリセット
 		forceAccumulator.set(0, 0, 0);
 
-		// 重力の計算
 		gravitySystem.accumulateForPlanet({
-			planetId: planet.id,
-			targetMass: planet.mass,
-			targetRadius: planet.radius,
-			targetPosition:
-				planetRegistry.get(planet.id)?.position ?? planet.position,
+			planetId,
+			targetMass: current.mass,
+			targetRadius: current.radius,
+			targetPosition: current.position,
 			planetRegistry,
 			outForce: forceAccumulator,
 		});
 
-		// 物理更新
 		planetRegistry.update(
-			planet.id,
-			forceAccumulator.divideScalar(planet.mass),
+			planetId,
+			forceAccumulator.divideScalar(current.mass),
 			delta,
 		);
 
-		positionVec.copy(
-			planetRegistry.get(planet.id)?.position ?? planet.position,
-		);
-		velocityVec.copy(
-			planetRegistry.get(planet.id)?.velocity ?? planet.velocity,
-		);
+		positionVec.copy(current.position);
+		velocityVec.copy(current.velocity);
 
-		// ===== 衝突判定ここから =====
 		for (const [otherId, other] of planetRegistry) {
-			if (otherId === planet.id) continue;
+			if (otherId === planetId) continue;
 
 			const otherPos = other.position;
 
@@ -113,16 +85,13 @@ export function PlanetMesh({
 			const dz = otherPos.z - positionVec.z;
 			const distSq = dx * dx + dy * dy + dz * dz;
 
-			const otherRadius = other.radius;
-			const minDist = planet.radius + otherRadius;
+			const minDist = current.radius + other.radius;
 
 			if (distSq <= minDist * minDist) {
-				// 衝突発生
-
-				if (planet.id < otherId) {
+				if (planetId < otherId) {
 					const result: string = decideCollisionOutcome(
-						planet.mass,
-						planet.radius,
+						current.mass,
+						current.radius,
 						positionVec.clone(),
 						velocityVec.clone(),
 						other.mass,
@@ -133,18 +102,18 @@ export function PlanetMesh({
 
 					if (result === CollisionType.Merge) {
 						const newData = mergePlanets(
-							planet.mass,
-							planet.radius,
+							current.mass,
+							current.radius,
 							positionVec.clone(),
 							velocityVec.clone(),
-							planet.rotationSpeedY,
+							current.rotationSpeedY,
 							other.mass,
 							other.radius,
 							other.position.clone(),
 							other.velocity.clone(),
 							other.rotationSpeedY,
 						);
-						onMerge(planet.id, otherId, newData);
+						onMerge(planetId, otherId, newData);
 					} else {
 						const collisionPoint = positionVec.clone();
 						onExplosion(collisionPoint, minDist);
@@ -152,18 +121,16 @@ export function PlanetMesh({
 				}
 			}
 		}
-		// ===== 衝突判定ここまで =====
-
-		// Meshへの反映
 		meshRef.current.position.copy(positionVec);
-
-		// 自転
-		meshRef.current.rotation.y += planet.rotationSpeedY * delta;
+		meshRef.current.rotation.y += current.rotationSpeedY * delta;
 	}, 0);
+
+	const renderPlanet = planetRegistry.get(planetId);
+	if (!renderPlanet) return null;
 
 	return (
 		<Trail
-			width={planet.radius}
+			width={renderPlanet.radius}
 			length={80}
 			color="#88ccff"
 			attenuation={(t) => t}
@@ -173,13 +140,12 @@ export function PlanetMesh({
 				ref={meshRef}
 				onDoubleClick={(e) => {
 					e.stopPropagation();
-					onSelect(planet.id);
+					onSelect(planetId);
 				}}
 			>
-				{/* args: [radius, widthSegments, heightSegments]
-        Higher segments = smoother sphere
-      */}
-				<sphereGeometry args={[planet.radius, planet.width, planet.height]} />
+				<sphereGeometry
+					args={[renderPlanet.radius, renderPlanet.width, renderPlanet.height]}
+				/>
 				<meshStandardMaterial map={colorMap} />
 			</mesh>
 		</Trail>

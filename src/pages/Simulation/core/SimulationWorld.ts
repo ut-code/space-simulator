@@ -15,7 +15,7 @@ export type mergeQueueProps = {
 };
 
 export type SimulationWorldSnapshot = {
-	planets: Planet[];
+	planetIds: string[];
 	explosions: ExplosionData[];
 	mergeQueue: { id: string; data: mergeQueueProps }[];
 	followedPlanetId: string | null;
@@ -25,29 +25,21 @@ function computeMass(radius: number, mass: number, newRadius: number) {
 	return mass * (newRadius / radius) ** 3;
 }
 
-function clonePlanet(planet: Planet): Planet {
-	return {
-		...planet,
-		position: planet.position.clone(),
-		velocity: planet.velocity.clone(),
-	};
-}
-
 export class SimulationWorld {
-	private planets: Planet[];
+	private activePlanetIds: Set<string>;
 	private explosions: ExplosionData[] = [];
 	private mergeQueue: { id: string; data: mergeQueueProps }[] = [];
 	private followedPlanetId: string | null = null;
 	private snapshot: SimulationWorldSnapshot;
 
 	constructor(initialPlanets: Planet[]) {
-		this.planets = initialPlanets.map(clonePlanet);
+		this.activePlanetIds = new Set(initialPlanets.map((planet) => planet.id));
 		this.snapshot = this.buildSnapshot();
 	}
 
 	private buildSnapshot(): SimulationWorldSnapshot {
 		return {
-			planets: this.planets,
+			planetIds: [...this.activePlanetIds],
 			explosions: this.explosions,
 			mergeQueue: this.mergeQueue,
 			followedPlanetId: this.followedPlanetId,
@@ -58,40 +50,34 @@ export class SimulationWorld {
 		this.snapshot = this.buildSnapshot();
 	}
 
-	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings) {
+	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings): Planet {
 		const [posX, posY, posZ] = settings.position;
 		const mass = computeMass(template.radius, template.mass, settings.radius);
-		this.planets = [
-			...this.planets,
-			{
-				id: crypto.randomUUID(),
-				name: template.name,
-				texturePath: template.texturePath,
-				rotationSpeedY: settings.rotationSpeedY,
-				radius: settings.radius,
-				width: 64,
-				height: 64,
-				position: new THREE.Vector3(posX, posY, posZ),
-				velocity: new THREE.Vector3(0, 0, 0),
-				mass,
-			},
-		];
+		const newPlanet: Planet = {
+			id: crypto.randomUUID(),
+			name: template.name,
+			texturePath: template.texturePath,
+			rotationSpeedY: settings.rotationSpeedY,
+			radius: settings.radius,
+			width: 64,
+			height: 64,
+			position: new THREE.Vector3(posX, posY, posZ),
+			velocity: new THREE.Vector3(0, 0, 0),
+			mass,
+		};
+		this.activePlanetIds.add(newPlanet.id);
 		this.updateSnapshot();
+		return newPlanet;
 	}
 
 	addPlanet(data: Planet) {
-		if (this.planets.some((planet) => planet.id === data.id)) return;
-		this.planets = [
-			...this.planets,
-			{
-				...data,
-			},
-		];
+		if (this.activePlanetIds.has(data.id)) return;
+		this.activePlanetIds.add(data.id);
 		this.updateSnapshot();
 	}
 
 	removePlanet(planetId: string) {
-		this.planets = this.planets.filter((planet) => planet.id !== planetId);
+		this.activePlanetIds.delete(planetId);
 		if (this.followedPlanetId === planetId) {
 			this.followedPlanetId = null;
 		}
@@ -99,7 +85,11 @@ export class SimulationWorld {
 	}
 
 	setFollowedPlanetId(planetId: string | null) {
-		this.followedPlanetId = planetId;
+		if (planetId && !this.activePlanetIds.has(planetId)) {
+			this.followedPlanetId = null;
+		} else {
+			this.followedPlanetId = planetId;
+		}
 		this.updateSnapshot();
 	}
 
@@ -126,16 +116,14 @@ export class SimulationWorld {
 		this.updateSnapshot();
 	}
 
-	registerMergeQueue(
-		obsoleteIdA: string,
-		obsoleteIdB: string,
-		newData: Planet,
-	) {
+	registerMerge(obsoleteIdA: string, obsoleteIdB: string, newData: Planet) {
 		if (
 			this.mergeQueue.some(
 				(queue) =>
-					queue.data.obsoleteIdA === obsoleteIdA &&
-					queue.data.obsoleteIdB === obsoleteIdB,
+					(queue.data.obsoleteIdA === obsoleteIdA &&
+						queue.data.obsoleteIdB === obsoleteIdB) ||
+					(queue.data.obsoleteIdA === obsoleteIdB &&
+						queue.data.obsoleteIdB === obsoleteIdA),
 			)
 		)
 			return;
@@ -155,12 +143,22 @@ export class SimulationWorld {
 		this.updateSnapshot();
 	}
 
+	registerMergeQueue(
+		obsoleteIdA: string,
+		obsoleteIdB: string,
+		newData: Planet,
+	) {
+		this.registerMerge(obsoleteIdA, obsoleteIdB, newData);
+	}
+
 	completeMergeQueue(obsoleteIdA: string, obsoleteIdB: string) {
 		this.mergeQueue = this.mergeQueue.filter(
 			(queue) =>
 				!(
-					queue.data.obsoleteIdA === obsoleteIdA &&
-					queue.data.obsoleteIdB === obsoleteIdB
+					(queue.data.obsoleteIdA === obsoleteIdA &&
+						queue.data.obsoleteIdB === obsoleteIdB) ||
+					(queue.data.obsoleteIdA === obsoleteIdB &&
+						queue.data.obsoleteIdB === obsoleteIdA)
 				),
 		);
 		this.updateSnapshot();

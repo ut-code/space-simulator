@@ -1,7 +1,14 @@
 import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import { Suspense, useMemo, useRef, useState } from "react";
+import {
+	Suspense,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import type { Vector3 } from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
@@ -28,10 +35,27 @@ useTexture.preload(planetTexturePaths);
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
+type MergeEvent = {
+	idA: string;
+	idB: string;
+	newData: Planet;
+};
+
+type ExplosionEvent = {
+	position: Vector3;
+	radius: number;
+};
+
 export default function Page() {
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const planetRegistry = useMemo(() => new PlanetRegistry(), []);
 	const simulationWorld = useMemo(() => new SimulationWorld([earth]), []);
+	const pendingMerges = useRef<MergeEvent[]>([]);
+	const pendingExplosions = useRef<ExplosionEvent[]>([]);
+
+	if (!planetRegistry.has(earth.id)) {
+		planetRegistry.register(earth.id, earth);
+	}
 
 	const [worldState, setWorldState] = useState(() =>
 		simulationWorld.getSnapshot(),
@@ -40,9 +64,27 @@ export default function Page() {
 	const [placementMode, setPlacementMode] = useState(false);
 	const [placementPanelOpen, setPlacementPanelOpen] = useState(true);
 
-	const syncWorld = () => {
+	const syncWorld = useCallback(() => {
 		setWorldState(simulationWorld.getSnapshot());
-	};
+	}, [simulationWorld]);
+
+	useEffect(() => {
+		const id = setInterval(() => {
+			const merges = pendingMerges.current.splice(0);
+			const explosions = pendingExplosions.current.splice(0);
+			if (merges.length === 0 && explosions.length === 0) return;
+
+			for (const event of merges) {
+				simulationWorld.registerMerge(event.idA, event.idB, event.newData);
+			}
+			for (const event of explosions) {
+				simulationWorld.registerExplosion(event.position, event.radius);
+			}
+			syncWorld();
+		}, 100);
+
+		return () => clearInterval(id);
+	}, [simulationWorld, syncWorld]);
 
 	const [planetControls, setPlanetControls, getPlanetControl] = useControls(
 		"New Planet",
@@ -88,11 +130,12 @@ export default function Page() {
 				rotationSpeedY: getPlanetControl("rotationSpeedY"),
 			};
 
-			simulationWorld.addPlanetFromTemplate(template, {
+			const newPlanet = simulationWorld.addPlanetFromTemplate(template, {
 				radius: settings.radius,
 				position: [settings.posX, settings.posY, settings.posZ],
 				rotationSpeedY: settings.rotationSpeedY,
 			});
+			planetRegistry.register(newPlanet.id, newPlanet);
 			syncWorld();
 		}),
 	});
@@ -125,22 +168,24 @@ export default function Page() {
 
 	const removePlanet = (planetId: string) => {
 		simulationWorld.removePlanet(planetId);
+		planetRegistry.unregister(planetId);
 		syncWorld();
 	};
 
-	const handleExplosion = (position: Vector3, radius: number) => {
-		simulationWorld.registerExplosion(position, radius);
-		syncWorld();
-	};
+	const handleExplosion = useCallback((position: Vector3, radius: number) => {
+		pendingExplosions.current.push({ position: position.clone(), radius });
+	}, []);
 
-	const handleMerge = (
-		obsoleteIdA: string,
-		obsoleteIdB: string,
-		newData: Planet,
-	) => {
-		simulationWorld.registerMergeQueue(obsoleteIdA, obsoleteIdB, newData);
-		syncWorld();
-	};
+	const handleMerge = useCallback(
+		(obsoleteIdA: string, obsoleteIdB: string, newData: Planet) => {
+			pendingMerges.current.push({
+				idA: obsoleteIdA,
+				idB: obsoleteIdB,
+				newData,
+			});
+		},
+		[],
+	);
 
 	return (
 		<div className="relative h-screen w-screen">
@@ -161,10 +206,10 @@ export default function Page() {
 					orbitControlsRef={orbitControlsRef}
 				/>
 
-				{worldState.planets.map((planet) => (
-					<Suspense key={planet.id} fallback={null}>
+				{worldState.planetIds.map((planetId) => (
+					<Suspense key={planetId} fallback={null}>
 						<PlanetMesh
-							planet={planet}
+							planetId={planetId}
 							planetRegistry={planetRegistry}
 							onExplosion={handleExplosion}
 							onSelect={(id) => {
@@ -196,10 +241,12 @@ export default function Page() {
 						<MergeController
 							queueData={queue.data}
 							onAdd={(newData: Planet) => {
+								planetRegistry.register(newData.id, newData);
 								simulationWorld.addPlanet(newData);
 								syncWorld();
 							}}
 							onDelete={(obsoleteId: string) => {
+								planetRegistry.unregister(obsoleteId);
 								simulationWorld.removePlanet(obsoleteId);
 								syncWorld();
 							}}
@@ -266,14 +313,14 @@ export default function Page() {
 								<div className="flex items-center justify-between">
 									<span className="text-blue-200">
 										追尾中: {(() => {
-											const planet = worldState.planets.find(
-												(p) => p.id === worldState.followedPlanetId,
-											);
+											const planet = worldState.followedPlanetId
+												? planetRegistry.get(worldState.followedPlanetId)
+												: undefined;
 											return planet ? (
 												<>
 													{planet.name}
 													<br />
-													(ID: {planet.id})
+													(ID: {worldState.followedPlanetId})
 												</>
 											) : (
 												"Unknown"
@@ -294,49 +341,67 @@ export default function Page() {
 							</div>
 						)}
 
-						<strong>追加済み惑星 ({worldState.planets.length})</strong>
+						<strong>追加済み惑星 ({worldState.planetIds.length})</strong>
 						<ul className="mb-0 mt-2.5 list-none p-0">
-							{worldState.planets.map((planet) => (
-								<li
-									key={`planet-item-${planet.id}`}
-									className="mb-2 flex items-center justify-between gap-2 border-b border-white/15 pb-2"
-								>
-									<div>
-										<div>{planet.name}</div>
-										<div className="text-xs opacity-[0.85]">
-											r={planet.radius.toFixed(1)} / (
-											{planet.position.x.toFixed(1)},
-											{planet.position.y.toFixed(1)},{" "}
-											{planet.position.z.toFixed(1)})
+							{worldState.planetIds
+								.map((planetId) => {
+									const planet = planetRegistry.get(planetId);
+									if (!planet) return null;
+									return { planetId, planet };
+								})
+								.filter(
+									(
+										item,
+									): item is {
+										planetId: string;
+										planet: ReturnType<
+											typeof planetRegistry.get
+										> extends infer T
+											? Exclude<T, undefined>
+											: never;
+									} => item !== null,
+								)
+								.map(({ planetId, planet }) => (
+									<li
+										key={`planet-item-${planetId}`}
+										className="mb-2 flex items-center justify-between gap-2 border-b border-white/15 pb-2"
+									>
+										<div>
+											<div>{planet.name}</div>
+											<div className="text-xs opacity-[0.85]">
+												r={planet.radius.toFixed(1)} / (
+												{planet.position.x.toFixed(1)},
+												{planet.position.y.toFixed(1)},{" "}
+												{planet.position.z.toFixed(1)})
+											</div>
 										</div>
-									</div>
-									<div className="flex shrink-0 items-center gap-2">
-										{worldState.followedPlanetId === planet.id ? (
-											<span className="px-2 py-1 text-xs text-blue-300">
-												追尾中
-											</span>
-										) : (
+										<div className="flex shrink-0 items-center gap-2">
+											{worldState.followedPlanetId === planetId ? (
+												<span className="px-2 py-1 text-xs text-blue-300">
+													追尾中
+												</span>
+											) : (
+												<button
+													type="button"
+													onClick={() => {
+														simulationWorld.setFollowedPlanetId(planetId);
+														syncWorld();
+													}}
+													className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
+												>
+													追尾
+												</button>
+											)}
 											<button
 												type="button"
-												onClick={() => {
-													simulationWorld.setFollowedPlanetId(planet.id);
-													syncWorld();
-												}}
+												onClick={() => removePlanet(planetId)}
 												className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
 											>
-												追尾
+												削除
 											</button>
-										)}
-										<button
-											type="button"
-											onClick={() => removePlanet(planet.id)}
-											className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
-										>
-											削除
-										</button>
-									</div>
-								</li>
-							))}
+										</div>
+									</li>
+								))}
 						</ul>
 					</>
 				)}

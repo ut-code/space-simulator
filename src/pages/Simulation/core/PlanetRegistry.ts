@@ -1,16 +1,14 @@
 import type * as THREE from "three";
-export type PositionRef = {
-	current: number[];
-};
-
-export type VelocityRef = {
-	current: number[];
-};
+import type { Planet } from "@/types/planet";
 
 export type PlanetRegistryEntry = {
 	mass: number;
 	radius: number;
 	rotationSpeedY: number;
+	texturePath: string;
+	width: number;
+	height: number;
+	name: string;
 	position: THREE.Vector3;
 	velocity: THREE.Vector3;
 };
@@ -18,8 +16,18 @@ export type PlanetRegistryEntry = {
 export class PlanetRegistry implements Iterable<[string, PlanetRegistryEntry]> {
 	private readonly entries = new Map<string, PlanetRegistryEntry>();
 
-	register(id: string, entry: PlanetRegistryEntry) {
-		this.entries.set(id, entry);
+	register(id: string, planet: Planet) {
+		this.entries.set(id, {
+			mass: planet.mass,
+			radius: planet.radius,
+			rotationSpeedY: planet.rotationSpeedY,
+			texturePath: planet.texturePath,
+			width: planet.width,
+			height: planet.height,
+			name: planet.name,
+			position: planet.position.clone(),
+			velocity: planet.velocity.clone(),
+		});
 	}
 
 	unregister(id: string) {
