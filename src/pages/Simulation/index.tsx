@@ -21,7 +21,10 @@ import {
 	PlacementSurface,
 	PreviewPlanet,
 } from "./components/PlanetPlacementView";
-import { PlanetRegistry } from "./core/PlanetRegistry";
+import {
+	PlanetRegistry,
+	type PlanetRegistryEntry,
+} from "./core/PlanetRegistry";
 import { SimulationWorld } from "./core/SimulationWorld";
 
 const planetTexturePaths = [
@@ -53,10 +56,6 @@ export default function Page() {
 	const pendingMerges = useRef<MergeEvent[]>([]);
 	const pendingExplosions = useRef<ExplosionEvent[]>([]);
 
-	if (!planetRegistry.has(earth.id)) {
-		planetRegistry.register(earth.id, earth);
-	}
-
 	const [worldState, setWorldState] = useState(() =>
 		simulationWorld.getSnapshot(),
 	);
@@ -67,6 +66,12 @@ export default function Page() {
 	const syncWorld = useCallback(() => {
 		setWorldState(simulationWorld.getSnapshot());
 	}, [simulationWorld]);
+
+	useEffect(() => {
+		if (!planetRegistry.has(earth.id)) {
+			planetRegistry.register(earth.id, earth);
+		}
+	}, [planetRegistry]);
 
 	useEffect(() => {
 		const id = setInterval(() => {
@@ -168,7 +173,6 @@ export default function Page() {
 
 	const removePlanet = (planetId: string) => {
 		simulationWorld.removePlanet(planetId);
-		planetRegistry.unregister(planetId);
 		syncWorld();
 	};
 
@@ -186,6 +190,17 @@ export default function Page() {
 		},
 		[],
 	);
+
+	const panelPlanets = worldState.planetIds
+		.map((planetId) => {
+			const planet = planetRegistry.get(planetId);
+			if (!planet) return null;
+			return { planetId, planet };
+		})
+		.filter(
+			(item): item is { planetId: string; planet: PlanetRegistryEntry } =>
+				item !== null,
+		);
 
 	return (
 		<div className="relative h-screen w-screen">
@@ -246,7 +261,6 @@ export default function Page() {
 								syncWorld();
 							}}
 							onDelete={(obsoleteId: string) => {
-								planetRegistry.unregister(obsoleteId);
 								simulationWorld.removePlanet(obsoleteId);
 								syncWorld();
 							}}
@@ -343,65 +357,47 @@ export default function Page() {
 
 						<strong>追加済み惑星 ({worldState.planetIds.length})</strong>
 						<ul className="mb-0 mt-2.5 list-none p-0">
-							{worldState.planetIds
-								.map((planetId) => {
-									const planet = planetRegistry.get(planetId);
-									if (!planet) return null;
-									return { planetId, planet };
-								})
-								.filter(
-									(
-										item,
-									): item is {
-										planetId: string;
-										planet: ReturnType<
-											typeof planetRegistry.get
-										> extends infer T
-											? Exclude<T, undefined>
-											: never;
-									} => item !== null,
-								)
-								.map(({ planetId, planet }) => (
-									<li
-										key={`planet-item-${planetId}`}
-										className="mb-2 flex items-center justify-between gap-2 border-b border-white/15 pb-2"
-									>
-										<div>
-											<div>{planet.name}</div>
-											<div className="text-xs opacity-[0.85]">
-												r={planet.radius.toFixed(1)} / (
-												{planet.position.x.toFixed(1)},
-												{planet.position.y.toFixed(1)},{" "}
-												{planet.position.z.toFixed(1)})
-											</div>
+							{panelPlanets.map(({ planetId, planet }) => (
+								<li
+									key={`planet-item-${planetId}`}
+									className="mb-2 flex items-center justify-between gap-2 border-b border-white/15 pb-2"
+								>
+									<div>
+										<div>{planet.name}</div>
+										<div className="text-xs opacity-[0.85]">
+											r={planet.radius.toFixed(1)} / (
+											{planet.position.x.toFixed(1)},
+											{planet.position.y.toFixed(1)},{" "}
+											{planet.position.z.toFixed(1)})
 										</div>
-										<div className="flex shrink-0 items-center gap-2">
-											{worldState.followedPlanetId === planetId ? (
-												<span className="px-2 py-1 text-xs text-blue-300">
-													追尾中
-												</span>
-											) : (
-												<button
-													type="button"
-													onClick={() => {
-														simulationWorld.setFollowedPlanetId(planetId);
-														syncWorld();
-													}}
-													className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
-												>
-													追尾
-												</button>
-											)}
+									</div>
+									<div className="flex shrink-0 items-center gap-2">
+										{worldState.followedPlanetId === planetId ? (
+											<span className="px-2 py-1 text-xs text-blue-300">
+												追尾中
+											</span>
+										) : (
 											<button
 												type="button"
-												onClick={() => removePlanet(planetId)}
+												onClick={() => {
+													simulationWorld.setFollowedPlanetId(planetId);
+													syncWorld();
+												}}
 												className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
 											>
-												削除
+												追尾
 											</button>
-										</div>
-									</li>
-								))}
+										)}
+										<button
+											type="button"
+											onClick={() => removePlanet(planetId)}
+											className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
+										>
+											削除
+										</button>
+									</div>
+								</li>
+							))}
 						</ul>
 					</>
 				)}
