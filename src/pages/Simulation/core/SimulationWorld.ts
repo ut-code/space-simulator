@@ -139,6 +139,8 @@ export class SimulationWorld {
 			)
 		)
 			return;
+		if (this.mergeQueue.some((queue) => queue.data.newData.id === newData.id))
+			return;
 		this.mergeQueue = [
 			...this.mergeQueue,
 			{
