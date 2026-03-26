@@ -38,8 +38,15 @@ export function PlanetMesh({
 		const current = planetRegistry.get(planetId);
 		if (!current) return;
 
-		// Sync mesh position with physics state
-		meshRef.current.position.copy(current.position);
+		// Validate position before copying to prevent NaN propagation
+		if (
+			Number.isFinite(current.position.x) &&
+			Number.isFinite(current.position.y) &&
+			Number.isFinite(current.position.z)
+		) {
+			// Sync mesh position with physics state
+			meshRef.current.position.copy(current.position);
+		}
 
 		// Update rotation (visual only, not physics)
 		meshRef.current.rotation.y += current.rotationSpeedY * delta;
@@ -47,6 +54,17 @@ export function PlanetMesh({
 
 	const renderPlanet = planetRegistry.get(planetId);
 	if (!renderPlanet) return null;
+
+	// Ensure valid position values for rendering
+	const hasValidPosition =
+		Number.isFinite(renderPlanet.position.x) &&
+		Number.isFinite(renderPlanet.position.y) &&
+		Number.isFinite(renderPlanet.position.z);
+
+	if (!hasValidPosition) {
+		console.warn(`Planet ${planetId} has invalid position, skipping render`);
+		return null;
+	}
 
 	return (
 		<Trail
@@ -58,6 +76,11 @@ export function PlanetMesh({
 			{/* biome-ignore lint: noStaticElementInteractions - Three.js mesh is not a DOM element*/}
 			<mesh
 				ref={meshRef}
+				position={[
+					renderPlanet.position.x,
+					renderPlanet.position.y,
+					renderPlanet.position.z,
+				]}
 				onDoubleClick={(e) => {
 					e.stopPropagation();
 					onSelect(planetId);

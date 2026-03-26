@@ -169,6 +169,24 @@ export class PhysicsEngine {
 	 */
 	private updatePlanets(delta: number): void {
 		for (const [planetId, planet] of this.planetRegistry) {
+			// Validate planet data to prevent NaN propagation
+			if (!planet.mass || planet.mass <= 0) {
+				console.warn(`Planet ${planetId} has invalid mass: ${planet.mass}`);
+				continue;
+			}
+			if (!planet.radius || planet.radius <= 0) {
+				console.warn(`Planet ${planetId} has invalid radius: ${planet.radius}`);
+				continue;
+			}
+			if (
+				!Number.isFinite(planet.position.x) ||
+				!Number.isFinite(planet.position.y) ||
+				!Number.isFinite(planet.position.z)
+			) {
+				console.warn(`Planet ${planetId} has NaN position`, planet.position);
+				continue;
+			}
+
 			// Reset force accumulator
 			this.forceAccumulator.set(0, 0, 0);
 
@@ -186,6 +204,19 @@ export class PhysicsEngine {
 			const acceleration = this.forceAccumulator
 				.clone()
 				.divideScalar(planet.mass);
+
+			// Validate acceleration before updating
+			if (
+				!Number.isFinite(acceleration.x) ||
+				!Number.isFinite(acceleration.y) ||
+				!Number.isFinite(acceleration.z)
+			) {
+				console.warn(
+					`Planet ${planetId} calculated NaN acceleration`,
+					acceleration,
+				);
+				continue;
+			}
 
 			// Update velocity and position using Euler integration
 			this.planetRegistry.update(planetId, acceleration, delta);

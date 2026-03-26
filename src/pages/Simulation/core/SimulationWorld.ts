@@ -22,7 +22,34 @@ export type SimulationWorldSnapshot = {
 };
 
 function computeMass(radius: number, mass: number, newRadius: number) {
-	return mass * (newRadius / radius) ** 3;
+	// Validate inputs to prevent NaN
+	if (!Number.isFinite(radius) || radius <= 0) {
+		console.warn("computeMass: invalid radius", radius);
+		return 1; // Fallback to unit mass
+	}
+	if (!Number.isFinite(mass) || mass <= 0) {
+		console.warn("computeMass: invalid mass", mass);
+		return 1; // Fallback to unit mass
+	}
+	if (!Number.isFinite(newRadius) || newRadius <= 0) {
+		console.warn("computeMass: invalid newRadius", newRadius);
+		return 1; // Fallback to unit mass
+	}
+
+	const computedMass = mass * (newRadius / radius) ** 3;
+
+	// Validate output
+	if (!Number.isFinite(computedMass) || computedMass <= 0) {
+		console.warn(
+			"computeMass: computed invalid mass",
+			computedMass,
+			"from inputs:",
+			{ radius, mass, newRadius },
+		);
+		return 1; // Fallback to unit mass
+	}
+
+	return computedMass;
 }
 
 export class SimulationWorld {
@@ -50,8 +77,45 @@ export class SimulationWorld {
 		this.snapshot = this.buildSnapshot();
 	}
 
+	/**
+	 * Manually update the snapshot after making changes.
+	 * Call this after adding/removing planets to refresh the snapshot.
+	 */
+	public refreshSnapshot(): void {
+		this.updateSnapshot();
+	}
+
+	getSnapshot(): SimulationWorldSnapshot {
+		return this.snapshot;
+	}
+
 	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings): Planet {
 		const [posX, posY, posZ] = settings.position;
+
+		// Validate inputs
+		if (
+			!Number.isFinite(posX) ||
+			!Number.isFinite(posY) ||
+			!Number.isFinite(posZ)
+		) {
+			console.error(
+				"addPlanetFromTemplate: invalid position",
+				settings.position,
+			);
+			throw new Error("Invalid planet position");
+		}
+		if (!Number.isFinite(settings.radius) || settings.radius <= 0) {
+			console.error("addPlanetFromTemplate: invalid radius", settings.radius);
+			throw new Error("Invalid planet radius");
+		}
+		if (!Number.isFinite(settings.rotationSpeedY)) {
+			console.error(
+				"addPlanetFromTemplate: invalid rotationSpeedY",
+				settings.rotationSpeedY,
+			);
+			throw new Error("Invalid planet rotationSpeedY");
+		}
+
 		const mass = computeMass(template.radius, template.mass, settings.radius);
 		const newPlanet: Planet = {
 			id: crypto.randomUUID(),
@@ -66,7 +130,8 @@ export class SimulationWorld {
 			mass,
 		};
 		this.activePlanetIds.add(newPlanet.id);
-		this.updateSnapshot();
+		// Don't update snapshot here - let caller do it after registering in PlanetRegistry
+		// This prevents race condition where React renders with planet ID but no registry entry
 		return newPlanet;
 	}
 
@@ -162,9 +227,5 @@ export class SimulationWorld {
 				),
 		);
 		this.updateSnapshot();
-	}
-
-	getSnapshot(): SimulationWorldSnapshot {
-		return this.snapshot;
 	}
 }
