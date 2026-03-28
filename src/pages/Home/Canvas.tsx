@@ -1,8 +1,8 @@
 import { Canvas } from "@react-three/fiber";
 
-interface Props {
+type Props = {
 	children: React.ReactNode;
-}
+};
 
 export default function ThreeCanvas(props: Props) {
 	return (

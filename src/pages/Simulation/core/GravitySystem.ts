@@ -35,9 +35,20 @@ export class GravitySystem {
 				radius: otherRadius,
 				position: otherPosition,
 			} = other;
+
+			// Validate other planet data
+			if (!otherMass || otherMass <= 0) continue;
+			if (!otherRadius || otherRadius <= 0) continue;
+			if (
+				!Number.isFinite(otherPosition.x) ||
+				!Number.isFinite(otherPosition.y) ||
+				!Number.isFinite(otherPosition.z)
+			)
+				continue;
+
 			this.sourcePosition.copy(otherPosition);
-			const sourceMass = otherMass || 1;
-			const sourceRadius = otherRadius || 0.1;
+			const sourceMass = otherMass;
+			const sourceRadius = otherRadius;
 
 			this.addPairForce(
 				outForce,
