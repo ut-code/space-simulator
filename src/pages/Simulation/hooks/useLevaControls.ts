@@ -7,12 +7,12 @@ import type { SimulationWorld } from "../core/SimulationWorld";
 
 const planetTemplates = { earth, sun, mars, jupiter, venus } as const;
 
-interface UseLevaControlsOptions {
+type UseLevaControlsOptions = {
 	simulationWorld: SimulationWorld;
 	planetRegistry: PlanetRegistry;
 	syncWorld: () => void;
 	orbitControlsRef: React.RefObject<Controls | null>;
-}
+};
 
 export function useLevaControls({
 	simulationWorld,

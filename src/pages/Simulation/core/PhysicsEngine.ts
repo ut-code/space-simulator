@@ -41,14 +41,14 @@ export type PhysicsEventListener = (event: PhysicsEvent) => void;
 /**
  * Configuration for the PhysicsEngine
  */
-export interface PhysicsEngineConfig {
+export type PhysicsEngineConfig = {
 	/** Fixed timestep for physics updates in seconds (default: 1/60 = ~16.67ms) */
 	fixedTimestep?: number;
 	/** Maximum number of physics steps per frame to prevent spiral of death (default: 5) */
 	maxSubSteps?: number;
 	/** Whether the engine should start running immediately (default: true) */
 	autoStart?: boolean;
-}
+};
 
 /**
  * Standalone physics engine that runs independently of React.

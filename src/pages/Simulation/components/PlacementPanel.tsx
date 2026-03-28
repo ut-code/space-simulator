@@ -5,7 +5,7 @@ import type {
 } from "../core/PlanetRegistry";
 import type { SimulationWorld } from "../core/SimulationWorld";
 
-interface PlacementPanelProps {
+type PlacementPanelProps = {
 	worldState: ReturnType<SimulationWorld["getSnapshot"]>;
 	planetRegistry: PlanetRegistry;
 	simulationWorld: SimulationWorld;
@@ -13,7 +13,7 @@ interface PlacementPanelProps {
 	removePlanet: (planetId: string) => void;
 	placementMode: boolean;
 	setPlacementMode: (value: boolean) => void;
-}
+};
 
 type PanelPlanet = { planetId: string; planet: PlanetRegistryEntry };
 

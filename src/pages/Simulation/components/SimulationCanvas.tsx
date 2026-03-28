@@ -9,7 +9,7 @@ import { Explosion } from "./Explosion";
 import { PlanetMesh } from "./PlanetMesh";
 import { PlacementSurface, PreviewPlanet } from "./PlanetPlacementView";
 
-interface SimulationCanvasProps {
+type SimulationCanvasProps = {
 	worldState: ReturnType<SimulationWorld["getSnapshot"]>;
 	planetRegistry: PlanetRegistry;
 	simulationWorld: SimulationWorld;
@@ -23,7 +23,7 @@ interface SimulationCanvasProps {
 	previewRadius: number;
 	previewPosition: [number, number, number];
 	onPlace: (position: [number, number, number]) => void;
-}
+};
 
 export function SimulationCanvas({
 	worldState,
