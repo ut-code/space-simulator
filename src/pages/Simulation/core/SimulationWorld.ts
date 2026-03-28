@@ -158,9 +158,20 @@ export class SimulationWorld {
 		this.updateSnapshot();
 	}
 
-	registerExplosion(position: THREE.Vector3, radius: number) {
+	registerExplosion(
+		idA: string,
+		idB: string,
+		position: THREE.Vector3,
+		radius: number,
+	) {
 		if (this.explosions.some((e) => e.position.distanceTo(position) < 2)) {
 			return;
+		}
+		// Remove the two exploding planets
+		this.activePlanetIds.delete(idA);
+		this.activePlanetIds.delete(idB);
+		if (this.followedPlanetId === idA || this.followedPlanetId === idB) {
+			this.followedPlanetId = null;
 		}
 		this.explosions = [
 			...this.explosions,
@@ -169,6 +180,23 @@ export class SimulationWorld {
 				radius: radius * 1.5,
 				position: position.clone(),
 				fragmentCount: 50,
+			},
+		];
+		this.updateSnapshot();
+	}
+
+	/**
+	 * Register a small spark effect at a position without removing any planets.
+	 * Used for repulse and merge collision visual feedback.
+	 */
+	registerSpark(position: THREE.Vector3, radius: number, fragmentCount = 10) {
+		this.explosions = [
+			...this.explosions,
+			{
+				id: crypto.randomUUID(),
+				radius: radius,
+				position: position.clone(),
+				fragmentCount,
 			},
 		];
 		this.updateSnapshot();

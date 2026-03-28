@@ -12,8 +12,28 @@ import type { PlanetRegistry } from "./PlanetRegistry";
  * Event types emitted by the PhysicsEngine
  */
 export type PhysicsEvent =
-	| { type: "collision:merge"; idA: string; idB: string; newPlanet: Planet }
-	| { type: "collision:explode"; position: THREE.Vector3; radius: number }
+	| {
+			type: "collision:merge";
+			idA: string;
+			idB: string;
+			newPlanet: Planet;
+			position: THREE.Vector3;
+			radius: number;
+	  }
+	| {
+			type: "collision:explode";
+			idA: string;
+			idB: string;
+			position: THREE.Vector3;
+			radius: number;
+	  }
+	| {
+			type: "collision:repulse";
+			idA: string;
+			idB: string;
+			position: THREE.Vector3;
+			radius: number;
+	  }
 	| { type: "update"; timestamp: number };
 
 export type PhysicsEventListener = (event: PhysicsEvent) => void;
@@ -286,12 +306,16 @@ export class PhysicsEngine {
 							planetB.rotationSpeedY,
 						);
 
+						const collisionPoint = this.positionVec.clone();
+
 						// Emit merge event
 						this.emit({
 							type: "collision:merge",
 							idA,
 							idB,
 							newPlanet,
+							position: collisionPoint,
+							radius: minDist,
 						});
 					} else {
 						// Calculate collision point for explosion
@@ -300,6 +324,8 @@ export class PhysicsEngine {
 						// Emit explosion event
 						this.emit({
 							type: "collision:explode",
+							idA,
+							idB,
 							position: collisionPoint,
 							radius: minDist,
 						});
