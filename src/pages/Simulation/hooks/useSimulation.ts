@@ -1,33 +1,34 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { earth } from "@/data/planets";
 import { PhysicsEngine } from "../core/PhysicsEngine";
 import { PlanetRegistry } from "../core/PlanetRegistry";
 import { SimulationWorld } from "../core/SimulationWorld";
 
+// Reactのライフサイクル外で、モジュールレベルのシングルトンとして管理する
+const planetRegistry = new PlanetRegistry();
+planetRegistry.register(earth.id, earth);
+
+const simulationWorld = new SimulationWorld([earth]);
+
+const physicsEngine = new PhysicsEngine(planetRegistry, {
+	fixedTimestep: 1 / 60,
+	maxSubSteps: 5,
+	autoStart: true,
+});
+
 export function useSimulation() {
-	const planetRegistry = useMemo(() => {
-		const registry = new PlanetRegistry();
-		registry.register(earth.id, earth);
-		return registry;
-	}, []);
-
-	const simulationWorld = useMemo(() => new SimulationWorld([earth]), []);
-
-	const physicsEngine = useMemo(() => {
-		return new PhysicsEngine(planetRegistry, {
-			fixedTimestep: 1 / 60,
-			maxSubSteps: 5,
-			autoStart: true,
-		});
-	}, [planetRegistry]);
-
 	const [worldState, setWorldState] = useState(() =>
 		simulationWorld.getSnapshot(),
 	);
 
 	const syncWorld = useCallback(() => {
 		setWorldState(simulationWorld.getSnapshot());
-	}, [simulationWorld]);
+	}, []);
+
+	const syncWorldRef = useRef(syncWorld);
+	useEffect(() => {
+		syncWorldRef.current = syncWorld;
+	}, [syncWorld]);
 
 	useEffect(() => {
 		const unsubscribe = physicsEngine.on((event) => {
@@ -43,11 +44,11 @@ export function useSimulation() {
 				simulationWorld.addPlanet(event.newPlanet);
 				// 合体時に小さなオレンジのスパークエフェクト
 				simulationWorld.registerSpark(event.position, event.radius * 0.8, 10);
-				syncWorld();
+				syncWorldRef.current();
 			} else if (event.type === "collision:repulse") {
 				// 反発時はオレンジのスパークのみ。惑星は削除しない
 				simulationWorld.registerSpark(event.position, event.radius, 8);
-				syncWorld();
+				syncWorldRef.current();
 			} else if (event.type === "collision:explode") {
 				planetRegistry.unregister(event.idA);
 				planetRegistry.unregister(event.idB);
@@ -57,15 +58,17 @@ export function useSimulation() {
 					event.position,
 					event.radius,
 				);
-				syncWorld();
+				syncWorldRef.current();
 			}
 		});
 
 		return () => {
 			unsubscribe();
-			physicsEngine.destroy();
 		};
-	}, [physicsEngine, simulationWorld, syncWorld, planetRegistry]);
+	}, []);
+
+	// Hookのアンマウント時にエンジンを止めることはしない
+	// （もしページ遷移時などにエンジンを止めたい場合は別コンテキストでの制御が必要）
 
 	const removePlanet = useCallback(
 		(planetId: string) => {
@@ -73,7 +76,7 @@ export function useSimulation() {
 			simulationWorld.removePlanet(planetId);
 			syncWorld();
 		},
-		[planetRegistry, simulationWorld, syncWorld],
+		[syncWorld],
 	);
 
 	return {
