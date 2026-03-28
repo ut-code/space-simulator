@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { earth } from "@/data/planets";
 import { PhysicsEngine } from "../core/PhysicsEngine";
 import { PlanetRegistry } from "../core/PlanetRegistry";
@@ -25,11 +25,6 @@ export function useSimulation() {
 		setWorldState(simulationWorld.getSnapshot());
 	}, []);
 
-	const syncWorldRef = useRef(syncWorld);
-	useEffect(() => {
-		syncWorldRef.current = syncWorld;
-	}, [syncWorld]);
-
 	useEffect(() => {
 		const unsubscribe = physicsEngine.on((event) => {
 			if (event.type === "collision:merge") {
@@ -44,11 +39,11 @@ export function useSimulation() {
 				simulationWorld.addPlanet(event.newPlanet);
 				// 合体時に小さなオレンジのスパークエフェクト
 				simulationWorld.registerSpark(event.position, event.radius * 0.8, 10);
-				syncWorldRef.current();
+				syncWorld();
 			} else if (event.type === "collision:repulse") {
 				// 反発時はオレンジのスパークのみ。惑星は削除しない
 				simulationWorld.registerSpark(event.position, event.radius, 8);
-				syncWorldRef.current();
+				syncWorld();
 			} else if (event.type === "collision:explode") {
 				planetRegistry.unregister(event.idA);
 				planetRegistry.unregister(event.idB);
@@ -58,14 +53,14 @@ export function useSimulation() {
 					event.position,
 					event.radius,
 				);
-				syncWorldRef.current();
+				syncWorld();
 			}
 		});
 
 		return () => {
 			unsubscribe();
 		};
-	}, []);
+	}, [syncWorld]);
 
 	// Hookのアンマウント時にエンジンを止めることはしない
 	// （もしページ遷移時などにエンジンを止めたい場合は別コンテキストでの制御が必要）
