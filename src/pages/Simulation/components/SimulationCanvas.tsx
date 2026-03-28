@@ -1,6 +1,5 @@
 import { OrbitControls, Stars } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import type { MutableRefObject } from "react";
 import { Suspense } from "react";
 import type { OrbitControls as Controls } from "three-stdlib";
 import type { PlanetRegistry } from "../core/PlanetRegistry";
@@ -15,7 +14,7 @@ interface SimulationCanvasProps {
 	planetRegistry: PlanetRegistry;
 	simulationWorld: SimulationWorld;
 	syncWorld: () => void;
-	orbitControlsRef: MutableRefObject<Controls | null>;
+	orbitControlsRef: React.RefObject<Controls | null>;
 	placementMode: boolean;
 	posY: number;
 	showPreview: boolean;

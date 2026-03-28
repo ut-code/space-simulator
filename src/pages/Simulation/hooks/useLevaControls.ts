@@ -1,5 +1,4 @@
 import { button, useControls } from "leva";
-import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
@@ -12,7 +11,7 @@ interface UseLevaControlsOptions {
 	simulationWorld: SimulationWorld;
 	planetRegistry: PlanetRegistry;
 	syncWorld: () => void;
-	orbitControlsRef: MutableRefObject<Controls | null>;
+	orbitControlsRef: React.RefObject<Controls | null>;
 }
 
 export function useLevaControls({

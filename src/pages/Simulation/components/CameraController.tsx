@@ -7,7 +7,7 @@ import type { PlanetRegistry } from "../core/PlanetRegistry";
 type CameraControllerProps = {
 	followedPlanetId: string | null;
 	planetRegistry: PlanetRegistry;
-	orbitControlsRef: React.MutableRefObject<OrbitControls | null>;
+	orbitControlsRef: React.RefObject<OrbitControls | null>;
 };
 
 // Reactのライフサイクル外でシングルトンとして管理する
