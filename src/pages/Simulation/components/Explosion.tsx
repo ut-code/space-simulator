@@ -125,7 +125,7 @@ export function Explosion({ explosion, onComplete }: ExplosionProps) {
 				Math.random() - 0.5,
 				Math.random() - 0.5,
 			).normalize();
-			const speed = (Math.random() * 0.4 + 0.5) * r * (isExplosion ? 3 : 2);
+			const speed = (Math.random() * 0.6 + 0.9) * r * (isExplosion ? 5 : 3);
 			const velocity = dir.clone().multiplyScalar(speed);
 
 			// Small fire sprite – dims quickly to show plain rocky sphere
@@ -167,7 +167,7 @@ export function Explosion({ explosion, onComplete }: ExplosionProps) {
 			mesh.position.copy(explosion.position).add(offset);
 			group.add(mesh);
 
-			const speed = Math.random() * r * 0.8 + r * 0.3;
+			const speed = Math.random() * r * 1.5 + r * 0.8;
 			const velocity = new THREE.Vector3(
 				Math.random() - 0.5,
 				Math.random() - 0.5,
@@ -250,7 +250,7 @@ export function Explosion({ explosion, onComplete }: ExplosionProps) {
 		glowMatRef.current = glowMat;
 
 		// ── 6. FLASH LIGHT (smaller range) ────────────────────────────
-		const light = new THREE.PointLight(0xffcc66, 80, r * 15, 1.5);
+		const light = new THREE.PointLight(0xffcc66, 80, r * 30, 1.5);
 		light.position.copy(explosion.position);
 		group.add(light);
 		lightRef.current = light;
