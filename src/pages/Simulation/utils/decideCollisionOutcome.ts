@@ -3,11 +3,11 @@ import { G } from "./gravityUtils";
 
 // Debug helper: set `window.__DEBUG_FORCE_EXPLODE = true` in the browser console
 // to force all collisions to be treated as explosions for quick visual testing.
-declare global {
-	interface Window {
-		__DEBUG_FORCE_EXPLODE?: boolean;
-	}
-}
+// declare global {
+// 	interface Window {
+// 		__DEBUG_FORCE_EXPLODE?: boolean;
+// 	}
+// }
 
 export const CollisionType = {
 	Explode: "explode",
@@ -27,9 +27,9 @@ export function decideCollisionOutcome(
 	velB: THREE.Vector3,
 ): string {
 	// Debug override
-	if (typeof window !== "undefined" && window.__DEBUG_FORCE_EXPLODE) {
-		return CollisionType.Explode;
-	}
+	//	if (typeof window !== "undefined" && window.__DEBUG_FORCE_EXPLODE) {
+	//		return CollisionType.Explode;
+	//	}
 
 	//脱出速度vEsc
 	const vEsc = Math.sqrt((2 * G * (massA + massB)) / (radA + radB));
