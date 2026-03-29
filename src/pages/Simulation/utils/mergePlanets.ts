@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import moonTexture from "@/assets/960px-Moon_texture.jpg";
+import moonTexture from "@/assets/960px-Moon_texture.avif";
 import type { Planet } from "@/types/planet";
 
 export function mergePlanets(
