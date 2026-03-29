@@ -11,6 +11,7 @@ type UseLevaControlsOptions = {
 	simulationWorld: SimulationWorld;
 	planetRegistry: PlanetRegistry;
 	syncWorld: () => void;
+	setAutoKindAssignment: (enabled: boolean) => void;
 	orbitControlsRef: React.RefObject<Controls | null>;
 };
 
@@ -18,17 +19,21 @@ export function useLevaControls({
 	simulationWorld,
 	planetRegistry,
 	syncWorld,
+	setAutoKindAssignment,
 	orbitControlsRef,
 }: UseLevaControlsOptions) {
 	const selectedPlanetTypeRef = useRef<keyof typeof planetTemplates>("earth");
+	const autoKindAssignmentRef = useRef(false);
 	const planetControlsRef = useRef<{
 		radius: number;
+		mass: number;
 		posX: number;
 		posY: number;
 		posZ: number;
 		rotationSpeedY: number;
 	}>({
 		radius: 1.2,
+		mass: 1,
 		posX: 10,
 		posY: 0,
 		posZ: 0,
@@ -53,11 +58,21 @@ export function useLevaControls({
 					const template = planetTemplates[selectedType] ?? earth;
 					setPlanetControls({
 						radius: template.radius,
+						mass: template.mass,
 						rotationSpeedY: template.rotationSpeedY,
 					});
 				},
 			},
 			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
+			mass: { value: 1, min: 0.1, max: 500, step: 0.1 },
+			autoKindAssignment: {
+				value: false,
+				label: "kind自動割り当て",
+				onChange: (value) => {
+					autoKindAssignmentRef.current = Boolean(value);
+					setAutoKindAssignment(Boolean(value));
+				},
+			},
 			posX: { value: 10, min: -200, max: 200, step: 0.2 },
 			posY: { value: 0, min: -200, max: 200, step: 0.2 },
 			posZ: { value: 0, min: -200, max: 200, step: 0.2 },
@@ -72,14 +87,17 @@ export function useLevaControls({
 
 				console.log("Adding planet with settings:", {
 					radius: current.radius,
+					mass: current.mass,
 					position: [current.posX, current.posY, current.posZ],
 					rotationSpeedY: current.rotationSpeedY,
 				});
 
 				const newPlanet = simulationWorld.addPlanetFromTemplate(template, {
 					radius: current.radius,
+					mass: current.mass,
 					position: [current.posX, current.posY, current.posZ],
 					rotationSpeedY: current.rotationSpeedY,
+					autoKindAssignment: autoKindAssignmentRef.current,
 				});
 
 				console.log("Created planet:", newPlanet.id, newPlanet);

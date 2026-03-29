@@ -26,6 +26,7 @@ export default function Page() {
 		worldState,
 		syncWorld,
 		removePlanet,
+		setAutoKindAssignment,
 	} = useSimulation();
 
 	const { planetControls, setPlanetControls, showGrid, showAxes, showPreview } =
@@ -33,6 +34,7 @@ export default function Page() {
 			simulationWorld,
 			planetRegistry,
 			syncWorld,
+			setAutoKindAssignment,
 			orbitControlsRef,
 		});
 

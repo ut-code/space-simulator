@@ -74,11 +74,16 @@ export function useSimulation() {
 		[syncWorld],
 	);
 
+	const setAutoKindAssignment = useCallback((enabled: boolean) => {
+		physicsEngine.setAutoKindAssignment(enabled);
+	}, []);
+
 	return {
 		planetRegistry,
 		simulationWorld,
 		worldState,
 		syncWorld,
 		removePlanet,
+		setAutoKindAssignment,
 	};
 }

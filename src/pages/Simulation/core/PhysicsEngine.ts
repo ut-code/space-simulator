@@ -5,6 +5,7 @@ import {
 	decideCollisionOutcome,
 } from "../utils/decideCollisionOutcome";
 import { mergePlanets } from "../utils/mergePlanets";
+import { applyAutoKindIfEnabled } from "../utils/planetKind";
 import { GravitySystem } from "./GravitySystem";
 import type { PlanetRegistry } from "./PlanetRegistry";
 
@@ -71,6 +72,7 @@ export class PhysicsEngine {
 	// Configuration
 	private readonly fixedTimestep: number;
 	private readonly maxSubSteps: number;
+	private autoKindAssignment = false;
 
 	// Temporary vectors for calculations (reused to avoid GC pressure)
 	private readonly forceAccumulator = new THREE.Vector3();
@@ -129,6 +131,13 @@ export class PhysicsEngine {
 				this.listeners.splice(index, 1);
 			}
 		};
+	}
+
+	/**
+	 * Enable or disable automatic planet kind/texture assignment.
+	 */
+	public setAutoKindAssignment(enabled: boolean): void {
+		this.autoKindAssignment = enabled;
 	}
 
 	/**
@@ -293,7 +302,7 @@ export class PhysicsEngine {
 
 					if (outcome === CollisionType.Merge) {
 						// Calculate merged planet properties
-						const newPlanet = mergePlanets(
+						const mergedPlanet = mergePlanets(
 							planetA.mass,
 							planetA.radius,
 							this.positionVec.clone(),
@@ -304,6 +313,10 @@ export class PhysicsEngine {
 							planetB.position.clone(),
 							planetB.velocity.clone(),
 							planetB.rotationSpeedY,
+						);
+						const newPlanet = applyAutoKindIfEnabled(
+							mergedPlanet,
+							this.autoKindAssignment,
 						);
 
 						const collisionPoint = this.positionVec.clone();

@@ -1,11 +1,14 @@
 import * as THREE from "three";
 import type { ExplosionData } from "@/types/Explosion";
 import type { Planet } from "@/types/planet";
+import { applyAutoKindIfEnabled } from "../utils/planetKind";
 
 type NewPlanetSettings = {
 	radius: number;
+	mass?: number;
 	position: [number, number, number];
 	rotationSpeedY: number;
+	autoKindAssignment?: boolean;
 };
 
 export type mergeQueueProps = {
@@ -115,11 +118,21 @@ export class SimulationWorld {
 			);
 			throw new Error("Invalid planet rotationSpeedY");
 		}
+		if (
+			settings.mass !== undefined &&
+			(!Number.isFinite(settings.mass) || settings.mass <= 0)
+		) {
+			console.error("addPlanetFromTemplate: invalid mass", settings.mass);
+			throw new Error("Invalid planet mass");
+		}
 
-		const mass = computeMass(template.radius, template.mass, settings.radius);
+		const mass =
+			settings.mass ??
+			computeMass(template.radius, template.mass, settings.radius);
 		const newPlanet: Planet = {
 			id: crypto.randomUUID(),
 			name: template.name,
+			kind: template.kind,
 			texturePath: template.texturePath,
 			rotationSpeedY: settings.rotationSpeedY,
 			radius: settings.radius,
@@ -129,10 +142,14 @@ export class SimulationWorld {
 			velocity: new THREE.Vector3(0, 0, 0),
 			mass,
 		};
+		const planetWithKind = applyAutoKindIfEnabled(
+			newPlanet,
+			settings.autoKindAssignment ?? false,
+		);
 		this.activePlanetIds.add(newPlanet.id);
 		// Don't update snapshot here - let caller do it after registering in PlanetRegistry
 		// This prevents race condition where React renders with planet ID but no registry entry
-		return newPlanet;
+		return planetWithKind;
 	}
 
 	addPlanet(data: Planet) {
