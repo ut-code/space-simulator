@@ -66,9 +66,9 @@ export default function Page() {
 				},
 			},
 			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
-			posX: { value: 0, min: -200, max: 200, step: 0.2 },
-			posY: { value: 0, min: -200, max: 200, step: 0.2 },
-			posZ: { value: 0, min: -200, max: 200, step: 0.2 },
+			posX: { value: 0, min: -1000, max: 1000, step: 0.2 },
+			posY: { value: 0, min: -1000, max: 1000, step: 0.2 },
+			posZ: { value: 0, min: -1000, max: 1000, step: 0.2 },
 			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
 		}),
 	);
@@ -179,7 +179,7 @@ export default function Page() {
 						position={previewPosition}
 					/>
 				)}
-				{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
+				{showGrid && <gridHelper args={[2000, 500, "#1f2937", "#0f172a"]} />}
 				{showAxes && <axesHelper args={[20]} />}
 
 				{worldState.explosions.map((exp) => (

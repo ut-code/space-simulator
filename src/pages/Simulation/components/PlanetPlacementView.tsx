@@ -44,7 +44,7 @@ export function PlacementSurface({
 			rotation={[-Math.PI / 2, 0, 0]}
 			onPointerDown={handlePointerDown}
 		>
-			<planeGeometry args={[400, 400]} />
+			<planeGeometry args={[2000, 2000]} />
 			<meshBasicMaterial
 				color="#6ee7ff"
 				opacity={enabled ? 0.14 : 0}
