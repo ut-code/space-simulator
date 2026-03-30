@@ -1,7 +1,9 @@
+import { lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
-import Simulation from "@/pages/Simulation";
+
+const Simulation = lazy(() => import("@/pages/Simulation"));
 
 export const AppRouter = () => (
 	<BrowserRouter>
