@@ -195,10 +195,10 @@ export default function Page() {
 
 				{/* Optional background and controls */}
 				<Stars
-					radius={100}
-					depth={50}
-					count={5000}
-					factor={4}
+					radius={200}
+					depth={200}
+					count={40000}
+					factor={6}
 					saturation={0}
 					fade
 					speed={1}
