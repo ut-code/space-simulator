@@ -44,17 +44,18 @@ export default function Page() {
 	};
 
 	const [planetControls, setPlanetControls, getPlanetControl] = useControls(
-		"New Planet",
+		"新たな惑星",
 		() => ({
 			planetType: {
 				value: "earth",
 				options: {
-					Earth: "earth",
-					Sun: "sun",
-					Mars: "mars",
-					Jupiter: "jupiter",
-					Venus: "venus",
+					地球: "earth",
+					太陽: "sun",
+					火星: "mars",
+					木星: "jupiter",
+					金星: "venus",
 				},
+				label: "惑星タイプ",
 				onChange: (value) => {
 					const selectedType =
 						(value as keyof typeof planetTemplates) ?? "earth";
@@ -65,42 +66,54 @@ export default function Page() {
 					});
 				},
 			},
-			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
-			posX: { value: 0, min: -1000, max: 1000, step: 0.2 },
-			posY: { value: 0, min: -1000, max: 1000, step: 0.2 },
-			posZ: { value: 0, min: -1000, max: 1000, step: 0.2 },
-			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
+			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1, label: "半径" },
+			posX: { value: 0, min: -1000, max: 1000, step: 0.2, label: "X座標" },
+			posY: { value: 0, min: -1000, max: 1000, step: 0.2, label: "Y座標" },
+			posZ: { value: 0, min: -1000, max: 1000, step: 0.2, label: "Z座標" },
+			rotationSpeedY: {
+				value: 0.6,
+				min: 0,
+				max: 10,
+				step: 0.1,
+				label: "自転速度",
+			},
+			惑星の追加: button(() => {
+				const selectedType =
+					(getPlanetControl("planetType") as keyof typeof planetTemplates) ??
+					"earth";
+				const template = planetTemplates[selectedType] ?? earth;
+				const settings = {
+					radius: getPlanetControl("radius"),
+					posX: getPlanetControl("posX"),
+					posY: getPlanetControl("posY"),
+					posZ: getPlanetControl("posZ"),
+					rotationSpeedY: getPlanetControl("rotationSpeedY"),
+				};
+
+				simulationWorld.addPlanetFromTemplate(template, {
+					radius: settings.radius,
+					position: [settings.posX, settings.posY, settings.posZ],
+					rotationSpeedY: settings.rotationSpeedY,
+				});
+				syncWorld();
+			}),
 		}),
 	);
 
-	useControls("New Planet", {
-		addPlanet: button(() => {
-			const selectedType =
-				(getPlanetControl("planetType") as keyof typeof planetTemplates) ??
-				"earth";
-			const template = planetTemplates[selectedType] ?? earth;
-			const settings = {
-				radius: getPlanetControl("radius"),
-				posX: getPlanetControl("posX"),
-				posY: getPlanetControl("posY"),
-				posZ: getPlanetControl("posZ"),
-				rotationSpeedY: getPlanetControl("rotationSpeedY"),
-			};
-
-			simulationWorld.addPlanetFromTemplate(template, {
-				radius: settings.radius,
-				position: [settings.posX, settings.posY, settings.posZ],
-				rotationSpeedY: settings.rotationSpeedY,
-			});
-			syncWorld();
-		}),
-	});
-
-	const { showGrid, showAxes, showPreview } = useControls("Helpers", {
-		showGrid: true,
-		showAxes: true,
-		showPreview: true,
-		resetCameraPosition: button(() => {
+	const { showGrid, showAxes, showPreview } = useControls("表示設定", {
+		showGrid: {
+			value: true,
+			label: "グリッド表示",
+		},
+		showAxes: {
+			value: true,
+			label: "座標軸表示",
+		},
+		showPreview: {
+			value: true,
+			label: "プレビュー表示",
+		},
+		カメラをリセット: button(() => {
 			if (orbitControlsRef.current) {
 				orbitControlsRef.current.reset();
 				orbitControlsRef.current.target.set(0, 0, 0);
