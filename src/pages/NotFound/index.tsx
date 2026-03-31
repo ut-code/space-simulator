@@ -1,7 +1,7 @@
 import { Stars } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
-import ThreeCanvas from "@/pages/Home/Canvas";
-import HomeScene from "@/pages/Home/Scene";
+import ThreeCanvas from "@/components/Canvas";
+import HomeScene from "@/components/Scene";
 
 export default function Page() {
 	const navigate = useNavigate();
