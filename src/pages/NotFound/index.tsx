@@ -33,11 +33,11 @@ export default function Page() {
 						drop-shadow-[0_0_25px_rgba(255,255,255,0.8)]
 					"
 				>
-					SPACE SIMULATOR
+					NOT FOUND
 				</h1>
 				<button
 					type="button"
-					onClick={() => navigate("/simulation")}
+					onClick={() => navigate("/")}
 					className="
 						px-10 py-4
 						text-xl font-semibold
@@ -52,7 +52,7 @@ export default function Page() {
 						active:scale-95
 					"
 				>
-					Start Simulation
+					Return to Start Page
 				</button>
 			</div>
 		</div>
