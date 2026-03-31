@@ -1,11 +1,8 @@
 import { Stars } from "@react-three/drei";
-import { useNavigate } from "react-router-dom";
 import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
 
 export default function Page() {
-	const navigate = useNavigate();
-
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
 			<ThreeCanvas>
@@ -33,27 +30,8 @@ export default function Page() {
 						drop-shadow-[0_0_25px_rgba(255,255,255,0.8)]
 					"
 				>
-					SPACE SIMULATOR
+					Loading...
 				</h1>
-				<button
-					type="button"
-					onClick={() => navigate("/simulation")}
-					className="
-						px-10 py-4
-						text-xl font-semibold
-						text-white
-						bg-blue-500
-						rounded-xl
-						shadow-lg shadow-blue-500/40
-						border border-blue-300
-						transition
-						hover:bg-blue-400
-						hover:scale-105
-						active:scale-95
-					"
-				>
-					Start Simulation
-				</button>
 			</div>
 		</div>
 	);

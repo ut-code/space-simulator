@@ -197,6 +197,7 @@ export class SimulationWorld {
 				radius: radius * 1.5,
 				position: position.clone(),
 				fragmentCount: 50,
+				kind: "explosion",
 			},
 		];
 		this.updateSnapshot();
@@ -214,6 +215,7 @@ export class SimulationWorld {
 				radius: radius,
 				position: position.clone(),
 				fragmentCount,
+				kind: "spark",
 			},
 		];
 		this.updateSnapshot();
