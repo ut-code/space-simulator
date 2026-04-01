@@ -89,6 +89,14 @@ export class SimulationWorld {
 		return this.snapshot;
 	}
 
+	clear() {
+		this.activePlanetIds.clear();
+		this.explosions = [];
+		this.mergeQueue = [];
+		this.followedPlanetId = null;
+		this.updateSnapshot();
+	}
+
 	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings): Planet {
 		const [posX, posY, posZ] = settings.position;
 

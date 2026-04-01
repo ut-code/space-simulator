@@ -35,10 +35,13 @@ export default function Page() {
 				>
 					SPACE SIMULATOR
 				</h1>
-				<button
-					type="button"
-					onClick={() => navigate("/simulation")}
-					className="
+				<div className="flex flex-col gap-4 items-center">
+					<button
+						type="button"
+						onClick={() =>
+							navigate("/simulation", { state: { mode: "normal" } })
+						}
+						className="
 						px-10 py-4
 						text-xl font-semibold
 						text-white
@@ -51,9 +54,31 @@ export default function Page() {
 						hover:scale-105
 						active:scale-95
 					"
-				>
-					Start Simulation
-				</button>
+					>
+						Start Simulation
+					</button>
+					<button
+						type="button"
+						onClick={() =>
+							navigate("/simulation", { state: { mode: "solar-system" } })
+						}
+						className="
+						px-10 py-4
+						text-xl font-semibold
+						text-white
+						bg-blue-500
+						rounded-xl
+						shadow-lg shadow-blue-500/40
+						border border-blue-300
+						transition
+						hover:bg-blue-400
+						hover:scale-105
+						active:scale-95
+					"
+					>
+						Start with Solar System
+					</button>
+				</div>
 			</div>
 		</div>
 	);
