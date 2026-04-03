@@ -36,12 +36,24 @@ export default function Page() {
 		simulationWorld.getSnapshot(),
 	);
 
-	const [placementMode, setPlacementMode] = useState(false);
+	//const [placementMode, setPlacementMode] = useState(false);
 	const [placementPanelOpen, setPlacementPanelOpen] = useState(true);
 
 	const syncWorld = () => {
 		setWorldState(simulationWorld.getSnapshot());
 	};
+
+	const { placementMode } = useControls("配置モード", {
+		guide: {
+			value: "ONのとき、水色の面をクリックすると配置できます",
+			editable: false,
+			label: "使い方",
+		},
+		placementMode: {
+			value: false,
+			label: "クリック配置",
+		},
+	});
 
 	const [planetControls, setPlanetControls, getPlanetControl] = useControls(
 		"新たな惑星",
@@ -220,31 +232,17 @@ export default function Page() {
 			</Canvas>
 			<div className="absolute left-4 top-4 w-80 max-h-[75vh] overflow-y-auto rounded-lg bg-black/70 p-3 text-sm text-white backdrop-blur-sm">
 				<div className="flex items-center justify-between">
-					<strong>クリック配置</strong>
-					<div className="flex items-center gap-2">
-						<label className="flex items-center gap-1.5">
-							<input
-								type="checkbox"
-								checked={placementMode}
-								onChange={(event) => setPlacementMode(event.target.checked)}
-							/>
-							ON
-						</label>
-						<button
-							type="button"
-							onClick={() => setPlacementPanelOpen((prev) => !prev)}
-							className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-0.5 text-xs text-white"
-						>
-							{placementPanelOpen ? "たたむ" : "ひらく"}
-						</button>
-					</div>
+					<strong>追加済み惑星 ({worldState.planets.length})</strong>
+					<button
+						type="button"
+						onClick={() => setPlacementPanelOpen((prev) => !prev)}
+						className="cursor-pointer rounded-md border border-white/40 bg-transparent px-3 py-1.5 text-sm text-white"
+					>
+						{placementPanelOpen ? "たたむ" : "ひらく"}
+					</button>
 				</div>
 				{placementPanelOpen && (
 					<>
-						<p className="mb-3 mt-2 opacity-[0.85]">
-							ONの間は水色の面をクリックすると、座標が自動入力されます。
-						</p>
-
 						{worldState.followedPlanetId && (
 							<div className="mb-3 mt-2 rounded border border-blue-500/30 bg-blue-500/10 p-2">
 								<div className="flex items-center justify-between">
@@ -270,15 +268,13 @@ export default function Page() {
 											simulationWorld.setFollowedPlanetId(null);
 											syncWorld();
 										}}
-										className="cursor-pointer rounded bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200 hover:bg-blue-500/40"
+										className="cursor-pointer rounded bg-blue-500/20 px-2.5 py-1.5 text-sm text-blue-200 hover:bg-blue-500/40"
 									>
 										解除
 									</button>
 								</div>
 							</div>
 						)}
-
-						<strong>追加済み惑星 ({worldState.planets.length})</strong>
 						<ul className="mb-0 mt-2.5 list-none p-0">
 							{worldState.planets.map((planet) => (
 								<li
