@@ -42,7 +42,7 @@ export function SimulationCanvas({
 }: SimulationCanvasProps) {
 	return (
 		<Canvas
-			camera={{ position: [0, 0, 6] }}
+			camera={{ position: [0, 0, 6], far: 5000 }}
 			onCreated={({ gl }) => {
 				gl.setClearColor("#000000", 1);
 			}}

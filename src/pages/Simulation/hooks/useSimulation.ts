@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { earth, mars } from "@/data/planets";
+import { earth } from "@/data/planets";
+import { solarPlanets } from "@/data/solarSystem";
 import { PhysicsEngine } from "../core/PhysicsEngine";
 import { PlanetRegistry } from "../core/PlanetRegistry";
 import { SimulationWorld } from "../core/SimulationWorld";
@@ -17,7 +18,7 @@ const physicsEngine = new PhysicsEngine(planetRegistry, {
 });
 
 export function useSimulation({ mode }: { mode: string }) {
-	const initialPlanets = mode === "solar-system" ? [mars] : [earth];
+	const initialPlanets = mode === "solar-system" ? solarPlanets : [earth];
 
 	const [worldState, setWorldState] = useState(() => {
 		console.log(mode, initialPlanets);
