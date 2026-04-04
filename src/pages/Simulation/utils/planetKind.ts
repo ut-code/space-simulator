@@ -19,6 +19,15 @@ export function texturePathByKind(kind: PlanetKind): string {
 	return kindTextureMap[kind];
 }
 
+export function applyKindAndTexture(planet: Planet): Planet {
+	const kind = decidePlanetKind(planet.mass, planet.radius);
+	return {
+		...planet,
+		kind,
+		texturePath: texturePathByKind(kind),
+	};
+}
+
 export function applyAutoKindIfEnabled(
 	planet: Planet,
 	autoKindAssignment: boolean,
@@ -27,10 +36,5 @@ export function applyAutoKindIfEnabled(
 		return planet;
 	}
 
-	const kind = decidePlanetKind(planet.mass, planet.radius);
-	return {
-		...planet,
-		kind,
-		texturePath: texturePathByKind(kind),
-	};
+	return applyKindAndTexture(planet);
 }

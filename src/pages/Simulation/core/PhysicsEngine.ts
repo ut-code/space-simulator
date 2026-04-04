@@ -5,7 +5,7 @@ import {
 	decideCollisionOutcome,
 } from "../utils/decideCollisionOutcome";
 import { mergePlanets } from "../utils/mergePlanets";
-import { applyAutoKindIfEnabled } from "../utils/planetKind";
+import { applyKindAndTexture } from "../utils/planetKind";
 import { GravitySystem } from "./GravitySystem";
 import type { PlanetRegistry } from "./PlanetRegistry";
 
@@ -72,7 +72,6 @@ export class PhysicsEngine {
 	// Configuration
 	private readonly fixedTimestep: number;
 	private readonly maxSubSteps: number;
-	private autoKindAssignment = false;
 
 	// Temporary vectors for calculations (reused to avoid GC pressure)
 	private readonly forceAccumulator = new THREE.Vector3();
@@ -134,10 +133,10 @@ export class PhysicsEngine {
 	}
 
 	/**
-	 * Enable or disable automatic planet kind/texture assignment.
+	 * Kept for API compatibility. Kind assignment for merged planets is always applied.
 	 */
 	public setAutoKindAssignment(enabled: boolean): void {
-		this.autoKindAssignment = enabled;
+		void enabled;
 	}
 
 	/**
@@ -314,10 +313,7 @@ export class PhysicsEngine {
 							planetB.velocity.clone(),
 							planetB.rotationSpeedY,
 						);
-						const newPlanet = applyAutoKindIfEnabled(
-							mergedPlanet,
-							this.autoKindAssignment,
-						);
+						const newPlanet = applyKindAndTexture(mergedPlanet);
 
 						const collisionPoint = this.positionVec.clone();
 
