@@ -73,7 +73,7 @@ export function useLevaControls({
 			mass: { value: 1, min: 0.1, max: 30000, step: 0.1 },
 			autoKindAssignment: {
 				value: false,
-				label: "kind自動割り当て",
+				label: "自動テクスチャ",
 				onChange: (value) => {
 					autoKindAssignmentRef.current = Boolean(value);
 					setAutoKindAssignment(Boolean(value));
