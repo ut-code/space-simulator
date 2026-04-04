@@ -11,6 +11,7 @@ type PlacementPanelProps = {
 	simulationWorld: SimulationWorld;
 	syncWorld: () => void;
 	removePlanet: (planetId: string) => void;
+	updatePlanetRadius: (planetId: string, radius: number) => void;
 	placementMode: boolean;
 	setPlacementMode: (value: boolean) => void;
 };
@@ -23,6 +24,7 @@ export function PlacementPanel({
 	simulationWorld,
 	syncWorld,
 	removePlanet,
+	updatePlanetRadius,
 	placementMode,
 	setPlacementMode,
 }: PlacementPanelProps) {
@@ -102,41 +104,60 @@ export function PlacementPanel({
 						{panelPlanets.map(({ planetId, planet }) => (
 							<li
 								key={`planet-item-${planetId}`}
-								className="mb-2 flex items-center justify-between gap-2 border-b border-white/15 pb-2"
+								className="mb-2 border-b border-white/15 pb-2"
 							>
-								<div>
-									<div>{planet.name}</div>
-									<div className="text-xs opacity-[0.85]">
-										r={planet.radius.toFixed(1)} / (
-										{planet.position.x.toFixed(1)},
-										{planet.position.y.toFixed(1)},{" "}
-										{planet.position.z.toFixed(1)})
+								<div className="flex items-center justify-between gap-2">
+									<div>
+										<div>{planet.name}</div>
+										<div className="text-xs opacity-[0.85]">
+											r={planet.radius.toFixed(1)} / (
+											{planet.position.x.toFixed(1)},
+											{planet.position.y.toFixed(1)},{" "}
+											{planet.position.z.toFixed(1)})
+										</div>
 									</div>
-								</div>
-								<div className="flex shrink-0 items-center gap-2">
-									{worldState.followedPlanetId === planetId ? (
-										<span className="px-2 py-1 text-xs text-blue-300">
-											追尾中
-										</span>
-									) : (
+									<div className="flex shrink-0 items-center gap-2">
+										{worldState.followedPlanetId === planetId ? (
+											<span className="px-2 py-1 text-xs text-blue-300">
+												追尾中
+											</span>
+										) : (
+											<button
+												type="button"
+												onClick={() => {
+													simulationWorld.setFollowedPlanetId(planetId);
+													syncWorld();
+												}}
+												className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
+											>
+												追尾
+											</button>
+										)}
 										<button
 											type="button"
-											onClick={() => {
-												simulationWorld.setFollowedPlanetId(planetId);
-												syncWorld();
-											}}
+											onClick={() => removePlanet(planetId)}
 											className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
 										>
-											追尾
+											削除
 										</button>
-									)}
-									<button
-										type="button"
-										onClick={() => removePlanet(planetId)}
-										className="cursor-pointer rounded-md border border-white/40 bg-transparent px-2 py-1 text-xs text-white"
-									>
-										削除
-									</button>
+									</div>
+								</div>
+								<div className="mt-1 px-1 py-0.5 opacity-75">
+									<div className="mb-0.5 flex items-center justify-between text-[11px] text-cyan-100/80">
+										<span>半径</span>
+										<span>{planet.radius.toFixed(1)}</span>
+									</div>
+									<input
+										type="range"
+										min={0.2}
+										max={12}
+										step={0.1}
+										value={planet.radius}
+										onChange={(event) =>
+											updatePlanetRadius(planetId, Number(event.target.value))
+										}
+										className="mx-auto block h-1 w-[86%] cursor-pointer accent-cyan-200/70"
+									/>
 								</div>
 							</li>
 						))}

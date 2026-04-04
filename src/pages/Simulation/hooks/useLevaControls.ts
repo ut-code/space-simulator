@@ -30,6 +30,9 @@ export function useLevaControls({
 		posX: number;
 		posY: number;
 		posZ: number;
+		velX: number;
+		velY: number;
+		velZ: number;
 		rotationSpeedY: number;
 	}>({
 		radius: 1.2,
@@ -37,6 +40,9 @@ export function useLevaControls({
 		posX: 10,
 		posY: 0,
 		posZ: 0,
+		velX: 0,
+		velY: 0,
+		velZ: 0,
 		rotationSpeedY: 0.6,
 	});
 
@@ -64,7 +70,7 @@ export function useLevaControls({
 				},
 			},
 			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
-			mass: { value: 1, min: 0.1, max: 500, step: 0.1 },
+			mass: { value: 1, min: 0.1, max: 30000, step: 0.1 },
 			autoKindAssignment: {
 				value: false,
 				label: "kind自動割り当て",
@@ -76,6 +82,9 @@ export function useLevaControls({
 			posX: { value: 10, min: -200, max: 200, step: 0.2 },
 			posY: { value: 0, min: -200, max: 200, step: 0.2 },
 			posZ: { value: 0, min: -200, max: 200, step: 0.2 },
+			velX: { value: 0, label: "velX", min: -20, max: 20, step: 0.1 },
+			velY: { value: 0, label: "velY", min: -20, max: 20, step: 0.1 },
+			velZ: { value: 0, label: "velZ", min: -20, max: 20, step: 0.1 },
 			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
 			addPlanet: button(() => {
 				// Read current values from the ref to avoid stale closure
@@ -89,6 +98,7 @@ export function useLevaControls({
 					radius: current.radius,
 					mass: current.mass,
 					position: [current.posX, current.posY, current.posZ],
+					velocity: [current.velX, current.velY, current.velZ],
 					rotationSpeedY: current.rotationSpeedY,
 				});
 
@@ -96,6 +106,7 @@ export function useLevaControls({
 					radius: current.radius,
 					mass: current.mass,
 					position: [current.posX, current.posY, current.posZ],
+					velocity: [current.velX, current.velY, current.velZ],
 					rotationSpeedY: current.rotationSpeedY,
 					autoKindAssignment: autoKindAssignmentRef.current,
 				});

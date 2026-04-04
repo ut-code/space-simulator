@@ -27,6 +27,7 @@ export default function Page() {
 		syncWorld,
 		removePlanet,
 		setAutoKindAssignment,
+		updatePlanetRadius,
 	} = useSimulation();
 
 	const { planetControls, setPlanetControls, showGrid, showAxes, showPreview } =
@@ -41,6 +42,11 @@ export default function Page() {
 	const previewPosition = useMemo<[number, number, number]>(
 		() => [planetControls.posX, planetControls.posY, planetControls.posZ],
 		[planetControls.posX, planetControls.posY, planetControls.posZ],
+	);
+
+	const previewVelocity = useMemo<[number, number, number]>(
+		() => [planetControls.velX, planetControls.velY, planetControls.velZ],
+		[planetControls.velX, planetControls.velY, planetControls.velZ],
 	);
 
 	const handlePlacement = (position: [number, number, number]) => {
@@ -66,6 +72,7 @@ export default function Page() {
 				showAxes={showAxes}
 				previewRadius={planetControls.radius}
 				previewPosition={previewPosition}
+				previewVelocity={previewVelocity}
 				onPlace={handlePlacement}
 			/>
 			<PlacementPanel
@@ -74,6 +81,7 @@ export default function Page() {
 				simulationWorld={simulationWorld}
 				syncWorld={syncWorld}
 				removePlanet={removePlanet}
+				updatePlanetRadius={updatePlanetRadius}
 				placementMode={placementMode}
 				setPlacementMode={setPlacementMode}
 			/>

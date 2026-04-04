@@ -7,6 +7,7 @@ type NewPlanetSettings = {
 	radius: number;
 	mass?: number;
 	position: [number, number, number];
+	velocity?: [number, number, number];
 	rotationSpeedY: number;
 	autoKindAssignment?: boolean;
 };
@@ -94,6 +95,7 @@ export class SimulationWorld {
 
 	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings): Planet {
 		const [posX, posY, posZ] = settings.position;
+		const [velX, velY, velZ] = settings.velocity ?? [0, 0, 0];
 
 		// Validate inputs
 		if (
@@ -106,6 +108,17 @@ export class SimulationWorld {
 				settings.position,
 			);
 			throw new Error("Invalid planet position");
+		}
+		if (
+			!Number.isFinite(velX) ||
+			!Number.isFinite(velY) ||
+			!Number.isFinite(velZ)
+		) {
+			console.error(
+				"addPlanetFromTemplate: invalid velocity",
+				settings.velocity,
+			);
+			throw new Error("Invalid planet velocity");
 		}
 		if (!Number.isFinite(settings.radius) || settings.radius <= 0) {
 			console.error("addPlanetFromTemplate: invalid radius", settings.radius);
@@ -139,7 +152,7 @@ export class SimulationWorld {
 			width: 64,
 			height: 64,
 			position: new THREE.Vector3(posX, posY, posZ),
-			velocity: new THREE.Vector3(0, 0, 0),
+			velocity: new THREE.Vector3(velX, velY, velZ),
 			mass,
 		};
 		const planetWithKind = applyAutoKindIfEnabled(

@@ -78,6 +78,16 @@ export function useSimulation() {
 		physicsEngine.setAutoKindAssignment(enabled);
 	}, []);
 
+	const updatePlanetRadius = useCallback(
+		(planetId: string, radius: number) => {
+			const updated = planetRegistry.updateRadius(planetId, radius);
+			if (!updated) return;
+			simulationWorld.refreshSnapshot();
+			syncWorld();
+		},
+		[syncWorld],
+	);
+
 	return {
 		planetRegistry,
 		simulationWorld,
@@ -85,5 +95,6 @@ export function useSimulation() {
 		syncWorld,
 		removePlanet,
 		setAutoKindAssignment,
+		updatePlanetRadius,
 	};
 }
