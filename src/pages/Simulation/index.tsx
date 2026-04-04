@@ -70,6 +70,7 @@ export default function Page() {
 				previewRadius={planetControls.radius}
 				previewPosition={previewPosition}
 				onPlace={handlePlacement}
+				mode={mode}
 			/>
 			<PlacementPanel
 				worldState={worldState}
