@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { earth } from "@/data/planets";
-import { solarPlanets } from "@/data/solarSystem";
+import { templates } from "@/data/templates";
+import { defaultTemplate } from "@/data/templates/default";
 import { PhysicsEngine } from "../core/PhysicsEngine";
 import { PlanetRegistry } from "../core/PlanetRegistry";
 import { SimulationWorld } from "../core/SimulationWorld";
@@ -17,11 +17,11 @@ const physicsEngine = new PhysicsEngine(planetRegistry, {
 	autoStart: true,
 });
 
-export function useSimulation({ mode }: { mode: string }) {
-	const initialPlanets = mode === "solar-system" ? solarPlanets : [earth];
+export function useSimulation(templateId: string | null) {
+	const initialPlanets =
+		templates.get(templateId ?? "default")?.planets ?? defaultTemplate.planets;
 
 	const [worldState, setWorldState] = useState(() => {
-		console.log(mode, initialPlanets);
 		planetRegistry.clear();
 		simulationWorld.clear();
 		initialPlanets.forEach((p) => {
