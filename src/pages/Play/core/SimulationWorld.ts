@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ExplosionData } from "@/types/Explosion";
+import type { ExplosionData } from "@/types/explosion";
 import type { Planet } from "@/types/planet";
 
 type NewPlanetSettings = {

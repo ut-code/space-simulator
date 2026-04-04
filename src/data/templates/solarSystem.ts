@@ -8,8 +8,9 @@ import sunTexture from "@/assets/2k_sun.avif";
 import uranusTexture from "@/assets/2k_uranus.avif";
 import venusTexture from "@/assets/2k_venus_atmosphere.avif";
 import earthTexture from "@/assets/earth_atmos_2048.avif";
-import { G } from "@/pages/Simulation/core/GravitySystem";
+import { G } from "@/pages/Play/core/GravitySystem";
 import type { Planet } from "@/types/planet";
+import type { Template } from "@/types/templates";
 
 function createOrbitalSpeed(
 	distance: number, // 中心からの距離
@@ -138,7 +139,7 @@ const neptune: Planet = {
 	mass: 17,
 };
 
-export const solarPlanets: Planet[] = [
+const solarPlanets = [
 	sun,
 	mercury,
 	venus,
@@ -149,3 +150,10 @@ export const solarPlanets: Planet[] = [
 	uranus,
 	neptune,
 ];
+
+const cameraLocation: [number, number, number] = [0, 100, 250];
+
+export const solarPlanetsTemplate: Template = {
+	planets: solarPlanets,
+	cameraLocation: cameraLocation,
+};

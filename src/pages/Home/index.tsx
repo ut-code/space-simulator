@@ -38,9 +38,7 @@ export default function Page() {
 				<div className="flex flex-col gap-4 items-center">
 					<button
 						type="button"
-						onClick={() =>
-							navigate("/simulation", { state: { mode: "normal" } })
-						}
+						onClick={() => navigate("/play")}
 						className="
 						px-10 py-4
 						text-xl font-semibold
@@ -59,9 +57,7 @@ export default function Page() {
 					</button>
 					<button
 						type="button"
-						onClick={() =>
-							navigate("/simulation", { state: { mode: "solar-system" } })
-						}
+						onClick={() => navigate("/play?template=solar")}
 						className="
 						px-10 py-4
 						text-xl font-semibold

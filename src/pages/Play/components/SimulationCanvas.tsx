@@ -2,6 +2,8 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import type { OrbitControls as Controls } from "three-stdlib";
+import { templates } from "@/data/templates";
+import { defaultTemplate } from "@/data/templates/default";
 import type { PlanetRegistry } from "../core/PlanetRegistry";
 import type { SimulationWorld } from "../core/SimulationWorld";
 import { CameraController } from "./CameraController";
@@ -23,7 +25,7 @@ type SimulationCanvasProps = {
 	previewRadius: number;
 	previewPosition: [number, number, number];
 	onPlace: (position: [number, number, number]) => void;
-	mode: string;
+	templateId: string;
 };
 
 export function SimulationCanvas({
@@ -40,10 +42,10 @@ export function SimulationCanvas({
 	previewRadius,
 	previewPosition,
 	onPlace,
-	mode,
+	templateId,
 }: SimulationCanvasProps) {
 	const initialCameraPosition: [number, number, number] =
-		mode === "solar-system" ? [0, 100, 250] : [0, 0, 6];
+		templates.get(templateId)?.cameraLocation ?? defaultTemplate.cameraLocation;
 	return (
 		<Canvas
 			camera={{ position: initialCameraPosition, far: 5000 }}
