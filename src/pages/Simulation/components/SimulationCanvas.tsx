@@ -23,6 +23,7 @@ type SimulationCanvasProps = {
 	previewRadius: number;
 	previewPosition: [number, number, number];
 	onPlace: (position: [number, number, number]) => void;
+	mode: string;
 };
 
 export function SimulationCanvas({
@@ -39,10 +40,13 @@ export function SimulationCanvas({
 	previewRadius,
 	previewPosition,
 	onPlace,
+	mode,
 }: SimulationCanvasProps) {
+	const initialCameraPosition: [number, number, number] =
+		mode === "solar-system" ? [0, 100, 250] : [0, 0, 6];
 	return (
 		<Canvas
-			camera={{ position: [0, 0, 6] }}
+			camera={{ position: initialCameraPosition, far: 5000 }}
 			onCreated={({ gl }) => {
 				gl.setClearColor("#000000", 1);
 			}}

@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { earth } from "@/data/planets";
+import { solarPlanets } from "@/data/solarSystem";
 import { PhysicsEngine } from "../core/PhysicsEngine";
 import { PlanetRegistry } from "../core/PlanetRegistry";
 import { SimulationWorld } from "../core/SimulationWorld";
 
 // Reactのライフサイクル外で、モジュールレベルのシングルトンとして管理する
 const planetRegistry = new PlanetRegistry();
-planetRegistry.register(earth.id, earth);
+//planetRegistry.register(earth.id, earth);
 
-const simulationWorld = new SimulationWorld([earth]);
+const simulationWorld = new SimulationWorld([]);
 
 const physicsEngine = new PhysicsEngine(planetRegistry, {
 	fixedTimestep: 1 / 60,
@@ -16,10 +17,19 @@ const physicsEngine = new PhysicsEngine(planetRegistry, {
 	autoStart: true,
 });
 
-export function useSimulation() {
-	const [worldState, setWorldState] = useState(() =>
-		simulationWorld.getSnapshot(),
-	);
+export function useSimulation({ mode }: { mode: string }) {
+	const initialPlanets = mode === "solar-system" ? solarPlanets : [earth];
+
+	const [worldState, setWorldState] = useState(() => {
+		console.log(mode, initialPlanets);
+		planetRegistry.clear();
+		simulationWorld.clear();
+		initialPlanets.forEach((p) => {
+			planetRegistry.register(p.id, p);
+			simulationWorld.addPlanet(p);
+		});
+		return simulationWorld.getSnapshot();
+	});
 
 	const syncWorld = useCallback(() => {
 		setWorldState(simulationWorld.getSnapshot());
