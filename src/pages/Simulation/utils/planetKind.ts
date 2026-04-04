@@ -11,7 +11,7 @@ const STAR_MASS_THRESHOLD = 10000;
 
 export function decidePlanetKind(mass: number, radius: number): PlanetKind {
 	if (mass > STAR_MASS_THRESHOLD) return "star";
-	if (radius < 2.0) return "rocky";
+	if (radius <= 2.0) return "rocky";
 	return "gas";
 }
 

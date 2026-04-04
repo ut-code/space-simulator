@@ -12,8 +12,12 @@ describe("planetKind", () => {
 		expect(decidePlanetKind(100, 1.9)).toBe("rocky");
 	});
 
-	it("should classify gas for all other cases", () => {
-		expect(decidePlanetKind(100, 2.0)).toBe("gas");
+	it("should classify rocky when radius is exactly 2.0", () => {
+		expect(decidePlanetKind(100, 2.0)).toBe("rocky");
+	});
+
+	it("should classify gas for larger radius", () => {
+		expect(decidePlanetKind(100, 2.1)).toBe("gas");
 	});
 
 	it("should keep mass=10000 as non-star boundary", () => {
