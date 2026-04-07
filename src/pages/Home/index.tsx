@@ -74,6 +74,25 @@ export default function Page() {
 					>
 						Start with Solar System
 					</button>
+					<button
+						type="button"
+						onClick={() => navigate("/tutorial")}
+						className="
+						px-10 py-4
+						text-xl font-semibold
+						text-white
+						bg-blue-500
+						rounded-xl
+						shadow-lg shadow-blue-500/40
+						border border-blue-300
+						transition
+						hover:bg-blue-400
+						hover:scale-105
+						active:scale-95
+					"
+					>
+						Learn about Physics
+					</button>
 				</div>
 			</div>
 		</div>
