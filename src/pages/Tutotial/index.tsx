@@ -2,30 +2,10 @@ import { Stars } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
 import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
+import { tutorialSections } from "@/data/tutorial";
 
 export default function Page() {
 	const navigate = useNavigate();
-
-	const tutorialSections = [
-		{
-			title: "万有引力の法則",
-			description:
-				"ニュートンの法則に基づき、2つの天体が互いに引き合う力の仕組みを学びます。",
-			path: "/play?tutorial=gravity",
-		},
-		{
-			title: "ケプラーの法則",
-			description:
-				"惑星が太陽の周りを回る軌道運動の3つの法則をシミュレーションで体験します。",
-			path: "/play?tutorial=kepler",
-		},
-		{
-			title: "多体系のダイナミクス",
-			description:
-				"3つ以上の天体が複雑に影響し合う系の混沌とした挙動を観察しましょう。",
-			path: "/play?tutorial=n-body",
-		},
-	];
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
@@ -76,7 +56,7 @@ export default function Page() {
 								key={section.title}
 								onClick={() => navigate(section.path)}
 								className="
-									bg-white/5 hover:bg-white/10
+									bg-white/10 hover:bg-white/20
 									border border-white/10 hover:border-blue-500/50
 									rounded-3xl p-8
 									transition-all duration-300
@@ -98,7 +78,7 @@ export default function Page() {
 						<button
 							type="button"
 							onClick={() => navigate("/")}
-							className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em]"
+							className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
 						>
 							Back to Menu
 						</button>
