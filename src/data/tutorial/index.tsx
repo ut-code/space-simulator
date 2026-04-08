@@ -27,24 +27,3 @@ export const tutorialSections: Tutorial[] = [
 		Content: CircularMotionContent,
 	},
 ];
-
-const _tutorialCopy = [
-	{
-		title: "万有引力の法則",
-		description:
-			"ニュートンの法則に基づき、2つの天体が互いに引き合う力の仕組みを学びます。",
-		path: "/tutorial/page",
-	},
-	{
-		title: "ケプラーの法則",
-		description:
-			"惑星が太陽の周りを回る軌道運動の3つの法則をシミュレーションで体験します。",
-		path: "/play?tutorial=kepler",
-	},
-	{
-		title: "多体系のダイナミクス",
-		description:
-			"3つ以上の天体が複雑に影響し合う系の混沌とした挙動を観察しましょう。",
-		path: "/play?tutorial=n-body",
-	},
-];

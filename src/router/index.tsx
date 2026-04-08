@@ -7,7 +7,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const Simulation = lazy(() => import("@/pages/Play"));
 const Templates = lazy(() => import("@/pages/Templates"));
 const Tutorial = lazy(() => import("@/pages/Tutotial"));
-const Page = lazy(() => import("@/pages/Tutotial/components/Page"));
+const TutorialPage = lazy(() => import("@/pages/Tutotial/components/Page"));
 
 export const AppRouter = () => (
 	<BrowserRouter>
@@ -41,7 +41,7 @@ export const AppRouter = () => (
 				path="/tutorial/page"
 				element={
 					<Suspense fallback={<Loading />}>
-						<Page />
+						<TutorialPage />
 					</Suspense>
 				}
 			/>
