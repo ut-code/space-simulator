@@ -1,5 +1,6 @@
 import type React from "react";
 import CircularMotionContent from "./Contents/circularMotion";
+import fallBack from "./Contents/fallBack";
 
 type Tutorial = {
 	id: string;
@@ -10,6 +11,13 @@ type Tutorial = {
 };
 
 export const tutorialSections: Tutorial[] = [
+	{
+		id: "fallBack",
+		title: "ページが見つかりません",
+		description: "ページが見つかりません",
+		path: "/tutorial/page?tutorialId=fallBack",
+		Content: fallBack,
+	},
 	{
 		id: "circularMotion",
 		title: "万有引力の法則と円運動",

@@ -20,7 +20,7 @@ export default function CircularMotionContent() {
 						<BlockMath math={"F = G \\frac{M m}{r^2}"} />
 					</div>
 					<p className="text-xs text-gray-500 mt-4">
-						※ $F$:引力, $G$:定数, $M,m$:重さ, $r$:距離
+						※ F:引力, G:定数, M,m:重さ, r:距離
 					</p>
 				</div>
 			</section>
@@ -59,6 +59,49 @@ export default function CircularMotionContent() {
 					が決まります。
 					スピードが速すぎると外へ飛んでいき、遅すぎると太陽へ落ちてしまうのです。
 				</p>
+			</section>
+
+			<section>
+				<h3 className="text-3xl font-bold text-blue-300 mb-4 border-l-4 border-blue-500 pl-4">
+					4. 理想的な速度を計算してみよう
+				</h3>
+				<p>
+					バランスの式を整理して、速度 <InlineMath math={"v"} /> を半径{" "}
+					<InlineMath math={"r"} /> の関数として表すと次のようになります。
+				</p>
+				<div className="bg-white/5 p-8 rounded-[2rem] my-6 text-center border border-white/10 shadow-inner">
+					<p className="text-sm text-green-200/60 mb-4 uppercase tracking-widest">
+						軌道速度の公式
+					</p>
+					<div className="text-4xl text-green-400 my-4">
+						<BlockMath math={"v = \\sqrt{\\frac{GM}{r}}"} />
+					</div>
+					<p className="text-xs text-gray-500 mt-4">
+						この式は、
+						<strong>「中心から遠くなるほど、ゆっくり回れば安定する」</strong>
+						ことを示しています。
+					</p>
+				</div>
+				<div className="bg-blue-900/30 p-6 rounded-2xl border border-blue-500/20">
+					<h4 className="text-xl font-bold text-blue-200 mb-3 flex items-center gap-2">
+						<span>🎮</span> シミュレーションで「手探り」してみよう
+					</h4>
+					<p className="mb-4">
+						理論がわかったら、次は実際にシミュレーションで体験してみる番です。
+					</p>
+					<ul className="list-disc list-inside space-y-2 text-sm text-gray-300">
+						<li>
+							太陽からの距離（半径 <InlineMath math={"r"} />
+							）をいろいろ変えて惑星を置いてみましょう。
+						</li>
+						<li>
+							配置時の初速度を少しずつ変えて、きれいな円軌道を描く「マジックナンバー」を探してみてください。
+						</li>
+						<li>
+							速度が足りないと太陽へ落下し、速すぎると宇宙の彼方へ逃げてしまいます。ちょうど良いバランスを見つけ出せるでしょうか？
+						</li>
+					</ul>
+				</div>
 			</section>
 		</div>
 	);

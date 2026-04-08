@@ -64,7 +64,7 @@ export default function Page() {
 					<div className="flex flex-col items-center gap-6 pt-8 border-t border-white/10">
 						<button
 							type="button"
-							onClick={() => navigate(`/play${window.location.search}`)}
+							onClick={() => navigate(`/play`)}
 							className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
 						>
 							シミュレーションを開始する
