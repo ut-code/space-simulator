@@ -15,7 +15,7 @@ export const tutorialSections: Tutorial[] = [
 		id: "fallBack",
 		title: "ページが見つかりません",
 		description: "ページが見つかりません",
-		path: "/tutorial/page?tutorialId=fallBack",
+		path: "/tutorial/fallBack",
 		Content: fallBack,
 	},
 	{
@@ -23,7 +23,7 @@ export const tutorialSections: Tutorial[] = [
 		title: "万有引力の法則と円運動",
 		description:
 			"ニュートンの法則に基づき、2つの天体が互いに引き合う力の仕組みを学びます。",
-		path: "/tutorial/page?tutorialId=circularMotion",
+		path: "/tutorial/circularMotion",
 		Content: CircularMotionContent,
 	},
 ];

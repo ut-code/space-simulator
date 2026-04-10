@@ -40,7 +40,7 @@ export const AppRouter = () => (
 				}
 			/>
 			<Route
-				path="/tutorial/page"
+				path="/tutorial/:id"
 				element={
 					<Suspense fallback={<Loading />}>
 						<TutorialPage />

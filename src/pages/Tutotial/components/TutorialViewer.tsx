@@ -1,5 +1,5 @@
 import { Stars } from "@react-three/drei";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
 // KaTeXのスタイルとコンポーネントをインポート
@@ -8,8 +8,8 @@ import { tutorialSections } from "@/pages/Tutotial/components/data";
 
 export default function Page() {
 	const navigate = useNavigate();
-	const [searchParams] = useSearchParams();
-	const tutorialId = searchParams.get("tutorialId") || tutorialSections[0].id;
+	const { id } = useParams();
+	const tutorialId = id ?? tutorialSections[0].id;
 
 	// 該当するコンテンツを取得（なければデフォルトを表示）
 	//const detail = TUTORIAL_DETAILS[tutorialId] || TUTORIAL_DETAILS.gravity;
@@ -61,22 +61,24 @@ export default function Page() {
 						<Content />
 					</div>
 
-					<div className="flex flex-col items-center gap-6 pt-8 border-t border-white/10">
-						<button
-							type="button"
-							onClick={() => navigate(`/play`)}
-							className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
-						>
-							シミュレーションを開始する
-						</button>
-						<button
-							type="button"
-							onClick={() => navigate("/tutorial")}
-							className="text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
-						>
-							← Back to List
-						</button>
-					</div>
+					{tutorialSections.some((section) => section.id === id) && (
+						<div className="flex flex-col items-center gap-6 pt-8 border-t border-white/10">
+							<button
+								type="button"
+								onClick={() => navigate(`/play`)}
+								className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
+							>
+								シミュレーションを開始する
+							</button>
+							<button
+								type="button"
+								onClick={() => navigate("/tutorial")}
+								className="text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
+							>
+								← Back to List
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
