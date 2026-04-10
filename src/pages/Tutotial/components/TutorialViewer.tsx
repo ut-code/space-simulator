@@ -34,7 +34,7 @@ export default function Page() {
 				<HomeScene />
 			</ThreeCanvas>
 
-			<div className="absolute inset-0 flex items-center justify-center p-6">
+			<div className="absolute inset-0 overflow-y-auto flex justify-center p-6 py-12 md:py-20">
 				<div
 					className="
 					bg-black/60
@@ -43,8 +43,8 @@ export default function Page() {
 					p-12 md:p-20
 					max-w-6xl
 					w-full
-					max-h-[90vh]
-					overflow-y-auto
+					h-fit
+					my-auto
 					border border-white/20
 					shadow-[0_0_50px_rgba(0,0,0,0.5)]
 					flex flex-col gap-12

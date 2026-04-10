@@ -22,7 +22,7 @@ export default function Page() {
 				<HomeScene />
 			</ThreeCanvas>
 
-			<div className="absolute inset-0 flex items-center justify-center p-6">
+			<div className="absolute inset-0 overflow-y-auto flex justify-center p-6 py-12 md:py-20">
 				{/* 半透明の大きなモーダルボックス */}
 				<div
 					className="
@@ -32,8 +32,8 @@ export default function Page() {
 					p-10 md:p-16
 					max-w-4xl
 					w-full
-					max-h-[85vh]
-					overflow-y-auto
+					h-fit
+					my-auto
 					border border-white/10
 					shadow-2xl
 					flex flex-col gap-12
