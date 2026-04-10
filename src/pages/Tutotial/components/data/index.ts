@@ -1,6 +1,6 @@
 import type React from "react";
-import CircularMotionContent from "./Contents/circularMotion";
-import fallBack from "./Contents/fallBack";
+import CircularMotionContent from "./contents/circularMotion";
+import fallBack from "./contents/fallBack";
 
 type Tutorial = {
 	id: string;
