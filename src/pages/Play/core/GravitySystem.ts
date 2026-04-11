@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import type { PlanetRegistry } from "./PlanetRegistry";
 
-const G = 1;
+export const G = 1;
 const SOFTENING_FACTOR = 0.005;
 
 type AccumulateForPlanetParams = {

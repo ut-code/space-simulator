@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import type { ExplosionData } from "@/types/Explosion";
+import type { ExplosionData } from "@/types/explosion";
 
 type ExplosionProps = {
 	explosion: ExplosionData;

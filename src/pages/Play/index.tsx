@@ -1,5 +1,6 @@
 import { useTexture } from "@react-three/drei";
 import { useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import { PlacementPanel } from "./components/PlacementPanel";
@@ -17,6 +18,9 @@ const planetTexturePaths = [
 useTexture.preload(planetTexturePaths);
 
 export default function Page() {
+	const [params, _] = useSearchParams();
+	const templateId = params.get("template");
+
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const [placementMode, setPlacementMode] = useState(false);
 
@@ -28,7 +32,7 @@ export default function Page() {
 		removePlanet,
 		setAutoKindAssignment,
 		updatePlanetRadius,
-	} = useSimulation();
+	} = useSimulation(templateId);
 
 	const { planetControls, setPlanetControls, showGrid, showAxes, showPreview } =
 		useLevaControls({
@@ -74,6 +78,7 @@ export default function Page() {
 				previewPosition={previewPosition}
 				previewVelocity={previewVelocity}
 				onPlace={handlePlacement}
+				templateId={templateId ?? "default"}
 			/>
 			<PlacementPanel
 				worldState={worldState}

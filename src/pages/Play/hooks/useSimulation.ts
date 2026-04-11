@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { earth } from "@/data/planets";
+import { templates } from "@/data/templates";
+import { defaultTemplate } from "@/data/templates/default";
 import { PhysicsEngine } from "../core/PhysicsEngine";
 import { PlanetRegistry } from "../core/PlanetRegistry";
 import { SimulationWorld } from "../core/SimulationWorld";
 
 // Reactのライフサイクル外で、モジュールレベルのシングルトンとして管理する
 const planetRegistry = new PlanetRegistry();
-planetRegistry.register(earth.id, earth);
+//planetRegistry.register(earth.id, earth);
 
-const simulationWorld = new SimulationWorld([earth]);
+const simulationWorld = new SimulationWorld([]);
 
 const physicsEngine = new PhysicsEngine(planetRegistry, {
 	fixedTimestep: 1 / 60,
@@ -16,10 +17,19 @@ const physicsEngine = new PhysicsEngine(planetRegistry, {
 	autoStart: true,
 });
 
-export function useSimulation() {
-	const [worldState, setWorldState] = useState(() =>
-		simulationWorld.getSnapshot(),
-	);
+export function useSimulation(templateId: string | null) {
+	const initialPlanets =
+		templates.get(templateId ?? "default")?.planets ?? defaultTemplate.planets;
+
+	const [worldState, setWorldState] = useState(() => {
+		planetRegistry.clear();
+		simulationWorld.clear();
+		initialPlanets.forEach((p) => {
+			planetRegistry.register(p.id, p);
+			simulationWorld.addPlanet(p);
+		});
+		return simulationWorld.getSnapshot();
+	});
 
 	const syncWorld = useCallback(() => {
 		setWorldState(simulationWorld.getSnapshot());

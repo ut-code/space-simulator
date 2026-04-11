@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { ExplosionData } from "@/types/Explosion";
+import type { ExplosionData } from "@/types/explosion";
 import type { Planet } from "@/types/planet";
 import { applyAutoKindIfEnabled } from "../utils/planetKind";
 
@@ -91,6 +91,14 @@ export class SimulationWorld {
 
 	getSnapshot(): SimulationWorldSnapshot {
 		return this.snapshot;
+	}
+
+	clear() {
+		this.activePlanetIds.clear();
+		this.explosions = [];
+		this.mergeQueue = [];
+		this.followedPlanetId = null;
+		this.updateSnapshot();
 	}
 
 	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings): Planet {
