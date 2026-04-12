@@ -135,7 +135,7 @@ export function SidebarForm({
 				onClick={onAddToStaged}
 				className="w-full rounded-md bg-cyan-500/80 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-cyan-500"
 			>
-				追加 ({form.name})
+				配置待ちリストに追加
 			</button>
 		</div>
 	);
