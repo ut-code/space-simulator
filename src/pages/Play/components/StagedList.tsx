@@ -18,7 +18,7 @@ export function StagedList({
 	return (
 		<div className="mt-3 border-t border-white/15 pt-3">
 			<div className="mb-2 flex items-center justify-between">
-				<strong className="text-xs">惑星待ちリスト</strong>
+				<strong className="text-xs">配置待ちリスト</strong>
 				<div className="flex gap-1.5">
 					<button
 						type="button"
@@ -47,6 +47,11 @@ export function StagedList({
 							<span className="ml-1.5 opacity-60">
 								r={staged.radius.toFixed(1)}
 							</span>
+							<div className="mt-0.5 opacity-50">
+								({staged.position[0].toFixed(1)},{" "}
+								{staged.position[1].toFixed(1)}, {staged.position[2].toFixed(1)}
+								)
+							</div>
 						</div>
 						<button
 							type="button"
