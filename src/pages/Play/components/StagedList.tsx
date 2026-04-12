@@ -47,7 +47,8 @@ export function StagedList({
 							<span className="ml-1.5 opacity-60">
 								r={staged.radius.toFixed(1)}
 							</span>
-							<span className="ml-1 opacity-50">
+							<span className="mx-0.5 opacity-40">/</span>
+							<span className="opacity-50">
 								({staged.position[0].toFixed(1)},{" "}
 								{staged.position[1].toFixed(1)}, {staged.position[2].toFixed(1)}
 								)
