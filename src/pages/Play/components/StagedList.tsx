@@ -47,11 +47,11 @@ export function StagedList({
 							<span className="ml-1.5 opacity-60">
 								r={staged.radius.toFixed(1)}
 							</span>
-							<div className="mt-0.5 opacity-50">
+							<span className="ml-1 opacity-50">
 								({staged.position[0].toFixed(1)},{" "}
 								{staged.position[1].toFixed(1)}, {staged.position[2].toFixed(1)}
 								)
-							</div>
+							</span>
 						</div>
 						<button
 							type="button"
