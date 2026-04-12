@@ -84,7 +84,7 @@ export function PlanetSidebar({
 				{isOpen && (
 					<div className="w-80 max-h-screen overflow-y-auto rounded-l-lg bg-black/80 p-4 text-sm text-white backdrop-blur-sm">
 						<div className="mb-4">
-							<strong className="text-base">惑星配置</strong>
+							<strong className="text-base">惑星を追加する</strong>
 						</div>
 
 						{/* Form */}

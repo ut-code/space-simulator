@@ -104,7 +104,7 @@ export function SidebarForm({
 							checked={placementMode}
 							onChange={(e) => onPlacementModeChange(e.target.checked)}
 						/>
-						{placementMode ? "配置モードON（3D面をクリック）" : "3D面で配置"}
+						{placementMode ? "3D面をクリックして位置を指定" : "3D面で配置"}
 					</label>
 				</div>
 				<div className="grid grid-cols-3 gap-2">

@@ -18,7 +18,7 @@ export function StagedList({
 	return (
 		<div className="mt-3 border-t border-white/15 pt-3">
 			<div className="mb-2 flex items-center justify-between">
-				<strong className="text-xs">配置待ち ({stagedPlanets.length})</strong>
+				<strong className="text-xs">惑星待ちリスト</strong>
 				<div className="flex gap-1.5">
 					<button
 						type="button"
