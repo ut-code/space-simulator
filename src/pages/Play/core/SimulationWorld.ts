@@ -143,6 +143,19 @@ export class SimulationWorld {
 		return newPlanet;
 	}
 
+	/**
+	 * Create a planet from arbitrary planet data (used for batch placement).
+	 * Returns the created planet so the caller can register it.
+	 */
+	createPlanet(data: Omit<Planet, "id">): Planet {
+		const newPlanet: Planet = {
+			...data,
+			id: crypto.randomUUID(),
+		};
+		this.activePlanetIds.add(newPlanet.id);
+		return newPlanet;
+	}
+
 	addPlanet(data: Planet) {
 		if (this.activePlanetIds.has(data.id)) return;
 		this.activePlanetIds.add(data.id);

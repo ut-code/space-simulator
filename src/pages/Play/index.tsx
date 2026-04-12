@@ -1,11 +1,12 @@
 import { useTexture } from "@react-three/drei";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
-import { PlacementPanel } from "./components/PlacementPanel";
+import { PlanetSidebar } from "./components/PlanetSidebar";
 import { SimulationCanvas } from "./components/SimulationCanvas";
-import { useLevaControls } from "./hooks/useLevaControls";
+import { usePlanetSidebar } from "./hooks/usePlanetSidebar";
 import { useSimulation } from "./hooks/useSimulation";
 
 const planetTexturePaths = [
@@ -32,25 +33,40 @@ export default function Page() {
 		removePlanet,
 	} = useSimulation(templateId);
 
-	const { planetControls, setPlanetControls, showGrid, showAxes, showPreview } =
-		useLevaControls({
-			simulationWorld,
-			planetRegistry,
-			syncWorld,
-			orbitControlsRef,
-		});
+	const sidebar = usePlanetSidebar();
 
-	const previewPosition = useMemo<[number, number, number]>(
-		() => [planetControls.posX, planetControls.posY, planetControls.posZ],
-		[planetControls.posX, planetControls.posY, planetControls.posZ],
-	);
+	const previewPosition = sidebar.form.position;
 
-	const handlePlacement = (position: [number, number, number]) => {
-		setPlanetControls({
-			posX: position[0],
-			posY: position[1],
-			posZ: position[2],
-		});
+	const batchPlacePlanets = () => {
+		const templateMap: Record<string, typeof earth> = {
+			earth,
+			sun,
+			mars,
+			jupiter,
+			venus,
+		};
+
+		for (const staged of sidebar.stagedPlanets) {
+			const template = templateMap[staged.templateKey] ?? earth;
+			const [x, y, z] = staged.position;
+			const mass = template.mass * (staged.radius / template.radius) ** 3;
+			const newPlanet = simulationWorld.createPlanet({
+				name: staged.name,
+				texturePath: staged.texturePath,
+				rotationSpeedY: staged.rotationSpeedY,
+				radius: staged.radius,
+				width: 64,
+				height: 64,
+				position: new THREE.Vector3(x, y, z),
+				velocity: new THREE.Vector3(0, 0, 0),
+				mass,
+			});
+			planetRegistry.register(newPlanet.id, newPlanet);
+		}
+
+		simulationWorld.refreshSnapshot();
+		syncWorld();
+		sidebar.clearAllStaged();
 	};
 
 	return (
@@ -62,21 +78,32 @@ export default function Page() {
 				syncWorld={syncWorld}
 				orbitControlsRef={orbitControlsRef}
 				placementMode={placementMode}
-				posY={planetControls.posY}
-				showPreview={showPreview}
-				showGrid={showGrid}
-				showAxes={showAxes}
-				previewRadius={planetControls.radius}
+				posY={previewPosition[1]}
+				showPreview={true}
+				showGrid={true}
+				showAxes={true}
+				previewRadius={sidebar.form.radius}
 				previewPosition={previewPosition}
-				onPlace={handlePlacement}
+				onPlace={sidebar.setPositionFromClick}
 				templateId={templateId ?? "default"}
 			/>
-			<PlacementPanel
+			<PlanetSidebar
 				worldState={worldState}
 				planetRegistry={planetRegistry}
 				simulationWorld={simulationWorld}
 				syncWorld={syncWorld}
 				removePlanet={removePlanet}
+				isOpen={sidebar.isOpen}
+				setIsOpen={sidebar.setIsOpen}
+				stagedPlanets={sidebar.stagedPlanets}
+				form={sidebar.form}
+				setForm={sidebar.setForm}
+				updateTemplate={sidebar.updateTemplate}
+				updatePosition={sidebar.updatePosition}
+				addToStaged={sidebar.addToStaged}
+				removeStaged={sidebar.removeStaged}
+				clearAllStaged={sidebar.clearAllStaged}
+				onBatchPlace={batchPlacePlanets}
 				placementMode={placementMode}
 				setPlacementMode={setPlacementMode}
 			/>
