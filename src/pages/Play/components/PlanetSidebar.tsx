@@ -87,29 +87,11 @@ export function PlanetSidebar({
 							<strong className="text-base">惑星配置</strong>
 						</div>
 
-						{/* Placement mode toggle */}
-						<div className="mb-4 flex items-center gap-2">
-							<label className="flex items-center gap-1.5 text-xs">
-								<input
-									type="checkbox"
-									checked={placementMode}
-									onChange={(e) => setPlacementMode(e.target.checked)}
-								/>
-								配置モード（3D面をクリック）
-							</label>
-						</div>
-
-						{/* Hidden input to communicate placementMode to parent */}
-						<input
-							type="hidden"
-							data-placement-mode={placementMode}
-							id="planet-placement-mode"
-						/>
-
 						{/* Form */}
 						<SidebarForm
 							form={form}
 							placementMode={placementMode}
+							onPlacementModeChange={setPlacementMode}
 							onTemplateChange={updateTemplate}
 							onRadiusChange={(v) =>
 								setForm((prev: StagedPlanet) => ({ ...prev, radius: v }))

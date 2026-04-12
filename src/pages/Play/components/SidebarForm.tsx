@@ -4,6 +4,7 @@ import type { StagedPlanet } from "../types/sidebar";
 type SidebarFormProps = {
 	form: StagedPlanet;
 	placementMode: boolean;
+	onPlacementModeChange: (value: boolean) => void;
 	onTemplateChange: (templateKey: string) => void;
 	onRadiusChange: (value: number) => void;
 	onRotationSpeedChange: (value: number) => void;
@@ -22,6 +23,7 @@ const planetTemplates = {
 export function SidebarForm({
 	form,
 	placementMode,
+	onPlacementModeChange,
 	onTemplateChange,
 	onRadiusChange,
 	onRotationSpeedChange,
@@ -94,12 +96,17 @@ export function SidebarForm({
 
 			{/* Position */}
 			<div>
-				<span className="mb-1 block text-xs opacity-80">
-					位置{" "}
-					{placementMode && (
-						<span className="text-cyan-300">(配置モード: 3D面をクリック)</span>
-					)}
-				</span>
+				<div className="mb-1 flex items-center justify-between">
+					<span className="text-xs opacity-80">位置</span>
+					<label className="flex cursor-pointer items-center gap-1.5 text-xs">
+						<input
+							type="checkbox"
+							checked={placementMode}
+							onChange={(e) => onPlacementModeChange(e.target.checked)}
+						/>
+						{placementMode ? "配置モードON（3D面をクリック）" : "3D面で配置"}
+					</label>
+				</div>
 				<div className="grid grid-cols-3 gap-2">
 					{(["posX", "posY", "posZ"] as const).map((axis, idx) => {
 						const label = axis.replace("pos", "");
