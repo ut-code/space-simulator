@@ -8,6 +8,7 @@ import { PlanetSidebar } from "./components/PlanetSidebar";
 import { SimulationCanvas } from "./components/SimulationCanvas";
 import { usePlanetSidebar } from "./hooks/usePlanetSidebar";
 import { useSimulation } from "./hooks/useSimulation";
+import { decidePlanetKind, texturePathByKind } from "./utils/planetKind";
 
 const planetTexturePaths = [
 	earth.texturePath,
@@ -57,9 +58,18 @@ export default function Page() {
 			const [x, y, z] = staged.position;
 			const [vx, vy, vz] = staged.velocity;
 			const mass = template.mass * (staged.radius / template.radius) ** 3;
+
+			const kind = staged.autoKindAssignment
+				? decidePlanetKind(mass, staged.radius)
+				: undefined;
+			const texturePath = staged.autoKindAssignment
+				? texturePathByKind(kind!)
+				: staged.texturePath;
+
 			const newPlanet = simulationWorld.createPlanet({
 				name: staged.name,
-				texturePath: staged.texturePath,
+				texturePath,
+				kind,
 				rotationSpeedY: staged.rotationSpeedY,
 				radius: staged.radius,
 				width: 64,
