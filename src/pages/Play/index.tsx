@@ -1,12 +1,14 @@
 import { useTexture } from "@react-three/drei";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
-import { PlacementPanel } from "./components/PlacementPanel";
+import { PlanetSidebar } from "./components/PlanetSidebar";
 import { SimulationCanvas } from "./components/SimulationCanvas";
-import { useLevaControls } from "./hooks/useLevaControls";
+import { usePlanetSidebar } from "./hooks/usePlanetSidebar";
 import { useSimulation } from "./hooks/useSimulation";
+import { decidePlanetKind, texturePathByKind } from "./utils/planetKind";
 
 const planetTexturePaths = [
 	earth.texturePath,
@@ -23,6 +25,10 @@ export default function Page() {
 
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const [placementMode, setPlacementMode] = useState(false);
+	const [showGrid, setShowGrid] = useState(true);
+	const [showAxes, setShowAxes] = useState(true);
+	const [showPreview, setShowPreview] = useState(true);
+	const [showStagedPreview, setShowStagedPreview] = useState(true);
 
 	const {
 		planetRegistry,
@@ -30,35 +36,46 @@ export default function Page() {
 		worldState,
 		syncWorld,
 		removePlanet,
-		setAutoKindAssignment,
 		updatePlanetRadius,
 	} = useSimulation(templateId);
 
-	const { planetControls, setPlanetControls, showGrid, showAxes, showPreview } =
-		useLevaControls({
-			simulationWorld,
-			planetRegistry,
-			syncWorld,
-			setAutoKindAssignment,
-			orbitControlsRef,
-		});
+	const sidebar = usePlanetSidebar();
 
-	const previewPosition = useMemo<[number, number, number]>(
-		() => [planetControls.posX, planetControls.posY, planetControls.posZ],
-		[planetControls.posX, planetControls.posY, planetControls.posZ],
-	);
+	const previewPosition = sidebar.form.position;
 
-	const previewVelocity = useMemo<[number, number, number]>(
-		() => [planetControls.velX, planetControls.velY, planetControls.velZ],
-		[planetControls.velX, planetControls.velY, planetControls.velZ],
-	);
+	const previewVelocity: [number, number, number] = sidebar.form.velocity;
 
-	const handlePlacement = (position: [number, number, number]) => {
-		setPlanetControls({
-			posX: position[0],
-			posY: position[1],
-			posZ: position[2],
-		});
+	const batchPlacePlanets = () => {
+		for (const staged of sidebar.stagedPlanets) {
+			const [x, y, z] = staged.position;
+			const [vx, vy, vz] = staged.velocity;
+			const mass = staged.mass;
+
+			const kind = staged.autoKindAssignment
+				? decidePlanetKind(mass, staged.radius)
+				: undefined;
+			const texturePath = staged.autoKindAssignment
+				? texturePathByKind(kind!)
+				: staged.texturePath;
+
+			const newPlanet = simulationWorld.createPlanet({
+				name: staged.name,
+				texturePath,
+				kind,
+				rotationSpeedY: staged.rotationSpeedY,
+				radius: staged.radius,
+				width: 64,
+				height: 64,
+				position: new THREE.Vector3(x, y, z),
+				velocity: new THREE.Vector3(vx, vy, vz),
+				mass,
+			});
+			planetRegistry.register(newPlanet.id, newPlanet);
+		}
+
+		simulationWorld.refreshSnapshot();
+		syncWorld();
+		sidebar.clearAllStaged();
 	};
 
 	return (
@@ -70,25 +87,49 @@ export default function Page() {
 				syncWorld={syncWorld}
 				orbitControlsRef={orbitControlsRef}
 				placementMode={placementMode}
-				posY={planetControls.posY}
+				posY={previewPosition[1]}
 				showPreview={showPreview}
 				showGrid={showGrid}
 				showAxes={showAxes}
-				previewRadius={planetControls.radius}
+				previewRadius={sidebar.form.radius}
 				previewPosition={previewPosition}
 				previewVelocity={previewVelocity}
-				onPlace={handlePlacement}
+				onPlace={sidebar.setPositionFromClick}
 				templateId={templateId ?? "default"}
+				stagedPlanets={sidebar.stagedPlanets}
+				showStagedPreview={showStagedPreview}
 			/>
-			<PlacementPanel
+			<PlanetSidebar
 				worldState={worldState}
 				planetRegistry={planetRegistry}
 				simulationWorld={simulationWorld}
 				syncWorld={syncWorld}
 				removePlanet={removePlanet}
 				updatePlanetRadius={updatePlanetRadius}
+				isOpen={sidebar.isOpen}
+				setIsOpen={sidebar.setIsOpen}
+				stagedPlanets={sidebar.stagedPlanets}
+				form={sidebar.form}
+				setForm={sidebar.setForm}
+				updateTemplate={sidebar.updateTemplate}
+				updatePosition={sidebar.updatePosition}
+				updateVelocity={sidebar.updateVelocity}
+				toggleAutoKind={sidebar.toggleAutoKind}
+				addToStaged={sidebar.addToStaged}
+				removeStaged={sidebar.removeStaged}
+				clearAllStaged={sidebar.clearAllStaged}
+				onBatchPlace={batchPlacePlanets}
 				placementMode={placementMode}
 				setPlacementMode={setPlacementMode}
+				showGrid={showGrid}
+				setShowGrid={setShowGrid}
+				showAxes={showAxes}
+				setShowAxes={setShowAxes}
+				showPreview={showPreview}
+				setShowPreview={setShowPreview}
+				showStagedPreview={showStagedPreview}
+				setShowStagedPreview={setShowStagedPreview}
+				orbitControlsRef={orbitControlsRef}
 			/>
 		</div>
 	);

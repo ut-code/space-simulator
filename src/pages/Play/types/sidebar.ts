@@ -1,0 +1,17 @@
+export type StagedPlanet = {
+	id: string; // unique staging id (not the final planet id)
+	templateKey: string;
+	name: string;
+	texturePath: string;
+	radius: number;
+	mass: number;
+	rotationSpeedY: number;
+	position: [number, number, number];
+	velocity: [number, number, number];
+	autoKindAssignment: boolean;
+};
+
+export type PlanetSidebarState = {
+	stagedPlanets: StagedPlanet[];
+	isOpen: boolean;
+};

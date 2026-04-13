@@ -6,10 +6,15 @@ import { templates } from "@/data/templates";
 import { defaultTemplate } from "@/data/templates/default";
 import type { PlanetRegistry } from "../core/PlanetRegistry";
 import type { SimulationWorld } from "../core/SimulationWorld";
+import type { StagedPlanet } from "../types/sidebar";
 import { CameraController } from "./CameraController";
 import { Explosion } from "./Explosion";
 import { PlanetMesh } from "./PlanetMesh";
-import { PlacementSurface, PreviewPlanet } from "./PlanetPlacementView";
+import {
+	PlacementSurface,
+	PreviewPlanet,
+	StagedPreviewPlanet,
+} from "./PlanetPlacementView";
 
 type SimulationCanvasProps = {
 	worldState: ReturnType<SimulationWorld["getSnapshot"]>;
@@ -27,6 +32,8 @@ type SimulationCanvasProps = {
 	previewVelocity: [number, number, number];
 	onPlace: (position: [number, number, number]) => void;
 	templateId: string;
+	stagedPlanets: StagedPlanet[];
+	showStagedPreview: boolean;
 };
 
 export function SimulationCanvas({
@@ -45,6 +52,8 @@ export function SimulationCanvas({
 	previewVelocity,
 	onPlace,
 	templateId,
+	stagedPlanets,
+	showStagedPreview,
 }: SimulationCanvasProps) {
 	const initialCameraPosition: [number, number, number] =
 		templates.get(templateId)?.cameraLocation ?? defaultTemplate.cameraLocation;
@@ -92,6 +101,17 @@ export function SimulationCanvas({
 					velocity={previewVelocity}
 				/>
 			)}
+
+			{/* Staged planet previews (amber to distinguish from main preview) */}
+			{showStagedPreview &&
+				stagedPlanets.map((staged) => (
+					<StagedPreviewPlanet
+						key={staged.id}
+						radius={staged.radius}
+						position={staged.position}
+						velocity={staged.velocity}
+					/>
+				))}
 			{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
 			{showAxes && <axesHelper args={[20]} />}
 
