@@ -13,6 +13,7 @@ type PlanetSidebarProps = {
 	simulationWorld: SimulationWorld;
 	syncWorld: () => void;
 	removePlanet: (planetId: string) => void;
+	updatePlanetRadius: (planetId: string, radius: number) => void;
 	isOpen: boolean;
 	setIsOpen: (v: boolean) => void;
 	stagedPlanets: StagedPlanet[];
@@ -20,6 +21,8 @@ type PlanetSidebarProps = {
 	setForm: (v: StagedPlanet | ((prev: StagedPlanet) => StagedPlanet)) => void;
 	updateTemplate: (templateKey: string) => void;
 	updatePosition: (axis: "posX" | "posY" | "posZ", value: number) => void;
+	updateVelocity: (axis: "velX" | "velY" | "velZ", value: number) => void;
+	toggleAutoKind: (enabled: boolean) => void;
 	addToStaged: () => void;
 	removeStaged: (stagedId: string) => void;
 	clearAllStaged: () => void;
@@ -32,12 +35,15 @@ export function PlanetSidebar({
 	simulationWorld,
 	syncWorld,
 	removePlanet,
+	updatePlanetRadius,
 	isOpen,
 	setIsOpen,
 	stagedPlanets,
 	form,
 	updateTemplate,
 	updatePosition,
+	updateVelocity,
+	toggleAutoKind,
 	addToStaged,
 	removeStaged,
 	clearAllStaged,
@@ -62,13 +68,6 @@ export function PlanetSidebar({
 
 	return (
 		<>
-			{/* PlacementSurface is rendered in SimulationCanvas; we just pass placementMode via simulationCanvas props */}
-			{/**
-			 * We communicate placementMode back to the parent via a side-channel:
-			 * SimulationCanvas already has a placementMode prop, so the parent can wire it.
-			 * For now, the toggle lives here but we trigger placement through setPositionFromClick.
-			 */}
-
 			{/* Sidebar */}
 			<div className="absolute right-0 top-0 flex h-screen">
 				{/* Toggle button */}
@@ -103,6 +102,8 @@ export function PlanetSidebar({
 								}))
 							}
 							onPositionChange={updatePosition}
+							onVelocityChange={updateVelocity}
+							onAutoKindToggle={toggleAutoKind}
 							onAddToStaged={addToStaged}
 						/>
 
@@ -145,43 +146,66 @@ export function PlanetSidebar({
 							<strong className="text-xs">
 								追加済み惑星 ({worldState.planetIds.length})
 							</strong>
-							<ul className="mt-2 list-none space-y-1.5 p-0">
+							<ul className="mt-2 list-none space-y-2 p-0">
 								{panelPlanets.map(({ planetId, planet }) => (
 									<li
 										key={`planet-item-${planetId}`}
-										className="flex items-center justify-between gap-2 border-b border-white/15 pb-1.5 text-xs"
+										className="rounded border border-white/10 bg-white/5 px-2 py-1.5 text-xs"
 									>
-										<div>
-											<div className="font-medium">{planet.name}</div>
-											<div className="opacity-70">
-												r={planet.radius.toFixed(1)} / (
-												{planet.position.x.toFixed(1)},{" "}
-												{planet.position.y.toFixed(1)},{" "}
-												{planet.position.z.toFixed(1)})
+										<div className="flex items-center justify-between gap-2">
+											<div>
+												<div className="font-medium">{planet.name}</div>
+												<div className="opacity-70">
+													r={planet.radius.toFixed(1)} / (
+													{planet.position.x.toFixed(1)},{" "}
+													{planet.position.y.toFixed(1)},{" "}
+													{planet.position.z.toFixed(1)})
+												</div>
 											</div>
-										</div>
-										<div className="flex shrink-0 items-center gap-1.5">
-											{worldState.followedPlanetId === planetId ? (
-												<span className="text-blue-300">追尾中</span>
-											) : (
+											<div className="flex shrink-0 items-center gap-1.5">
+												{worldState.followedPlanetId === planetId ? (
+													<span className="text-blue-300">追尾中</span>
+												) : (
+													<button
+														type="button"
+														onClick={() => {
+															simulationWorld.setFollowedPlanetId(planetId);
+															syncWorld();
+														}}
+														className="rounded border border-white/30 bg-transparent px-1.5 py-0.5 text-white/80 hover:bg-white/10"
+													>
+														追尾
+													</button>
+												)}
 												<button
 													type="button"
-													onClick={() => {
-														simulationWorld.setFollowedPlanetId(planetId);
-														syncWorld();
-													}}
+													onClick={() => removePlanet(planetId)}
 													className="rounded border border-white/30 bg-transparent px-1.5 py-0.5 text-white/80 hover:bg-white/10"
 												>
-													追尾
+													削除
 												</button>
-											)}
-											<button
-												type="button"
-												onClick={() => removePlanet(planetId)}
-												className="rounded border border-white/30 bg-transparent px-1.5 py-0.5 text-white/80 hover:bg-white/10"
-											>
-												削除
-											</button>
+											</div>
+										</div>
+										{/* Radius slider */}
+										<div className="mt-1 px-1 py-0.5 opacity-75">
+											<div className="mb-0.5 flex items-center justify-between text-[11px] text-cyan-100/80">
+												<span>半径</span>
+												<span>{planet.radius.toFixed(1)}</span>
+											</div>
+											<input
+												type="range"
+												min={0.2}
+												max={12}
+												step={0.1}
+												value={planet.radius}
+												onChange={(event) =>
+													updatePlanetRadius(
+														planetId,
+														Number(event.target.value),
+													)
+												}
+												className="mx-auto block h-1 w-[86%] cursor-pointer accent-cyan-200/70"
+											/>
 										</div>
 									</li>
 								))}

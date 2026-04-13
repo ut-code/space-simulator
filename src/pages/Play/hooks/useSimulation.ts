@@ -84,11 +84,27 @@ export function useSimulation(templateId: string | null) {
 		[syncWorld],
 	);
 
+	const setAutoKindAssignment = useCallback((enabled: boolean) => {
+		physicsEngine.setAutoKindAssignment(enabled);
+	}, []);
+
+	const updatePlanetRadius = useCallback(
+		(planetId: string, radius: number) => {
+			const updated = planetRegistry.updateRadius(planetId, radius);
+			if (!updated) return;
+			simulationWorld.refreshSnapshot();
+			syncWorld();
+		},
+		[syncWorld],
+	);
+
 	return {
 		planetRegistry,
 		simulationWorld,
 		worldState,
 		syncWorld,
 		removePlanet,
+		setAutoKindAssignment,
+		updatePlanetRadius,
 	};
 }

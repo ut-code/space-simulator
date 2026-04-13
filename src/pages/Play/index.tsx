@@ -31,11 +31,14 @@ export default function Page() {
 		worldState,
 		syncWorld,
 		removePlanet,
+		updatePlanetRadius,
 	} = useSimulation(templateId);
 
 	const sidebar = usePlanetSidebar();
 
 	const previewPosition = sidebar.form.position;
+
+	const previewVelocity: [number, number, number] = sidebar.form.velocity;
 
 	const batchPlacePlanets = () => {
 		const templateMap: Record<string, typeof earth> = {
@@ -49,6 +52,7 @@ export default function Page() {
 		for (const staged of sidebar.stagedPlanets) {
 			const template = templateMap[staged.templateKey] ?? earth;
 			const [x, y, z] = staged.position;
+			const [vx, vy, vz] = staged.velocity;
 			const mass = template.mass * (staged.radius / template.radius) ** 3;
 			const newPlanet = simulationWorld.createPlanet({
 				name: staged.name,
@@ -58,7 +62,7 @@ export default function Page() {
 				width: 64,
 				height: 64,
 				position: new THREE.Vector3(x, y, z),
-				velocity: new THREE.Vector3(0, 0, 0),
+				velocity: new THREE.Vector3(vx, vy, vz),
 				mass,
 			});
 			planetRegistry.register(newPlanet.id, newPlanet);
@@ -84,6 +88,7 @@ export default function Page() {
 				showAxes={true}
 				previewRadius={sidebar.form.radius}
 				previewPosition={previewPosition}
+				previewVelocity={previewVelocity}
 				onPlace={sidebar.setPositionFromClick}
 				templateId={templateId ?? "default"}
 			/>
@@ -93,6 +98,7 @@ export default function Page() {
 				simulationWorld={simulationWorld}
 				syncWorld={syncWorld}
 				removePlanet={removePlanet}
+				updatePlanetRadius={updatePlanetRadius}
 				isOpen={sidebar.isOpen}
 				setIsOpen={sidebar.setIsOpen}
 				stagedPlanets={sidebar.stagedPlanets}
@@ -100,6 +106,8 @@ export default function Page() {
 				setForm={sidebar.setForm}
 				updateTemplate={sidebar.updateTemplate}
 				updatePosition={sidebar.updatePosition}
+				updateVelocity={sidebar.updateVelocity}
+				toggleAutoKind={sidebar.toggleAutoKind}
 				addToStaged={sidebar.addToStaged}
 				removeStaged={sidebar.removeStaged}
 				clearAllStaged={sidebar.clearAllStaged}

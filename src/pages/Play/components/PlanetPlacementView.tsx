@@ -1,17 +1,95 @@
+import { Line } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
+import { useMemo } from "react";
 import * as THREE from "three";
 
 type PreviewPlanetProps = {
 	radius: number;
 	position: [number, number, number];
+	velocity: [number, number, number];
 };
 // 惑星の配置プレビュー用の半透明の球体を描画するコンポーネント
-export function PreviewPlanet({ radius, position }: PreviewPlanetProps) {
+export function PreviewPlanet({
+	radius,
+	position,
+	velocity,
+}: PreviewPlanetProps) {
+	const velocityVector = useMemo(
+		() => new THREE.Vector3(velocity[0], velocity[1], velocity[2]),
+		[velocity],
+	);
+	const speed = velocityVector.length();
+	const hasVelocity = speed > 0.001;
+
+	const direction = useMemo(() => {
+		if (!hasVelocity) {
+			return new THREE.Vector3(1, 0, 0);
+		}
+		return velocityVector.clone().normalize();
+	}, [hasVelocity, velocityVector]);
+
+	const arrowLength = useMemo(() => {
+		const scaledBySpeed = speed * 1.4;
+		const minLength = Math.max(radius * 1.2, 1.2);
+		return Math.min(Math.max(scaledBySpeed, minLength), 30);
+	}, [radius, speed]);
+
+	const headLength = Math.max(radius * 0.55, 0.55);
+	const shaftLength = Math.max(arrowLength - headLength, 0.2);
+
+	const shaftEnd = useMemo(
+		() => direction.clone().multiplyScalar(shaftLength),
+		[direction, shaftLength],
+	);
+	const headCenter = useMemo(
+		() => direction.clone().multiplyScalar(shaftLength + headLength / 2),
+		[direction, headLength, shaftLength],
+	);
+	const headQuaternion = useMemo(() => {
+		const quaternion = new THREE.Quaternion();
+		quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+		return quaternion;
+	}, [direction]);
+
 	return (
-		<mesh position={position}>
-			<sphereGeometry args={[radius, 24, 24]} />
-			<meshBasicMaterial color="#6ee7ff" wireframe opacity={0.6} transparent />
-		</mesh>
+		<group position={position}>
+			<mesh>
+				<sphereGeometry args={[radius, 24, 24]} />
+				<meshBasicMaterial
+					color="#6ee7ff"
+					wireframe
+					opacity={0.6}
+					transparent
+				/>
+			</mesh>
+			{hasVelocity && (
+				<>
+					<Line
+						points={[
+							[0, 0, 0],
+							[shaftEnd.x, shaftEnd.y, shaftEnd.z],
+						]}
+						color="#7bf9ff"
+						lineWidth={2}
+						transparent
+						opacity={0.95}
+					/>
+					<mesh
+						position={[headCenter.x, headCenter.y, headCenter.z]}
+						quaternion={headQuaternion}
+					>
+						<coneGeometry args={[headLength * 0.28, headLength, 16]} />
+						<meshStandardMaterial
+							color="#bdfcff"
+							emissive="#39d3ff"
+							emissiveIntensity={0.8}
+							transparent
+							opacity={0.95}
+						/>
+					</mesh>
+				</>
+			)}
+		</group>
 	);
 }
 

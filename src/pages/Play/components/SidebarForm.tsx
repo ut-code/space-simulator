@@ -9,6 +9,8 @@ type SidebarFormProps = {
 	onRadiusChange: (value: number) => void;
 	onRotationSpeedChange: (value: number) => void;
 	onPositionChange: (axis: "posX" | "posY" | "posZ", value: number) => void;
+	onVelocityChange: (axis: "velX" | "velY" | "velZ", value: number) => void;
+	onAutoKindToggle: (enabled: boolean) => void;
 	onAddToStaged: () => void;
 };
 
@@ -28,6 +30,8 @@ export function SidebarForm({
 	onRadiusChange,
 	onRotationSpeedChange,
 	onPositionChange,
+	onVelocityChange,
+	onAutoKindToggle,
 	onAddToStaged,
 }: SidebarFormProps) {
 	return (
@@ -134,6 +138,50 @@ export function SidebarForm({
 						);
 					})}
 				</div>
+			</div>
+
+			{/* Velocity */}
+			<div>
+				<span className="mb-1 block text-xs opacity-80">速度</span>
+				<div className="grid grid-cols-3 gap-2">
+					{(["velX", "velY", "velZ"] as const).map((axis, idx) => {
+						const label = axis.replace("vel", "");
+						return (
+							<div key={axis}>
+								<label
+									htmlFor={`planet-${axis}`}
+									className="text-xs opacity-60"
+								>
+									{label}
+								</label>
+								<input
+									id={`planet-${axis}`}
+									type="number"
+									min={-20}
+									max={20}
+									step={0.1}
+									value={form.velocity[idx]}
+									onChange={(e) =>
+										onVelocityChange(axis, Number(e.target.value))
+									}
+									className="mt-0.5 w-full rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+								/>
+							</div>
+						);
+					})}
+				</div>
+			</div>
+
+			{/* Auto texture toggle */}
+			<div className="flex items-center gap-2">
+				<label className="flex cursor-pointer items-center gap-1.5 text-xs">
+					<input
+						type="checkbox"
+						checked={form.autoKindAssignment}
+						onChange={(e) => onAutoKindToggle(e.target.checked)}
+					/>
+					自動テクスチャ
+				</label>
 			</div>
 
 			{/* Add button */}

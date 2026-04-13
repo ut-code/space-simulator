@@ -6,6 +6,8 @@ export type StagedPlanet = {
 	radius: number;
 	rotationSpeedY: number;
 	position: [number, number, number];
+	velocity: [number, number, number];
+	autoKindAssignment: boolean;
 };
 
 export type PlanetSidebarState = {

@@ -19,6 +19,8 @@ const defaultForm = (): StagedPlanet => ({
 	radius: earth.radius,
 	rotationSpeedY: earth.rotationSpeedY,
 	position: [10, 0, 0],
+	velocity: [0, 0, 0],
+	autoKindAssignment: false,
 });
 
 export function usePlanetSidebar() {
@@ -56,16 +58,37 @@ export function usePlanetSidebar() {
 		[],
 	);
 
+	const updateVelocity = useCallback(
+		(axis: "velX" | "velY" | "velZ", value: number) => {
+			setForm((prev) => {
+				const idx = axis === "velX" ? 0 : axis === "velY" ? 1 : 2;
+				const newVel: [number, number, number] = [...prev.velocity] as [
+					number,
+					number,
+					number,
+				];
+				newVel[idx] = value;
+				return { ...prev, velocity: newVel };
+			});
+		},
+		[],
+	);
+
 	const setPositionFromClick = useCallback((pos: [number, number, number]) => {
 		setForm((prev) => ({ ...prev, position: pos }));
+	}, []);
+
+	const toggleAutoKind = useCallback((enabled: boolean) => {
+		setForm((prev) => ({ ...prev, autoKindAssignment: enabled }));
 	}, []);
 
 	const addToStaged = useCallback(() => {
 		setStagedPlanets((prev) => [...prev, form]);
 		setForm((prev) => ({
 			...defaultForm(),
-			// keep the position for convenient consecutive placement
+			// keep the position and velocity for convenient consecutive placement
 			position: prev.position,
+			velocity: prev.velocity,
 		}));
 	}, [form]);
 
@@ -86,7 +109,9 @@ export function usePlanetSidebar() {
 		setForm,
 		updateTemplate,
 		updatePosition,
+		updateVelocity,
 		setPositionFromClick,
+		toggleAutoKind,
 		addToStaged,
 		removeStaged,
 		clearAllStaged,
