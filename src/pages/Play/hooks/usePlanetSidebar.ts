@@ -17,6 +17,7 @@ const defaultForm = (): StagedPlanet => ({
 	name: "Earth",
 	texturePath: earth.texturePath,
 	radius: earth.radius,
+	mass: earth.mass,
 	rotationSpeedY: earth.rotationSpeedY,
 	position: [10, 0, 0],
 	velocity: [0, 0, 0],
@@ -38,6 +39,7 @@ export function usePlanetSidebar() {
 			name: template.name,
 			texturePath: template.texturePath,
 			radius: template.radius,
+			mass: template.mass,
 			rotationSpeedY: template.rotationSpeedY,
 		}));
 	}, []);

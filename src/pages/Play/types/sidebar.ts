@@ -4,6 +4,7 @@ export type StagedPlanet = {
 	name: string;
 	texturePath: string;
 	radius: number;
+	mass: number;
 	rotationSpeedY: number;
 	position: [number, number, number];
 	velocity: [number, number, number];

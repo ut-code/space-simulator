@@ -110,6 +110,9 @@ export function PlanetSidebar({
 							onRadiusChange={(v) =>
 								setForm((prev: StagedPlanet) => ({ ...prev, radius: v }))
 							}
+							onMassChange={(v) =>
+								setForm((prev: StagedPlanet) => ({ ...prev, mass: v }))
+							}
 							onRotationSpeedChange={(v) =>
 								setForm((prev: StagedPlanet) => ({
 									...prev,

@@ -45,19 +45,10 @@ export default function Page() {
 	const previewVelocity: [number, number, number] = sidebar.form.velocity;
 
 	const batchPlacePlanets = () => {
-		const templateMap: Record<string, typeof earth> = {
-			earth,
-			sun,
-			mars,
-			jupiter,
-			venus,
-		};
-
 		for (const staged of sidebar.stagedPlanets) {
-			const template = templateMap[staged.templateKey] ?? earth;
 			const [x, y, z] = staged.position;
 			const [vx, vy, vz] = staged.velocity;
-			const mass = template.mass * (staged.radius / template.radius) ** 3;
+			const mass = staged.mass;
 
 			const kind = staged.autoKindAssignment
 				? decidePlanetKind(mass, staged.radius)

@@ -7,6 +7,7 @@ type SidebarFormProps = {
 	onPlacementModeChange: (value: boolean) => void;
 	onTemplateChange: (templateKey: string) => void;
 	onRadiusChange: (value: number) => void;
+	onMassChange: (value: number) => void;
 	onRotationSpeedChange: (value: number) => void;
 	onPositionChange: (axis: "posX" | "posY" | "posZ", value: number) => void;
 	onVelocityChange: (axis: "velX" | "velY" | "velZ", value: number) => void;
@@ -28,6 +29,7 @@ export function SidebarForm({
 	onPlacementModeChange,
 	onTemplateChange,
 	onRadiusChange,
+	onMassChange,
 	onRotationSpeedChange,
 	onPositionChange,
 	onVelocityChange,
@@ -74,6 +76,23 @@ export function SidebarForm({
 					step={0.1}
 					value={form.radius}
 					onChange={(e) => onRadiusChange(Number(e.target.value))}
+					className="w-full"
+				/>
+			</div>
+
+			{/* Mass */}
+			<div>
+				<label htmlFor="planet-mass" className="mb-1 block text-xs opacity-80">
+					質量: {form.mass.toFixed(1)}
+				</label>
+				<input
+					id="planet-mass"
+					type="range"
+					min={0.1}
+					max={30000}
+					step={0.1}
+					value={form.mass}
+					onChange={(e) => onMassChange(Number(e.target.value))}
 					className="w-full"
 				/>
 			</div>
