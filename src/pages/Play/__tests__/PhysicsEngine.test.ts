@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { sun } from "@/data/planets";
 import type { Planet } from "@/types/planet";
 import { PhysicsEngine, type PhysicsEvent } from "../core/PhysicsEngine";
 import { PlanetRegistry } from "../core/PlanetRegistry";
@@ -181,6 +182,130 @@ describe("PhysicsEngine - Standalone Physics (No React)", () => {
 
 				resolve();
 			}, 100);
+		});
+	});
+
+	it("should auto-assign kind and texture on collision merge when enabled", () => {
+		const planet1: Planet = {
+			id: "heavy-planet",
+			name: "Heavy",
+			mass: 9000,
+			radius: 1,
+			position: new THREE.Vector3(0, 0, 0),
+			velocity: new THREE.Vector3(0.1, 0, 0),
+			rotationSpeedY: 0.5,
+			texturePath: "heavy.jpg",
+			width: 32,
+			height: 32,
+		};
+
+		const planet2: Planet = {
+			id: "light-planet",
+			name: "Light",
+			mass: 2000,
+			radius: 1,
+			position: new THREE.Vector3(1.5, 0, 0),
+			velocity: new THREE.Vector3(0, 0, 0),
+			rotationSpeedY: 0.3,
+			texturePath: "light.jpg",
+			width: 32,
+			height: 32,
+		};
+
+		registry.register(planet1.id, planet1);
+		registry.register(planet2.id, planet2);
+
+		engine = new PhysicsEngine(registry, {
+			fixedTimestep: 1 / 60,
+			autoStart: false,
+		});
+		engine.setAutoKindAssignment(true);
+
+		engine.on((event) => {
+			events.push(event);
+		});
+
+		engine.start();
+
+		return new Promise<void>((resolve) => {
+			setTimeout(() => {
+				engine.stop();
+
+				const mergeEvents = events.filter(
+					(e): e is Extract<PhysicsEvent, { type: "collision:merge" }> =>
+						e.type === "collision:merge",
+				);
+				expect(mergeEvents.length).toBeGreaterThan(0);
+
+				const merged = mergeEvents[0]?.newPlanet;
+				expect(merged).toBeDefined();
+				expect(merged?.kind).toBe("star");
+				expect(merged?.texturePath).toBe(sun.texturePath);
+
+				resolve();
+			}, 120);
+		});
+	});
+
+	it("should assign kind and texture on collision merge even when disabled", () => {
+		const planet1: Planet = {
+			id: "heavy-planet-off",
+			name: "HeavyOff",
+			mass: 9000,
+			radius: 1,
+			position: new THREE.Vector3(0, 0, 0),
+			velocity: new THREE.Vector3(0.1, 0, 0),
+			rotationSpeedY: 0.5,
+			texturePath: "heavy-off.jpg",
+			width: 32,
+			height: 32,
+		};
+
+		const planet2: Planet = {
+			id: "light-planet-off",
+			name: "LightOff",
+			mass: 2000,
+			radius: 1,
+			position: new THREE.Vector3(1.5, 0, 0),
+			velocity: new THREE.Vector3(0, 0, 0),
+			rotationSpeedY: 0.3,
+			texturePath: "light-off.jpg",
+			width: 32,
+			height: 32,
+		};
+
+		registry.register(planet1.id, planet1);
+		registry.register(planet2.id, planet2);
+
+		engine = new PhysicsEngine(registry, {
+			fixedTimestep: 1 / 60,
+			autoStart: false,
+		});
+		engine.setAutoKindAssignment(false);
+
+		engine.on((event) => {
+			events.push(event);
+		});
+
+		engine.start();
+
+		return new Promise<void>((resolve) => {
+			setTimeout(() => {
+				engine.stop();
+
+				const mergeEvents = events.filter(
+					(e): e is Extract<PhysicsEvent, { type: "collision:merge" }> =>
+						e.type === "collision:merge",
+				);
+				expect(mergeEvents.length).toBeGreaterThan(0);
+
+				const merged = mergeEvents[0]?.newPlanet;
+				expect(merged).toBeDefined();
+				expect(merged?.kind).toBe("star");
+				expect(merged?.texturePath).toBe(sun.texturePath);
+
+				resolve();
+			}, 120);
 		});
 	});
 });

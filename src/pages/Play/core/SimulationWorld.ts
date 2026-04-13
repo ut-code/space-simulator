@@ -1,11 +1,15 @@
 import * as THREE from "three";
 import type { ExplosionData } from "@/types/explosion";
 import type { Planet } from "@/types/planet";
+import { applyAutoKindIfEnabled } from "../utils/planetKind";
 
 type NewPlanetSettings = {
 	radius: number;
+	mass?: number;
 	position: [number, number, number];
+	velocity?: [number, number, number];
 	rotationSpeedY: number;
+	autoKindAssignment?: boolean;
 };
 
 export type mergeQueueProps = {
@@ -99,6 +103,7 @@ export class SimulationWorld {
 
 	addPlanetFromTemplate(template: Planet, settings: NewPlanetSettings): Planet {
 		const [posX, posY, posZ] = settings.position;
+		const [velX, velY, velZ] = settings.velocity ?? [0, 0, 0];
 
 		// Validate inputs
 		if (
@@ -112,6 +117,17 @@ export class SimulationWorld {
 			);
 			throw new Error("Invalid planet position");
 		}
+		if (
+			!Number.isFinite(velX) ||
+			!Number.isFinite(velY) ||
+			!Number.isFinite(velZ)
+		) {
+			console.error(
+				"addPlanetFromTemplate: invalid velocity",
+				settings.velocity,
+			);
+			throw new Error("Invalid planet velocity");
+		}
 		if (!Number.isFinite(settings.radius) || settings.radius <= 0) {
 			console.error("addPlanetFromTemplate: invalid radius", settings.radius);
 			throw new Error("Invalid planet radius");
@@ -123,24 +139,38 @@ export class SimulationWorld {
 			);
 			throw new Error("Invalid planet rotationSpeedY");
 		}
+		if (
+			settings.mass !== undefined &&
+			(!Number.isFinite(settings.mass) || settings.mass <= 0)
+		) {
+			console.error("addPlanetFromTemplate: invalid mass", settings.mass);
+			throw new Error("Invalid planet mass");
+		}
 
-		const mass = computeMass(template.radius, template.mass, settings.radius);
+		const mass =
+			settings.mass ??
+			computeMass(template.radius, template.mass, settings.radius);
 		const newPlanet: Planet = {
 			id: crypto.randomUUID(),
 			name: template.name,
+			kind: template.kind,
 			texturePath: template.texturePath,
 			rotationSpeedY: settings.rotationSpeedY,
 			radius: settings.radius,
 			width: 64,
 			height: 64,
 			position: new THREE.Vector3(posX, posY, posZ),
-			velocity: new THREE.Vector3(0, 0, 0),
+			velocity: new THREE.Vector3(velX, velY, velZ),
 			mass,
 		};
+		const planetWithKind = applyAutoKindIfEnabled(
+			newPlanet,
+			settings.autoKindAssignment ?? false,
+		);
 		this.activePlanetIds.add(newPlanet.id);
 		// Don't update snapshot here - let caller do it after registering in PlanetRegistry
 		// This prevents race condition where React renders with planet ID but no registry entry
-		return newPlanet;
+		return planetWithKind;
 	}
 
 	addPlanet(data: Planet) {

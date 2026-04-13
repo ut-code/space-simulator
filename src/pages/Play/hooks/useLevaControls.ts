@@ -11,6 +11,7 @@ type UseLevaControlsOptions = {
 	simulationWorld: SimulationWorld;
 	planetRegistry: PlanetRegistry;
 	syncWorld: () => void;
+	setAutoKindAssignment: (enabled: boolean) => void;
 	orbitControlsRef: React.RefObject<Controls | null>;
 };
 
@@ -18,20 +19,30 @@ export function useLevaControls({
 	simulationWorld,
 	planetRegistry,
 	syncWorld,
+	setAutoKindAssignment,
 	orbitControlsRef,
 }: UseLevaControlsOptions) {
 	const selectedPlanetTypeRef = useRef<keyof typeof planetTemplates>("earth");
+	const autoKindAssignmentRef = useRef(false);
 	const planetControlsRef = useRef<{
 		radius: number;
+		mass: number;
 		posX: number;
 		posY: number;
 		posZ: number;
+		velX: number;
+		velY: number;
+		velZ: number;
 		rotationSpeedY: number;
 	}>({
 		radius: 1.2,
+		mass: 1,
 		posX: 10,
 		posY: 0,
 		posZ: 0,
+		velX: 0,
+		velY: 0,
+		velZ: 0,
 		rotationSpeedY: 0.6,
 	});
 
@@ -53,14 +64,27 @@ export function useLevaControls({
 					const template = planetTemplates[selectedType] ?? earth;
 					setPlanetControls({
 						radius: template.radius,
+						mass: template.mass,
 						rotationSpeedY: template.rotationSpeedY,
 					});
 				},
 			},
 			radius: { value: 1.2, min: 0.2, max: 6, step: 0.1 },
+			mass: { value: 1, min: 0.1, max: 30000, step: 0.1 },
+			autoKindAssignment: {
+				value: false,
+				label: "自動テクスチャ",
+				onChange: (value) => {
+					autoKindAssignmentRef.current = Boolean(value);
+					setAutoKindAssignment(Boolean(value));
+				},
+			},
 			posX: { value: 10, min: -200, max: 200, step: 0.2 },
 			posY: { value: 0, min: -200, max: 200, step: 0.2 },
 			posZ: { value: 0, min: -200, max: 200, step: 0.2 },
+			velX: { value: 0, label: "velX", min: -20, max: 20, step: 0.1 },
+			velY: { value: 0, label: "velY", min: -20, max: 20, step: 0.1 },
+			velZ: { value: 0, label: "velZ", min: -20, max: 20, step: 0.1 },
 			rotationSpeedY: { value: 0.6, min: 0, max: 10, step: 0.1 },
 			addPlanet: button(() => {
 				// Read current values from the ref to avoid stale closure
@@ -72,14 +96,19 @@ export function useLevaControls({
 
 				console.log("Adding planet with settings:", {
 					radius: current.radius,
+					mass: current.mass,
 					position: [current.posX, current.posY, current.posZ],
+					velocity: [current.velX, current.velY, current.velZ],
 					rotationSpeedY: current.rotationSpeedY,
 				});
 
 				const newPlanet = simulationWorld.addPlanetFromTemplate(template, {
 					radius: current.radius,
+					mass: current.mass,
 					position: [current.posX, current.posY, current.posZ],
+					velocity: [current.velX, current.velY, current.velZ],
 					rotationSpeedY: current.rotationSpeedY,
+					autoKindAssignment: autoKindAssignmentRef.current,
 				});
 
 				console.log("Created planet:", newPlanet.id, newPlanet);

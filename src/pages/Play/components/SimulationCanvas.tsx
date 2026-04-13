@@ -24,6 +24,7 @@ type SimulationCanvasProps = {
 	showAxes: boolean;
 	previewRadius: number;
 	previewPosition: [number, number, number];
+	previewVelocity: [number, number, number];
 	onPlace: (position: [number, number, number]) => void;
 	templateId: string;
 };
@@ -41,6 +42,7 @@ export function SimulationCanvas({
 	showAxes,
 	previewRadius,
 	previewPosition,
+	previewVelocity,
 	onPlace,
 	templateId,
 }: SimulationCanvasProps) {
@@ -84,7 +86,11 @@ export function SimulationCanvas({
 			/>
 
 			{showPreview && (
-				<PreviewPlanet radius={previewRadius} position={previewPosition} />
+				<PreviewPlanet
+					radius={previewRadius}
+					position={previewPosition}
+					velocity={previewVelocity}
+				/>
 			)}
 			{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
 			{showAxes && <axesHelper args={[20]} />}

@@ -30,6 +30,8 @@ export default function Page() {
 		worldState,
 		syncWorld,
 		removePlanet,
+		setAutoKindAssignment,
+		updatePlanetRadius,
 	} = useSimulation(templateId);
 
 	const { planetControls, setPlanetControls, showGrid, showAxes, showPreview } =
@@ -37,12 +39,18 @@ export default function Page() {
 			simulationWorld,
 			planetRegistry,
 			syncWorld,
+			setAutoKindAssignment,
 			orbitControlsRef,
 		});
 
 	const previewPosition = useMemo<[number, number, number]>(
 		() => [planetControls.posX, planetControls.posY, planetControls.posZ],
 		[planetControls.posX, planetControls.posY, planetControls.posZ],
+	);
+
+	const previewVelocity = useMemo<[number, number, number]>(
+		() => [planetControls.velX, planetControls.velY, planetControls.velZ],
+		[planetControls.velX, planetControls.velY, planetControls.velZ],
 	);
 
 	const handlePlacement = (position: [number, number, number]) => {
@@ -68,6 +76,7 @@ export default function Page() {
 				showAxes={showAxes}
 				previewRadius={planetControls.radius}
 				previewPosition={previewPosition}
+				previewVelocity={previewVelocity}
 				onPlace={handlePlacement}
 				templateId={templateId ?? "default"}
 			/>
@@ -77,6 +86,7 @@ export default function Page() {
 				simulationWorld={simulationWorld}
 				syncWorld={syncWorld}
 				removePlanet={removePlanet}
+				updatePlanetRadius={updatePlanetRadius}
 				placementMode={placementMode}
 				setPlacementMode={setPlacementMode}
 			/>

@@ -57,6 +57,22 @@ export class PlanetRegistry implements Iterable<[string, PlanetRegistryEntry]> {
 		entry.position.addScaledVector(entry.velocity, delta);
 	}
 
+	updateRadius(id: string, newRadius: number) {
+		const entry = this.entries.get(id);
+		if (!entry) return false;
+		if (!Number.isFinite(newRadius) || newRadius <= 0) return false;
+
+		const previousRadius = entry.radius;
+		if (!Number.isFinite(previousRadius) || previousRadius <= 0) return false;
+
+		const nextMass = entry.mass * (newRadius / previousRadius) ** 3;
+		if (!Number.isFinite(nextMass) || nextMass <= 0) return false;
+
+		entry.radius = newRadius;
+		entry.mass = nextMass;
+		return true;
+	}
+
 	[Symbol.iterator](): Iterator<[string, PlanetRegistryEntry]> {
 		return this.entries[Symbol.iterator]();
 	}

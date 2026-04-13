@@ -5,6 +5,7 @@ import {
 	decideCollisionOutcome,
 } from "../utils/decideCollisionOutcome";
 import { mergePlanets } from "../utils/mergePlanets";
+import { applyKindAndTexture } from "../utils/planetKind";
 import { GravitySystem } from "./GravitySystem";
 import type { PlanetRegistry } from "./PlanetRegistry";
 
@@ -129,6 +130,13 @@ export class PhysicsEngine {
 				this.listeners.splice(index, 1);
 			}
 		};
+	}
+
+	/**
+	 * Kept for API compatibility. Kind assignment for merged planets is always applied.
+	 */
+	public setAutoKindAssignment(enabled: boolean): void {
+		void enabled;
 	}
 
 	/**
@@ -293,7 +301,7 @@ export class PhysicsEngine {
 
 					if (outcome === CollisionType.Merge) {
 						// Calculate merged planet properties
-						const newPlanet = mergePlanets(
+						const mergedPlanet = mergePlanets(
 							planetA.mass,
 							planetA.radius,
 							this.positionVec.clone(),
@@ -305,6 +313,7 @@ export class PhysicsEngine {
 							planetB.velocity.clone(),
 							planetB.rotationSpeedY,
 						);
+						const newPlanet = applyKindAndTexture(mergedPlanet);
 
 						const collisionPoint = this.positionVec.clone();
 
