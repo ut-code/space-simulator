@@ -34,6 +34,8 @@ type PlanetSidebarProps = {
 	setShowAxes: (v: boolean) => void;
 	showPreview: boolean;
 	setShowPreview: (v: boolean) => void;
+	showStagedPreview: boolean;
+	setShowStagedPreview: (v: boolean) => void;
 	orbitControlsRef: React.RefObject<Controls | null>;
 };
 
@@ -65,6 +67,8 @@ export function PlanetSidebar({
 	setShowAxes,
 	showPreview,
 	setShowPreview,
+	showStagedPreview,
+	setShowStagedPreview,
 	orbitControlsRef,
 }: PlanetSidebarProps & {
 	placementMode: boolean;
@@ -131,6 +135,8 @@ export function PlanetSidebar({
 							onRemove={removeStaged}
 							onClearAll={clearAllStaged}
 							onBatchPlace={onBatchPlace}
+							showStagedPreview={showStagedPreview}
+							onToggleStagedPreview={setShowStagedPreview}
 						/>
 
 						{/* Followed planet info */}

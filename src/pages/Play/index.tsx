@@ -28,6 +28,7 @@ export default function Page() {
 	const [showGrid, setShowGrid] = useState(true);
 	const [showAxes, setShowAxes] = useState(true);
 	const [showPreview, setShowPreview] = useState(true);
+	const [showStagedPreview, setShowStagedPreview] = useState(true);
 
 	const {
 		planetRegistry,
@@ -95,6 +96,8 @@ export default function Page() {
 				previewVelocity={previewVelocity}
 				onPlace={sidebar.setPositionFromClick}
 				templateId={templateId ?? "default"}
+				stagedPlanets={sidebar.stagedPlanets}
+				showStagedPreview={showStagedPreview}
 			/>
 			<PlanetSidebar
 				worldState={worldState}
@@ -124,6 +127,8 @@ export default function Page() {
 				setShowAxes={setShowAxes}
 				showPreview={showPreview}
 				setShowPreview={setShowPreview}
+				showStagedPreview={showStagedPreview}
+				setShowStagedPreview={setShowStagedPreview}
 				orbitControlsRef={orbitControlsRef}
 			/>
 		</div>

@@ -5,6 +5,8 @@ type StagedListProps = {
 	onRemove: (stagedId: string) => void;
 	onClearAll: () => void;
 	onBatchPlace: () => void;
+	showStagedPreview: boolean;
+	onToggleStagedPreview: (enabled: boolean) => void;
 };
 
 export function StagedList({
@@ -12,6 +14,8 @@ export function StagedList({
 	onRemove,
 	onClearAll,
 	onBatchPlace,
+	showStagedPreview,
+	onToggleStagedPreview,
 }: StagedListProps) {
 	if (stagedPlanets.length === 0) return null;
 
@@ -35,6 +39,16 @@ export function StagedList({
 						全削除
 					</button>
 				</div>
+			</div>
+			<div className="mb-2">
+				<label className="flex cursor-pointer items-center gap-1.5 text-xs">
+					<input
+						type="checkbox"
+						checked={showStagedPreview}
+						onChange={(e) => onToggleStagedPreview(e.target.checked)}
+					/>
+					3Dビューに配置予定を表示
+				</label>
 			</div>
 			<ul className="list-none space-y-1.5 p-0">
 				{stagedPlanets.map((staged) => (

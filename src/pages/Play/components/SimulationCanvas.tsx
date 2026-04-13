@@ -6,6 +6,7 @@ import { templates } from "@/data/templates";
 import { defaultTemplate } from "@/data/templates/default";
 import type { PlanetRegistry } from "../core/PlanetRegistry";
 import type { SimulationWorld } from "../core/SimulationWorld";
+import type { StagedPlanet } from "../types/sidebar";
 import { CameraController } from "./CameraController";
 import { Explosion } from "./Explosion";
 import { PlanetMesh } from "./PlanetMesh";
@@ -27,6 +28,8 @@ type SimulationCanvasProps = {
 	previewVelocity: [number, number, number];
 	onPlace: (position: [number, number, number]) => void;
 	templateId: string;
+	stagedPlanets: StagedPlanet[];
+	showStagedPreview: boolean;
 };
 
 export function SimulationCanvas({
@@ -45,6 +48,8 @@ export function SimulationCanvas({
 	previewVelocity,
 	onPlace,
 	templateId,
+	stagedPlanets,
+	showStagedPreview,
 }: SimulationCanvasProps) {
 	const initialCameraPosition: [number, number, number] =
 		templates.get(templateId)?.cameraLocation ?? defaultTemplate.cameraLocation;
@@ -92,6 +97,20 @@ export function SimulationCanvas({
 					velocity={previewVelocity}
 				/>
 			)}
+
+			{/* Staged planet previews (amber to distinguish from main preview) */}
+			{showStagedPreview &&
+				stagedPlanets.map((staged) => (
+					<mesh key={staged.id} position={staged.position}>
+						<sphereGeometry args={[staged.radius, 24, 24]} />
+						<meshBasicMaterial
+							color="#f59e0b"
+							wireframe
+							opacity={0.4}
+							transparent
+						/>
+					</mesh>
+				))}
 			{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
 			{showAxes && <axesHelper args={[20]} />}
 
