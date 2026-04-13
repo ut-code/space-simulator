@@ -24,6 +24,9 @@ export default function Page() {
 
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const [placementMode, setPlacementMode] = useState(false);
+	const [showGrid, setShowGrid] = useState(true);
+	const [showAxes, setShowAxes] = useState(true);
+	const [showPreview, setShowPreview] = useState(true);
 
 	const {
 		planetRegistry,
@@ -83,9 +86,9 @@ export default function Page() {
 				orbitControlsRef={orbitControlsRef}
 				placementMode={placementMode}
 				posY={previewPosition[1]}
-				showPreview={true}
-				showGrid={true}
-				showAxes={true}
+				showPreview={showPreview}
+				showGrid={showGrid}
+				showAxes={showAxes}
 				previewRadius={sidebar.form.radius}
 				previewPosition={previewPosition}
 				previewVelocity={previewVelocity}
@@ -114,6 +117,13 @@ export default function Page() {
 				onBatchPlace={batchPlacePlanets}
 				placementMode={placementMode}
 				setPlacementMode={setPlacementMode}
+				showGrid={showGrid}
+				setShowGrid={setShowGrid}
+				showAxes={showAxes}
+				setShowAxes={setShowAxes}
+				showPreview={showPreview}
+				setShowPreview={setShowPreview}
+				orbitControlsRef={orbitControlsRef}
 			/>
 		</div>
 	);

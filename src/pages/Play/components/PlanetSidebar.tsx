@@ -1,3 +1,4 @@
+import type { OrbitControls as Controls } from "three-stdlib";
 import type {
 	PlanetRegistry,
 	PlanetRegistryEntry,
@@ -27,6 +28,13 @@ type PlanetSidebarProps = {
 	removeStaged: (stagedId: string) => void;
 	clearAllStaged: () => void;
 	onBatchPlace: () => void;
+	showGrid: boolean;
+	setShowGrid: (v: boolean) => void;
+	showAxes: boolean;
+	setShowAxes: (v: boolean) => void;
+	showPreview: boolean;
+	setShowPreview: (v: boolean) => void;
+	orbitControlsRef: React.RefObject<Controls | null>;
 };
 
 export function PlanetSidebar({
@@ -51,6 +59,13 @@ export function PlanetSidebar({
 	placementMode,
 	setPlacementMode,
 	setForm,
+	showGrid,
+	setShowGrid,
+	showAxes,
+	setShowAxes,
+	showPreview,
+	setShowPreview,
+	orbitControlsRef,
 }: PlanetSidebarProps & {
 	placementMode: boolean;
 	setPlacementMode: (v: boolean) => void;
@@ -210,6 +225,50 @@ export function PlanetSidebar({
 									</li>
 								))}
 							</ul>
+						</div>
+
+						{/* Helpers section */}
+						<div className="mt-4 border-t border-white/15 pt-3">
+							<strong className="text-xs">Helpers</strong>
+							<div className="mt-2 space-y-1.5">
+								<label className="flex cursor-pointer items-center gap-2 text-xs">
+									<input
+										type="checkbox"
+										checked={showGrid}
+										onChange={(e) => setShowGrid(e.target.checked)}
+									/>
+									グリッド
+								</label>
+								<label className="flex cursor-pointer items-center gap-2 text-xs">
+									<input
+										type="checkbox"
+										checked={showAxes}
+										onChange={(e) => setShowAxes(e.target.checked)}
+									/>
+									軸ヘルパー
+								</label>
+								<label className="flex cursor-pointer items-center gap-2 text-xs">
+									<input
+										type="checkbox"
+										checked={showPreview}
+										onChange={(e) => setShowPreview(e.target.checked)}
+									/>
+									配置プレビュー
+								</label>
+								<button
+									type="button"
+									onClick={() => {
+										if (orbitControlsRef.current) {
+											orbitControlsRef.current.reset();
+											orbitControlsRef.current.target.set(0, 0, 0);
+											orbitControlsRef.current.update();
+										}
+									}}
+									className="mt-1 w-full rounded border border-white/30 bg-transparent px-2 py-1 text-xs text-white/80 hover:bg-white/10"
+								>
+									カメラリセット
+								</button>
+							</div>
 						</div>
 					</div>
 				)}
