@@ -10,7 +10,11 @@ import type { StagedPlanet } from "../types/sidebar";
 import { CameraController } from "./CameraController";
 import { Explosion } from "./Explosion";
 import { PlanetMesh } from "./PlanetMesh";
-import { PlacementSurface, PreviewPlanet } from "./PlanetPlacementView";
+import {
+	PlacementSurface,
+	PreviewPlanet,
+	StagedPreviewPlanet,
+} from "./PlanetPlacementView";
 
 type SimulationCanvasProps = {
 	worldState: ReturnType<SimulationWorld["getSnapshot"]>;
@@ -101,15 +105,12 @@ export function SimulationCanvas({
 			{/* Staged planet previews (amber to distinguish from main preview) */}
 			{showStagedPreview &&
 				stagedPlanets.map((staged) => (
-					<mesh key={staged.id} position={staged.position}>
-						<sphereGeometry args={[staged.radius, 24, 24]} />
-						<meshBasicMaterial
-							color="#f59e0b"
-							wireframe
-							opacity={0.4}
-							transparent
-						/>
-					</mesh>
+					<StagedPreviewPlanet
+						key={staged.id}
+						radius={staged.radius}
+						position={staged.position}
+						velocity={staged.velocity}
+					/>
 				))}
 			{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
 			{showAxes && <axesHelper args={[20]} />}

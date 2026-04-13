@@ -88,9 +88,11 @@ export function usePlanetSidebar() {
 		setStagedPlanets((prev) => [...prev, form]);
 		setForm((prev) => ({
 			...defaultForm(),
-			// keep the position and velocity for convenient consecutive placement
+			// keep position, velocity, and autoKindAssignment for convenient
+			// consecutive placement
 			position: prev.position,
 			velocity: prev.velocity,
+			autoKindAssignment: prev.autoKindAssignment,
 		}));
 	}, [form]);
 
