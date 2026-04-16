@@ -1,4 +1,5 @@
 import type { OrbitControls as Controls } from "three-stdlib";
+import { Switch } from "@/components/ui/switch";
 import type {
 	PlanetRegistry,
 	PlanetRegistryEntry,
@@ -240,30 +241,30 @@ export function PlanetSidebar({
 						<div className="mt-4 border-t border-white/15 pt-3">
 							<strong className="text-xs">Helpers</strong>
 							<div className="mt-2 space-y-1.5">
-								<label className="flex cursor-pointer items-center gap-2 text-xs">
-									<input
-										type="checkbox"
+								<div className="flex items-center justify-between text-xs">
+									<span className="text-white/80">グリッド</span>
+									<Switch
 										checked={showGrid}
-										onChange={(e) => setShowGrid(e.target.checked)}
+										onCheckedChange={setShowGrid}
+										className="data-[state=checked]:bg-cyan-500 data-[state=unchecked]:bg-gray-600"
 									/>
-									グリッド
-								</label>
-								<label className="flex cursor-pointer items-center gap-2 text-xs">
-									<input
-										type="checkbox"
+								</div>
+								<div className="flex items-center justify-between text-xs">
+									<span className="text-white/80">軸ヘルパー</span>
+									<Switch
 										checked={showAxes}
-										onChange={(e) => setShowAxes(e.target.checked)}
+										onCheckedChange={setShowAxes}
+										className="data-[state=checked]:bg-cyan-500 data-[state=unchecked]:bg-gray-600"
 									/>
-									軸ヘルパー
-								</label>
-								<label className="flex cursor-pointer items-center gap-2 text-xs">
-									<input
-										type="checkbox"
+								</div>
+								<div className="flex items-center justify-between text-xs">
+									<span className="text-white/80">配置プレビュー</span>
+									<Switch
 										checked={showPreview}
-										onChange={(e) => setShowPreview(e.target.checked)}
+										onCheckedChange={setShowPreview}
+										className="data-[state=checked]:bg-cyan-500 data-[state=unchecked]:bg-gray-600"
 									/>
-									配置プレビュー
-								</label>
+								</div>
 								<button
 									type="button"
 									onClick={() => {

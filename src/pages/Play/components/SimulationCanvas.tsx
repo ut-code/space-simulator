@@ -112,7 +112,7 @@ export function SimulationCanvas({
 						velocity={staged.velocity}
 					/>
 				))}
-			{showGrid && <gridHelper args={[200, 50, "#1f2937", "#0f172a"]} />}
+			{showGrid && <gridHelper args={[2000, 500, "#1f2937", "#0f172a"]} />}
 			{showAxes && <axesHelper args={[20]} />}
 
 			{worldState.explosions.map((exp) => (
@@ -128,10 +128,10 @@ export function SimulationCanvas({
 
 			{/* Optional background and controls */}
 			<Stars
-				radius={100}
-				depth={50}
-				count={5000}
-				factor={4}
+				radius={200}
+				depth={200}
+				count={40000}
+				factor={6}
 				saturation={0}
 				fade
 				speed={1}

@@ -1,3 +1,4 @@
+import { Switch } from "@/components/ui/switch";
 import type { StagedPlanet } from "../types/sidebar";
 
 type StagedListProps = {
@@ -41,14 +42,14 @@ export function StagedList({
 				</div>
 			</div>
 			<div className="mb-2">
-				<label className="flex cursor-pointer items-center gap-1.5 text-xs">
-					<input
-						type="checkbox"
+				<div className="flex items-center justify-between text-xs">
+					<Switch
 						checked={showStagedPreview}
-						onChange={(e) => onToggleStagedPreview(e.target.checked)}
+						onCheckedChange={onToggleStagedPreview}
+						className="data-[state=checked]:bg-cyan-500 data-[state=unchecked]:bg-gray-600"
 					/>
-					3Dビューに配置予定を表示
-				</label>
+					<span className="text-white/80">3Dビューに配置予定を表示</span>
+				</div>
 			</div>
 			<ul className="list-none space-y-1.5 p-0">
 				{stagedPlanets.map((staged) => (

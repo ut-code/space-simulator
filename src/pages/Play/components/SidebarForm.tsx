@@ -1,3 +1,4 @@
+import { Switch } from "@/components/ui/switch";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { StagedPlanet } from "../types/sidebar";
 
@@ -121,16 +122,16 @@ export function SidebarForm({
 			<div>
 				<div className="mb-1 flex items-center justify-between">
 					<span className="text-xs opacity-80">位置</span>
-					<label className="flex cursor-pointer items-center gap-1.5 text-xs">
-						<input
-							type="checkbox"
-							checked={placementMode}
-							onChange={(e) => onPlacementModeChange(e.target.checked)}
-						/>
+					<div className="flex items-center justify-between text-xs gap-2">
 						{placementMode ? "3D面をクリックして位置を指定" : "3D面で配置"}
-					</label>
+						<Switch
+							checked={placementMode}
+							onCheckedChange={onPlacementModeChange}
+							className="data-[state=checked]:bg-cyan-500 data-[state=unchecked]:bg-gray-600"
+						/>
+					</div>
 				</div>
-				<div className="grid grid-cols-3 gap-2">
+				<div className="grid grid-cols-3 gap-1.5">
 					{(["posX", "posY", "posZ"] as const).map((axis, idx) => {
 						const label = axis.replace("pos", "");
 						return (
@@ -193,14 +194,14 @@ export function SidebarForm({
 
 			{/* Auto texture toggle */}
 			<div className="flex items-center gap-2">
-				<label className="flex cursor-pointer items-center gap-1.5 text-xs">
-					<input
-						type="checkbox"
+				<div className="flex items-center justify-between text-xs gap-1.5">
+					<Switch
 						checked={form.autoKindAssignment}
-						onChange={(e) => onAutoKindToggle(e.target.checked)}
+						onCheckedChange={onAutoKindToggle}
+						className="data-[state=checked]:bg-cyan-500 data-[state=unchecked]:bg-gray-600"
 					/>
-					自動テクスチャ
-				</label>
+					<span className="text-white/80">自動テクスチャ</span>
+				</div>
 			</div>
 
 			{/* Add button */}
