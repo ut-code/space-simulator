@@ -57,7 +57,7 @@ export default function Page() {
 					</button>
 					<button
 						type="button"
-						onClick={() => navigate("/play?template=solar")}
+						onClick={() => navigate("/templates")}
 						className="
 						px-10 py-4
 						text-xl font-semibold
@@ -72,7 +72,7 @@ export default function Page() {
 						active:scale-95
 					"
 					>
-						Start with Solar System
+						Start with Templates
 					</button>
 					<button
 						type="button"
