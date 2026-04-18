@@ -1,5 +1,5 @@
 import type { Template } from "@/types/templates";
-import { asteroidBeltTemplate } from "./Asteroid Belt";
+import { asteroidBeltTemplate } from "./asteroidBelt";
 import { binarySystemTemplate } from "./binarySystem";
 import { defaultTemplate } from "./default";
 import { solarPlanetsTemplate } from "./solarSystem";

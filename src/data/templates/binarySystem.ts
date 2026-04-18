@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import jupitarTexture from "@/assets/2k_jupiter.avif";
+import jupiterTexture from "@/assets/2k_jupiter.avif";
 import venusTexture from "@/assets/2k_venus_atmosphere.avif";
 import earthTexture from "@/assets/earth_atmos_2048.avif";
 import { G } from "@/pages/Play/core/GravitySystem";
@@ -37,7 +37,7 @@ const starA: Planet = {
 	id: "binary-star-a",
 	name: "Helios A",
 	kind: "gas",
-	texturePath: jupitarTexture,
+	texturePath: jupiterTexture,
 	rotationSpeedY: 0.15,
 	radius: 8,
 	width: 64,
@@ -51,7 +51,7 @@ const starB: Planet = {
 	id: "binary-star-b",
 	name: "Helios B",
 	kind: "gas",
-	texturePath: jupitarTexture,
+	texturePath: jupiterTexture,
 	rotationSpeedY: 0.12,
 	radius: 7,
 	width: 64,
