@@ -44,7 +44,7 @@ const starA: Planet = {
 	height: 64,
 	position: new THREE.Vector3(-STAR_SEPARATION / 2, 0, 0),
 	velocity: new THREE.Vector3(0, 0, 0),
-	mass: 190000,
+	mass: 10000,
 };
 
 const starB: Planet = {
@@ -58,7 +58,7 @@ const starB: Planet = {
 	height: 64,
 	position: new THREE.Vector3(STAR_SEPARATION / 2, 0, 0),
 	velocity: new THREE.Vector3(0, 0, 0),
-	mass: 140000,
+	mass: 10000,
 };
 
 const binaryVelocities = createBinaryStarVelocities(
