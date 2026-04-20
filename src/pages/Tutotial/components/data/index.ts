@@ -1,6 +1,7 @@
 import type React from "react";
 import BinaryStarContent from "./contents/BinaryStarContent";
 import CircularMotionContent from "./contents/circularMotion";
+import Eccentricity from "./contents/Eccentricity";
 import fallBack from "./contents/fallBack";
 
 type Tutorial = {
@@ -34,5 +35,13 @@ export const tutorialSections: Tutorial[] = [
 			"2つ以上の星が互いの重力で引き合いながら共通の重心のまわりを回るしくみを学びます。",
 		path: "/tutorial/binaryStar",
 		Content: BinaryStarContent,
+	},
+	{
+		id: "eccentricity",
+		title: "軌道離心率",
+		description:
+			"天体が描く楕円軌道の形のゆがみを表す量で、円軌道からどれだけ外れているかを示します。",
+		path: "/tutorial/eccentricity",
+		Content: Eccentricity,
 	},
 ];
