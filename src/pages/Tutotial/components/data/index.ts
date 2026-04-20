@@ -3,6 +3,7 @@ import BinaryStarContent from "./contents/BinaryStarContent";
 import CircularMotionContent from "./contents/circularMotion";
 import Eccentricity from "./contents/Eccentricity";
 import fallBack from "./contents/fallBack";
+import SolarSystemContent from "./contents/solarSystem";
 
 type Tutorial = {
 	id: string;
@@ -27,6 +28,14 @@ export const tutorialSections: Tutorial[] = [
 			"万有引力の法則を使って、天体が互いに引き合いながら円運動する仕組みを学びます。",
 		path: "/tutorial/circularMotion",
 		Content: CircularMotionContent,
+	},
+	{
+		id: "solarSystem",
+		title: "太陽系",
+		description:
+			"太陽を中心に、惑星や天体がどのように運動しているかを学び、太陽系の構造を理解します。",
+		path: "/tutorial/solarSystem",
+		Content: SolarSystemContent,
 	},
 	{
 		id: "binaryStar",
