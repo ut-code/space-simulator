@@ -12,7 +12,7 @@ export default function BinaryStarContent() {
 					夜空に輝く星の多くは、実は1つではなく、2つ以上の星がお互いの周りをぐるぐると回り合っています。
 					このように、重力で結びついたペアの星を<strong>「連星」</strong>
 					と呼びます。
-					太陽のように1つポツンと存在している星よりも、宇宙では連星の方がメジャーな存在なのです。
+					太陽のように1つポツンと存在している星よりも、宇宙では連星の方がよく見られる存在なのです。
 				</p>
 			</section>
 
@@ -40,10 +40,16 @@ export default function BinaryStarContent() {
 					<div className="text-3xl text-blue-400 my-6 text-center">
 						<BlockMath math={"M_1 r_1 = M_2 r_2"} />
 					</div>
+					<p className="text-xs text-gray-500 mb-4 text-center">
+						※ M: 星の重さ、r: 重心からの距離
+					</p>
 					<p className="text-sm text-gray-400 border-t border-white/10 pt-4">
 						<strong>直感的な解釈：</strong>{" "}
-						2つの星は同じ時間で1周する関係になっています。
-						そのため、重心から遠い星ほど大きな円を回り、同じ時間でもより長い道のりを進みます。
+						これは「重い星ほど重心の近くに、軽い星ほど重心から遠くに位置する」というバランスを示しています。
+						<strong>
+							「重い星はどっしりと構え、軽い星がその周りを大きく振り回される」
+						</strong>
+						イメージです。
 					</p>
 				</div>
 			</section>
@@ -70,11 +76,25 @@ export default function BinaryStarContent() {
 							math={"M_1 \\frac{v_1^2}{r_1} = G \\frac{M_1 M_2}{(r_1 + r_2)^2}"}
 						/>
 					</div>
+					<div className="text-xs text-gray-500 mb-4 text-center space-y-1">
+						<p>
+							左辺：外へ逃げようとする力（遠心力） /
+							右辺：相手に引かれる力（万有引力）
+						</p>
+						<p>※ v: 速度、(r₁+r₂): 星と星の間の合計距離</p>
+					</div>
 					<div className="text-sm text-gray-400 border-t border-white/10 pt-4 space-y-2">
 						<p>
 							<strong>直感的な解釈：</strong>
 						</p>
 						<ul className="list-disc list-inside ml-2">
+							<li>
+								「動くスピード」と「引き合う強さ」がぴったり一致したときだけ、星は衝突も脱走もせずに回り続けられます。
+							</li>
+							<li>
+								分母の <span className="text-orange-300">(r₁ + r₂)²</span>{" "}
+								は、重力が「お互いの距離」で決まることを示しています。
+							</li>
 							<li>
 								2つの星は<strong>全く同じ時間（周期）</strong>
 								をかけて1周します。
@@ -117,13 +137,15 @@ export default function BinaryStarContent() {
 							「重い星と軽い星では、どちらがどんな動きをするのか？」
 							実際に動かして確かめてみることが大切です。
 						</p>
+						<br />
+						<p>※太陽を使うと変化がわかりやすく、楽しく遊べます。。</p>
 					</ul>
 				</div>
 				<div className="bg-white/5 p-6 rounded-2xl border border-white/10 mt-6">
 					<p className="text-sm font-bold text-green-300 mb-2">💡 ヒント</p>
 					<p className="text-sm text-gray-400">
 						もし星が衝突してしまったら「初速度が足りない」サインです。逆に、お互い離れていってしまったら「速すぎる」ことになります。
-						絶妙なバランスを見つけて、宇宙のダンスを完成させてください！
+						絶妙なバランスを見つけて、条件を少し変えるだけで軌道が安定しなくなることを観察してみましょう。
 					</p>
 				</div>
 			</section>
