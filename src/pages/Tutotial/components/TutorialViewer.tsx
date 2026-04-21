@@ -18,6 +18,7 @@ export default function Page() {
 		tutorialSections[0];
 	const title = detail.title;
 	const Content = detail.Content;
+	const simPath = detail.simPath;
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
@@ -63,6 +64,15 @@ export default function Page() {
 
 					{tutorialSections.some((section) => section.id === id) && (
 						<div className="flex flex-col items-center gap-6 pt-8 border-t border-white/10">
+							{simPath && (
+								<button
+									type="button"
+									onClick={() => navigate(simPath)}
+									className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
+								>
+									テンプレートから開始する
+								</button>
+							)}
 							<button
 								type="button"
 								onClick={() => navigate(`/play`)}

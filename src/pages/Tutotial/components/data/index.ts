@@ -11,6 +11,7 @@ type Tutorial = {
 	title: string;
 	description: string;
 	path: string;
+	simPath: null | string;
 	Content: React.FC;
 };
 
@@ -20,6 +21,7 @@ export const tutorialSections: Tutorial[] = [
 		title: "ページが見つかりません",
 		description: "ページが見つかりません",
 		path: "/tutorial/fallBack",
+		simPath: null,
 		Content: fallBack,
 	},
 	{
@@ -28,6 +30,7 @@ export const tutorialSections: Tutorial[] = [
 		description:
 			"万有引力の法則を使って、天体が互いに引き合いながら円運動する仕組みを学びます。",
 		path: "/tutorial/circularMotion",
+		simPath: null,
 		Content: CircularMotionContent,
 	},
 	{
@@ -36,6 +39,7 @@ export const tutorialSections: Tutorial[] = [
 		description:
 			"太陽を中心に、惑星や天体がどのように運動しているかを学び、太陽系の構造を理解します。",
 		path: "/tutorial/solarSystem",
+		simPath: "/play?template=solar",
 		Content: SolarSystemContent,
 	},
 	{
@@ -44,6 +48,7 @@ export const tutorialSections: Tutorial[] = [
 		description:
 			"2つ以上の星が互いの重力で引き合いながら共通の重心のまわりを回るしくみを学びます。",
 		path: "/tutorial/binaryStar",
+		simPath: "/play?template=binary",
 		Content: BinaryStarContent,
 	},
 	{
@@ -52,6 +57,7 @@ export const tutorialSections: Tutorial[] = [
 		description:
 			"天体が描く楕円軌道の形のゆがみを表す量で、円軌道からどれだけ外れているかを示します。",
 		path: "/tutorial/eccentricity",
+		simPath: null,
 		Content: Eccentricity,
 	},
 	{
@@ -60,6 +66,7 @@ export const tutorialSections: Tutorial[] = [
 		description:
 			"天体の重力を利用して宇宙機の速度や進行方向を変える航法技術で、燃料をほとんど使わずに加速や軌道変更ができます。",
 		path: "/tutorial/swingBy",
+		simPath: null,
 		Content: SwingBy,
 	},
 ];
