@@ -68,15 +68,17 @@ export default function Page() {
 								<button
 									type="button"
 									onClick={() => navigate(simPath)}
-									className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
+									className="w-64 px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
 								>
-									テンプレートから開始する
+									テンプレートから
+									<br />
+									開始する
 								</button>
 							)}
 							<button
 								type="button"
 								onClick={() => navigate(`/play`)}
-								className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
+								className="w-64 px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
 							>
 								シミュレーションを開始する
 							</button>
