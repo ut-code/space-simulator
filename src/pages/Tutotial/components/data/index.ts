@@ -3,6 +3,7 @@ import BinaryStarContent from "./contents/BinaryStarContent";
 import CircularMotionContent from "./contents/circularMotion";
 import Eccentricity from "./contents/Eccentricity";
 import fallBack from "./contents/fallBack";
+import SwingBy from "./contents/SwingBy";
 import SolarSystemContent from "./contents/solarSystem";
 
 type Tutorial = {
@@ -52,5 +53,13 @@ export const tutorialSections: Tutorial[] = [
 			"天体が描く楕円軌道の形のゆがみを表す量で、円軌道からどれだけ外れているかを示します。",
 		path: "/tutorial/eccentricity",
 		Content: Eccentricity,
+	},
+	{
+		id: "swingBy",
+		title: "スイングバイ",
+		description:
+			"天体の重力を利用して宇宙機の速度や進行方向を変える航法技術で、燃料をほとんど使わずに加速や軌道変更ができます。",
+		path: "/tutorial/swingBy",
+		Content: SwingBy,
 	},
 ];
