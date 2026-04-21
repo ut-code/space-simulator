@@ -1,5 +1,5 @@
 // SolarSystemContent.tsx
-import { BlockMath, InlineMath } from "react-katex";
+import { BlockMath } from "react-katex";
 
 export default function SolarSystemContent() {
 	return (
