@@ -40,6 +40,7 @@ export default function Page() {
 						type="button"
 						onClick={() => navigate("/play")}
 						className="
+						w-80
 						px-10 py-4
 						text-xl font-semibold
 						text-white
@@ -59,6 +60,7 @@ export default function Page() {
 						type="button"
 						onClick={() => navigate("/templates")}
 						className="
+						w-80
 						px-10 py-4
 						text-xl font-semibold
 						text-white
@@ -78,6 +80,7 @@ export default function Page() {
 						type="button"
 						onClick={() => navigate("/tutorial")}
 						className="
+						w-80
 						px-10 py-4
 						text-xl font-semibold
 						text-white
