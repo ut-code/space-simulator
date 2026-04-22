@@ -4,7 +4,7 @@ import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
 // KaTeXのスタイルとコンポーネントをインポート
 import "katex/dist/katex.min.css";
-import { fallback, tutorialSections } from "@/pages/Tutorial/components/data";
+import { fallback, tutorialSections } from "./contents";
 
 export default function Page() {
 	const navigate = useNavigate();
@@ -82,7 +82,7 @@ export default function Page() {
 							</button>
 							<button
 								type="button"
-								onClick={() => navigate("/tutorial")}
+								onClick={() => navigate("/tutorial/physics")}
 								className="text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
 							>
 								← Back to List

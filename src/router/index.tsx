@@ -7,10 +7,9 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const Simulation = lazy(() => import("@/pages/Play"));
 const Templates = lazy(() => import("@/pages/Templates"));
 const Tutorial = lazy(() => import("@/pages/Tutorial"));
-//TODO: rename
-const TutorialPage = lazy(
-	() => import("@/pages/Tutorial/components/TutorialViewer"),
-);
+const HowToPlay = lazy(() => import("@/pages/Tutorial/HowToPlay"));
+const Physics = lazy(() => import("@/pages/Tutorial/Physics"));
+const PhysicsDetail = lazy(() => import("@/pages/Tutorial/Physics/Detail"));
 
 export const AppRouter = () => (
 	<BrowserRouter>
@@ -41,10 +40,26 @@ export const AppRouter = () => (
 				}
 			/>
 			<Route
+				path="/tutorial/how-to-play"
+				element={
+					<Suspense fallback={<Loading />}>
+						<HowToPlay />
+					</Suspense>
+				}
+			/>
+			<Route
+				path="/tutorial/physics"
+				element={
+					<Suspense fallback={<Loading />}>
+						<Physics />
+					</Suspense>
+				}
+			/>
+			<Route
 				path="/tutorial/:id"
 				element={
 					<Suspense fallback={<Loading />}>
-						<TutorialPage />
+						<PhysicsDetail />
 					</Suspense>
 				}
 			/>

@@ -1,10 +1,10 @@
 import type React from "react";
-import BinaryStarContent from "./contents/BinaryStarContent";
-import CircularMotionContent from "./contents/CircularMotion";
-import Eccentricity from "./contents/Eccentricity";
-import Fallback from "./contents/FallBack";
-import SolarSystemContent from "./contents/SolarSystem";
-import SwingBy from "./contents/SwingBy";
+import BinaryStarContent from "./BinaryStarContent";
+import CircularMotionContent from "./CircularMotion";
+import Eccentricity from "./Eccentricity";
+import Fallback from "./FallBack";
+import SolarSystemContent from "./SolarSystem";
+import SwingBy from "./SwingBy";
 
 type Tutorial = {
 	id: string;
