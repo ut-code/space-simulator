@@ -85,6 +85,16 @@ export default function Page() {
 							</button>
 						))}
 					</div>
+
+					<div className="flex justify-center">
+						<button
+							type="button"
+							onClick={() => navigate("/")}
+							className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
+						>
+							Back to Home
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
