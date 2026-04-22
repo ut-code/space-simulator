@@ -2,7 +2,7 @@ import { Stars } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
 import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
-import { tutorialSections } from "@/pages/Tutotial/components/data";
+import { tutorialSections } from "@/pages/Tutorial/components/data";
 
 export default function Page() {
 	const navigate = useNavigate();

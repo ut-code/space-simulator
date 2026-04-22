@@ -6,9 +6,9 @@ import Home from "@/pages/Home";
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Simulation = lazy(() => import("@/pages/Play"));
 const Templates = lazy(() => import("@/pages/Templates"));
-const Tutorial = lazy(() => import("@/pages/Tutotial"));
+const Tutorial = lazy(() => import("@/pages/Tutorial"));
 const TutorialPage = lazy(
-	() => import("@/pages/Tutotial/components/TutorialViewer"),
+	() => import("@/pages/Tutorial/components/TutorialViewer"),
 );
 
 export const AppRouter = () => (

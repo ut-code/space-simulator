@@ -1,10 +1,9 @@
 import type React from "react";
 import BinaryStarContent from "./contents/BinaryStarContent";
-import CircularMotionContent from "./contents/circularMotion";
+import CircularMotionContent from "./contents/CircularMotion";
 import Eccentricity from "./contents/Eccentricity";
-import fallBack from "./contents/fallBack";
+import SolarSystemContent from "./contents/SolarSystem";
 import SwingBy from "./contents/SwingBy";
-import SolarSystemContent from "./contents/solarSystem";
 
 type Tutorial = {
 	id: string;
@@ -17,15 +16,7 @@ type Tutorial = {
 
 export const tutorialSections: Tutorial[] = [
 	{
-		id: "fallBack",
-		title: "ページが見つかりません",
-		description: "ページが見つかりません",
-		path: "/tutorial/fallBack",
-		simPath: null,
-		Content: fallBack,
-	},
-	{
-		id: "circularMotion",
+		id: "circular-motion",
 		title: "万有引力の法則と円運動",
 		description:
 			"万有引力の法則を使って、天体が互いに引き合いながら円運動する仕組みを学びます。",
@@ -34,7 +25,7 @@ export const tutorialSections: Tutorial[] = [
 		Content: CircularMotionContent,
 	},
 	{
-		id: "solarSystem",
+		id: "solar-system",
 		title: "太陽系",
 		description:
 			"太陽を中心に、惑星や天体がどのように運動しているかを学び、太陽系の構造を理解します。",
@@ -43,7 +34,7 @@ export const tutorialSections: Tutorial[] = [
 		Content: SolarSystemContent,
 	},
 	{
-		id: "binaryStar",
+		id: "binary-star",
 		title: "連星系",
 		description:
 			"2つ以上の星が互いの重力で引き合いながら共通の重心のまわりを回るしくみを学びます。",
@@ -61,7 +52,7 @@ export const tutorialSections: Tutorial[] = [
 		Content: Eccentricity,
 	},
 	{
-		id: "swingBy",
+		id: "swing-by",
 		title: "スイングバイ",
 		description:
 			"天体の重力を利用して宇宙機の速度や進行方向を変える航法技術で、燃料をほとんど使わずに加速や軌道変更ができます。",

@@ -4,7 +4,7 @@ import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
 // KaTeXのスタイルとコンポーネントをインポート
 import "katex/dist/katex.min.css";
-import { tutorialSections } from "@/pages/Tutotial/components/data";
+import { tutorialSections } from "@/pages/Tutorial/components/data";
 
 export default function Page() {
 	const navigate = useNavigate();
