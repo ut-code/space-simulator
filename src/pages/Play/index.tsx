@@ -25,8 +25,8 @@ export default function Page() {
 
 	const orbitControlsRef = useRef<Controls | null>(null);
 	const [placementMode, setPlacementMode] = useState(false);
-	const [showGrid, setShowGrid] = useState(true);
-	const [showAxes, setShowAxes] = useState(true);
+	const [showGrid, setShowGrid] = useState(false);
+	const [showAxes, setShowAxes] = useState(false);
 	const [showPreview, setShowPreview] = useState(true);
 	const [showStagedPreview, setShowStagedPreview] = useState(true);
 
