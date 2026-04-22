@@ -6,14 +6,12 @@ import HomeScene from "@/components/Scene";
 const tutorialCards = [
 	{
 		title: "How to Play",
-		description:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae posuere turpis, at mattis augue.",
+		description: "宇宙シミュレーションで遊ぶ方法を知る",
 		href: "/tutorial/how-to-play",
 	},
 	{
 		title: "Physics Guide",
-		description:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sit amet metus in risus faucibus cursus.",
+		description: "天体の物理の基本を学ぶ",
 		href: "/tutorial/physics",
 	},
 ];
