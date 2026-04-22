@@ -94,7 +94,7 @@ export default function Page() {
 						active:scale-95
 					"
 					>
-						Learn about Physics
+						Tutorial
 					</button>
 				</div>
 			</div>

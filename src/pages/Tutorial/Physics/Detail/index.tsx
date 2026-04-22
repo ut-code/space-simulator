@@ -1,24 +1,22 @@
 import { Stars } from "@react-three/drei";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
 // KaTeXのスタイルとコンポーネントをインポート
 import "katex/dist/katex.min.css";
-import { tutorialSections } from "@/pages/Tutotial/components/data";
+import { fallback, tutorialSections } from "./contents";
 
 export default function Page() {
 	const navigate = useNavigate();
 	const { id } = useParams();
-	const tutorialId = id ?? tutorialSections[0].id;
+	if (!id) {
+		return <Navigate to="/tutorial" replace />;
+	}
 
-	// 該当するコンテンツを取得（なければデフォルトを表示）
-	//const detail = TUTORIAL_DETAILS[tutorialId] || TUTORIAL_DETAILS.gravity;
-	const detail =
-		tutorialSections.find((section) => section.id === tutorialId) ??
-		tutorialSections[0];
-	const title = detail.title;
-	const Content = detail.Content;
-	const simPath = detail.simPath;
+	const detail = tutorialSections.find((section) => section.id === id);
+	const title = detail?.title ?? fallback.title;
+	const Content = detail?.content ?? fallback.content;
+	const simPath = detail?.simPath ?? fallback.simPath;
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
@@ -84,7 +82,7 @@ export default function Page() {
 							</button>
 							<button
 								type="button"
-								onClick={() => navigate("/tutorial")}
+								onClick={() => navigate("/tutorial/physics")}
 								className="text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
 							>
 								← Back to List

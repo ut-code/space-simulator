@@ -1,5 +1,3 @@
-// NotFoundContent.tsx
-
 export default function fallBack() {
 	return (
 		<div className="space-y-8 text-gray-200 leading-relaxed">

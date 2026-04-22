@@ -2,7 +2,19 @@ import { Stars } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
 import ThreeCanvas from "@/components/Canvas";
 import HomeScene from "@/components/Scene";
-import { tutorialSections } from "@/pages/Tutotial/components/data";
+
+const tutorialCards = [
+	{
+		title: "How to Play",
+		description: "宇宙シミュレーションで遊ぶ方法を知る",
+		href: "/tutorial/how-to-play",
+	},
+	{
+		title: "Physics Guide",
+		description: "天体の物理の基本を学ぶ",
+		href: "/tutorial/physics",
+	},
+];
 
 export default function Page() {
 	const navigate = useNavigate();
@@ -23,7 +35,6 @@ export default function Page() {
 			</ThreeCanvas>
 
 			<div className="absolute inset-0 overflow-y-auto flex justify-center p-6 py-12 md:py-20">
-				{/* 半透明の大きなモーダルボックス */}
 				<div
 					className="
 					bg-black/40
@@ -41,23 +52,20 @@ export default function Page() {
 				>
 					<div className="text-center">
 						<h1 className="text-5xl font-black tracking-tight text-white mb-4 italic uppercase">
-							Physics Guide
+							Tutorial
 						</h1>
 						<p className="text-blue-200 text-lg opacity-80">
-							天体の物理の基本を学ぶ
+							宇宙シミュレーションの基本を学ぶ
 						</p>
 					</div>
 
-					{/* 各解説カードのリスト */}
 					<div className="flex flex-col gap-6">
-						{tutorialSections.map(
-							(section) =>
-								section.id !== tutorialSections[0].id && (
-									<button
-										type="button"
-										key={section.title}
-										onClick={() => navigate(section.path)}
-										className="
+						{tutorialCards.map((card) => (
+							<button
+								type="button"
+								key={card.title}
+								onClick={() => navigate(card.href)}
+								className="
 									bg-white/10 hover:bg-white/20
 									border border-white/10 hover:border-blue-500/50
 									rounded-3xl p-8
@@ -65,16 +73,15 @@ export default function Page() {
 									cursor-pointer
 									group
 								"
-									>
-										<h2 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
-											{section.title}
-										</h2>
-										<p className="text-gray-400 leading-relaxed line-clamp-2">
-											{section.description}
-										</p>
-									</button>
-								),
-						)}
+							>
+								<h2 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+									{card.title}
+								</h2>
+								<p className="text-gray-400 leading-relaxed line-clamp-2">
+									{card.description}
+								</p>
+							</button>
+						))}
 					</div>
 
 					<div className="flex justify-center">
@@ -83,7 +90,7 @@ export default function Page() {
 							onClick={() => navigate("/")}
 							className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
 						>
-							Back to Menu
+							Back to Home
 						</button>
 					</div>
 				</div>
