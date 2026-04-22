@@ -7,6 +7,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const Simulation = lazy(() => import("@/pages/Play"));
 const Templates = lazy(() => import("@/pages/Templates"));
 const Tutorial = lazy(() => import("@/pages/Tutorial"));
+//TODO: rename
 const TutorialPage = lazy(
 	() => import("@/pages/Tutorial/components/TutorialViewer"),
 );

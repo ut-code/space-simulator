@@ -50,14 +50,12 @@ export default function Page() {
 
 					{/* 各解説カードのリスト */}
 					<div className="flex flex-col gap-6">
-						{tutorialSections.map(
-							(section) =>
-								section.id !== tutorialSections[0].id && (
-									<button
-										type="button"
-										key={section.title}
-										onClick={() => navigate(section.path)}
-										className="
+						{tutorialSections.map((section) => (
+							<button
+								type="button"
+								key={section.title}
+								onClick={() => navigate(`/tutorial/${section.id}`)}
+								className="
 									bg-white/10 hover:bg-white/20
 									border border-white/10 hover:border-blue-500/50
 									rounded-3xl p-8
@@ -65,16 +63,15 @@ export default function Page() {
 									cursor-pointer
 									group
 								"
-									>
-										<h2 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
-											{section.title}
-										</h2>
-										<p className="text-gray-400 leading-relaxed line-clamp-2">
-											{section.description}
-										</p>
-									</button>
-								),
-						)}
+							>
+								<h2 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+									{section.title}
+								</h2>
+								<p className="text-gray-400 leading-relaxed line-clamp-2">
+									{section.description}
+								</p>
+							</button>
+						))}
 					</div>
 
 					<div className="flex justify-center">
