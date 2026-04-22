@@ -34,9 +34,9 @@ export default function Page() {
 
 					<div className="grid gap-6 md:grid-cols-3">
 						{[
-							"Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-							"Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-							"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+							"右側パネルで惑星タイプを選び、半径・質量・自転速度を調整します。テンプレートは Earth / Sun / Mars / Jupiter / Venus から選べます。",
+							"位置と速度を設定し、必要なら 3D 面クリック配置を ON にして直感的に座標を決めます。設定できたら配置待ちリストに追加します。",
+							"配置待ちリストを確認して一括配置するとシミュレーション空間へ反映されます。惑星をクリックすると追尾、不要なら削除もできます。",
 						].map((text, index) => (
 							<div
 								key={text}
@@ -51,13 +51,13 @@ export default function Page() {
 					</div>
 
 					<div className="rounded-3xl border border-white/10 bg-white/10 p-8 text-gray-300 leading-relaxed">
-						<p className="text-xl font-semibold text-white mb-3">
-							Lorem ipsum dolor sit amet
-						</p>
+						<p className="text-xl font-semibold text-white mb-3">操作のコツ</p>
 						<p>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam
-							malesuada, sem sed tristique volutpat, turpis justo fringilla sem,
-							nec interdum ipsum ligula a velit.
+							Helpers
+							でグリッド・軸・プレビュー表示を切り替えると見やすくなります。
+							カメラが迷ったらカメラリセット、軌道を観察したいときは追尾を使うと便利です。
+							テンプレート付きで始めたい場合は Physics Guide から開くと、URL
+							パラメータ付きで すぐ検証できます。
 						</p>
 					</div>
 
