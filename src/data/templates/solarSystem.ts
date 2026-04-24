@@ -27,7 +27,7 @@ const sun: Planet = {
 	name: "Sun",
 	texturePath: sunTexture,
 	rotationSpeedY: 0.1,
-	radius: 10,
+	radius: 30,
 	width: 64,
 	height: 64,
 	position: new THREE.Vector3(0, 0, 0),
