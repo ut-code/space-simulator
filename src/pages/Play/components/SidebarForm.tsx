@@ -1,5 +1,15 @@
 import { Switch } from "@/components/ui/switch";
-import { earth, jupiter, mars, sun, venus } from "@/data/planets";
+import {
+	earth,
+	jupiter,
+	mars,
+	mercury,
+	neptune,
+	saturn,
+	sun,
+	uranus,
+	venus,
+} from "@/data/planets";
 import type { StagedPlanet } from "../types/sidebar";
 
 type SidebarFormProps = {
@@ -17,11 +27,15 @@ type SidebarFormProps = {
 };
 
 const planetTemplates = {
-	earth,
 	sun,
+	mercury,
+	venus,
+	earth,
 	mars,
 	jupiter,
-	venus,
+	saturn,
+	uranus,
+	neptune,
 };
 
 export function SidebarForm({
@@ -73,7 +87,7 @@ export function SidebarForm({
 					id="planet-radius"
 					type="range"
 					min={0.2}
-					max={6}
+					max={50}
 					step={0.1}
 					value={form.radius}
 					onChange={(e) => onRadiusChange(Number(e.target.value))}
@@ -90,7 +104,7 @@ export function SidebarForm({
 					id="planet-mass"
 					type="range"
 					min={0.1}
-					max={30000}
+					max={500000}
 					step={0.1}
 					value={form.mass}
 					onChange={(e) => onMassChange(Number(e.target.value))}

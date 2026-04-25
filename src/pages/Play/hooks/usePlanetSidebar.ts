@@ -1,14 +1,28 @@
 import { useCallback, useState } from "react";
-import { earth, jupiter, mars, sun, venus } from "@/data/planets";
+import {
+	earth,
+	jupiter,
+	mars,
+	mercury,
+	neptune,
+	saturn,
+	sun,
+	uranus,
+	venus,
+} from "@/data/planets";
 import type { Planet } from "@/types/planet";
 import type { StagedPlanet } from "../types/sidebar";
 
 const planetTemplates: Record<string, Planet> = {
-	earth,
 	sun,
+	mercury,
+	venus,
+	earth,
 	mars,
 	jupiter,
-	venus,
+	saturn,
+	uranus,
+	neptune,
 };
 
 const defaultForm = (): StagedPlanet => ({
@@ -19,7 +33,7 @@ const defaultForm = (): StagedPlanet => ({
 	radius: earth.radius,
 	mass: earth.mass,
 	rotationSpeedY: earth.rotationSpeedY,
-	position: [10, 0, 0],
+	position: [0, 0, 0],
 	velocity: [0, 0, 0],
 	autoKindAssignment: false,
 });
