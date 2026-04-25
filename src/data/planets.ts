@@ -8,18 +8,7 @@ import sunTexture from "@/assets/2k_sun.avif";
 import uranusTexture from "@/assets/2k_uranus.avif";
 import venusTexture from "@/assets/2k_venus_atmosphere.avif";
 import earthTexture from "@/assets/earth_atmos_2048.avif";
-import { G } from "@/pages/Play/core/GravitySystem";
 import type { Planet } from "@/types/planet";
-
-function createOrbitalSpeed(
-	distance: number, // 中心からの距離
-	centralMass: number,
-	G = 1,
-): number {
-	return Math.sqrt((G * centralMass) / distance);
-}
-// スケール基準
-const AU = 100;
 
 export const testPlanet: Planet = {
 	id: "test-planet",
