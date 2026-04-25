@@ -87,7 +87,7 @@ export function SidebarForm({
 					id="planet-radius"
 					type="range"
 					min={0.2}
-					max={20}
+					max={50}
 					step={0.1}
 					value={form.radius}
 					onChange={(e) => onRadiusChange(Number(e.target.value))}

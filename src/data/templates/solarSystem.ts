@@ -43,8 +43,8 @@ const mercury: Planet = {
 	radius: 0.76, // 0.38 × 2
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(0.39 * AU, 0, 0),
-	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(0.39 * AU, sun.mass, G)),
+	position: new THREE.Vector3(0.5 * AU, 0, 0),
+	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(0.5 * AU, sun.mass, G)),
 	mass: 0.055,
 };
 

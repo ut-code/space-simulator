@@ -55,8 +55,8 @@ export const mercury: Planet = {
 	radius: 0.76, // 0.38 × 2
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(0.39 * AU, 0, 0),
-	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(0.39 * AU, sun.mass, G)),
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
 	mass: 0.055,
 };
 
@@ -68,8 +68,8 @@ export const venus: Planet = {
 	radius: 1.8,
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(20, 0, 0),
-	velocity: new THREE.Vector3(0, 0, 2.5),
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
 	mass: 0.815,
 };
 
@@ -94,8 +94,8 @@ export const mars: Planet = {
 	radius: 1,
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(45, 0, 0),
-	velocity: new THREE.Vector3(0, 0, 1.6),
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
 	mass: 0.107,
 };
 
@@ -107,8 +107,8 @@ export const jupiter: Planet = {
 	radius: 22,
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(80, 0, 0),
-	velocity: new THREE.Vector3(0, 0, 1),
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
 	mass: 318,
 };
 
@@ -120,8 +120,8 @@ export const saturn: Planet = {
 	radius: 18.2, // 9.45 × 2
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(9.58 * AU, 0, 0),
-	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(9.58 * AU, sun.mass, G)),
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
 	mass: 95,
 };
 
@@ -133,8 +133,8 @@ export const uranus: Planet = {
 	radius: 8.0, // 4.0 × 2
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(19.2 * AU, 0, 0),
-	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(19.2 * AU, sun.mass, G)),
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
 	mass: 14.5,
 };
 
@@ -146,7 +146,7 @@ export const neptune: Planet = {
 	radius: 7.8, // 3.9 × 2
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(30.1 * AU, 0, 0),
-	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(30.1 * AU, sun.mass, G)),
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
 	mass: 17,
 };
