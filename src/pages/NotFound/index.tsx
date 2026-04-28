@@ -31,9 +31,10 @@ export default function Page() {
 						mb-10
 						animate-pulse
 						drop-shadow-[0_0_25px_rgba(255,255,255,0.8)]
+						whitespace-nowrap
 					"
 				>
-					NOT FOUND
+					ページが見つかりません
 				</h1>
 				<button
 					type="button"
@@ -52,7 +53,7 @@ export default function Page() {
 						active:scale-95
 					"
 				>
-					Return to Start Page
+					スタート画面に戻る
 				</button>
 			</div>
 		</div>

@@ -2,6 +2,13 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { templates } from "@/data/templates";
 
+const templateType: Record<string, string> = {
+	default: "デフォルト",
+	solar: "太陽系",
+	binary: "連星系",
+	"asteroid-belt": "小惑星帯",
+};
+
 const templateDescriptions: Record<string, string> = {
 	default: "1つの地球から始める基本シミュレーション",
 	solar: "太陽系の主要天体を配置したテンプレート",
@@ -24,7 +31,7 @@ export default function Page() {
 	return (
 		<div className="min-h-screen bg-slate-950 text-white px-6 py-12">
 			<div className="mx-auto max-w-5xl">
-				<h1 className="text-4xl font-bold tracking-wide mb-3">Templates</h1>
+				<h1 className="text-4xl font-bold tracking-wide mb-3">テンプレート</h1>
 				<p className="text-slate-300 mb-8">
 					開始したいテンプレートを選択してください。
 				</p>
@@ -36,7 +43,7 @@ export default function Page() {
 							className="rounded-xl border border-slate-700 bg-slate-900/60 p-5"
 						>
 							<h2 className="text-2xl font-semibold mb-2">
-								{getTemplateTitle(id)}
+								{templateType[id] ?? "テンプレート"}
 							</h2>
 							<p className="text-slate-300 mb-5">
 								{templateDescriptions[id] ?? "テンプレート"}
@@ -58,7 +65,7 @@ export default function Page() {
 						onClick={() => navigate("/")}
 						className="px-5 py-2 rounded-lg border border-slate-500 hover:bg-slate-800 transition"
 					>
-						Back to Home
+						ホームに戻る
 					</button>
 				</div>
 			</div>
