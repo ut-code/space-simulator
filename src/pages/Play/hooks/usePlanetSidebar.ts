@@ -28,7 +28,7 @@ const planetTemplates: Record<string, Planet> = {
 const defaultForm = (): StagedPlanet => ({
 	id: crypto.randomUUID(),
 	templateKey: "earth",
-	name: "Earth",
+	name: "地球",
 	texturePath: earth.texturePath,
 	radius: earth.radius,
 	mass: earth.mass,

@@ -2,13 +2,6 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { templates } from "@/data/templates";
 
-const templateType: Record<string, string> = {
-	default: "デフォルト",
-	solar: "太陽系",
-	binary: "連星系",
-	"asteroid-belt": "小惑星帯",
-};
-
 const templateDescriptions: Record<string, string> = {
 	default: "1つの地球から始める基本シミュレーション",
 	solar: "太陽系の主要天体を配置したテンプレート",
@@ -17,10 +10,10 @@ const templateDescriptions: Record<string, string> = {
 };
 
 function getTemplateTitle(id: string): string {
-	if (id === "default") return "Default";
-	if (id === "solar") return "Solar System";
-	if (id === "binary") return "Binary System";
-	if (id === "asteroid-belt") return "Asteroid Belt";
+	if (id === "default") return "デフォルト";
+	if (id === "solar") return "太陽系";
+	if (id === "binary") return "連星系";
+	if (id === "asteroid-belt") return "小惑星帯";
 	return id;
 }
 
@@ -43,7 +36,7 @@ export default function Page() {
 							className="rounded-xl border border-slate-700 bg-slate-900/60 p-5"
 						>
 							<h2 className="text-2xl font-semibold mb-2">
-								{templateType[id] ?? "テンプレート"}
+								{getTemplateTitle(id) ?? "テンプレート"}
 							</h2>
 							<p className="text-slate-300 mb-5">
 								{templateDescriptions[id] ?? "テンプレート"}
