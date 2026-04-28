@@ -15,7 +15,7 @@ export function mergePlanets(
 	yrotB: number,
 ): Planet {
 	const newId = crypto.randomUUID();
-	const newName = "mergedPlanet";
+	const newName = "合体した惑星";
 	const newTexturePath = moonTexture;
 
 	const newRotationSpeedY =

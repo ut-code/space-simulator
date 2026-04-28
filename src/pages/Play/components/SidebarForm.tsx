@@ -38,18 +38,6 @@ const planetTemplates = {
 	neptune,
 };
 
-const planetNamesJP: Record<string, string> = {
-	sun: "太陽",
-	mercury: "水星",
-	venus: "金星",
-	earth: "地球",
-	mars: "火星",
-	jupiter: "木星",
-	saturn: "土星",
-	uranus: "天王星",
-	neptune: "海王星",
-};
-
 export function SidebarForm({
 	form,
 	placementMode,
@@ -81,7 +69,7 @@ export function SidebarForm({
 									: "border-white/20 bg-white/5 text-white/70 hover:border-white/40 hover:bg-white/10"
 							}`}
 						>
-							{planetNamesJP[key] || tpl.name}
+							{tpl.name}
 						</button>
 					))}
 				</div>
