@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import {
 	earth,
@@ -63,6 +63,15 @@ export function SidebarForm({
 		String(form.velocity[2]),
 	]);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		setPosition([
+			String(form.position[0]),
+			String(form.position[1]),
+			String(form.position[2]),
+		]);
+	}, [form.position]);
+
 	return (
 		<div className="space-y-3">
 			{/* Planet type selector */}
