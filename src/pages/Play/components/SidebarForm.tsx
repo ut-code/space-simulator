@@ -177,6 +177,12 @@ export function SidebarForm({
 									onBlur={() => {
 										const val = position[idx].trim();
 										if (val === "") {
+											onPositionChange(axis, 0);
+											setPosition((prev) => {
+												const newPos = [...prev] as [string, string, string];
+												newPos[idx] = String(0);
+												return newPos;
+											});
 											setError(null);
 											return;
 										}
@@ -197,6 +203,12 @@ export function SidebarForm({
 										if (e.key === "Enter") {
 											const val = position[idx].trim();
 											if (val === "") {
+												onPositionChange(axis, 0);
+												setPosition((prev) => {
+													const newPos = [...prev] as [string, string, string];
+													newPos[idx] = String(0);
+													return newPos;
+												});
 												setError(null);
 												return;
 											}
@@ -251,6 +263,12 @@ export function SidebarForm({
 									onBlur={() => {
 										const val = velocity[idx].trim();
 										if (val === "") {
+											onVelocityChange(axis, 0);
+											setVelocity((prev) => {
+												const newVel = [...prev] as [string, string, string];
+												newVel[idx] = String(0);
+												return newVel;
+											});
 											setError(null);
 											return;
 										}
@@ -271,6 +289,12 @@ export function SidebarForm({
 										if (e.key === "Enter") {
 											const val = velocity[idx].trim();
 											if (val === "") {
+												onVelocityChange(axis, 0);
+												setVelocity((prev) => {
+													const newVel = [...prev] as [string, string, string];
+													newVel[idx] = String(0);
+													return newVel;
+												});
 												setError(null);
 												return;
 											}

@@ -183,9 +183,9 @@ export function PlanetSidebar({
 												<div className="opacity-70 flex gap-2">
 													<span>半径: {planet.radius.toFixed(1)}</span>
 													<span>
-														位置: ({planet.position.x.toFixed(1)},
-														{planet.position.y.toFixed(1)},
-														{planet.position.z.toFixed(1)})
+														位置: ({planet.position.x.toFixed(1)},{" "}
+														{planet.position.y.toFixed(1)},{" "}
+														{planet.position.z.toFixed(1)}){" "}
 													</span>
 												</div>
 											</div>
