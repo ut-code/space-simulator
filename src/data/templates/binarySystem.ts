@@ -35,7 +35,7 @@ const STAR_SEPARATION = 60;
 
 const starA: Planet = {
 	id: "binary-star-a",
-	name: "Helios A",
+	name: "ヘリオスA",
 	kind: "gas",
 	texturePath: jupiterTexture,
 	rotationSpeedY: 0.15,
@@ -49,7 +49,7 @@ const starA: Planet = {
 
 const starB: Planet = {
 	id: "binary-star-b",
-	name: "Helios B",
+	name: "ヘリオスB",
 	kind: "gas",
 	texturePath: jupiterTexture,
 	rotationSpeedY: 0.12,
@@ -73,7 +73,7 @@ starB.velocity.set(0, 0, -binaryVelocities.velocityB);
 
 const planetAroundA: Planet = {
 	id: "binary-a-prime",
-	name: "A-Prime",
+	name: "ヘリオスA系惑星",
 	kind: "rocky",
 	texturePath: venusTexture,
 	rotationSpeedY: 2,
@@ -91,7 +91,7 @@ const planetAroundA: Planet = {
 
 const planetAroundB: Planet = {
 	id: "binary-b-prime",
-	name: "B-Prime",
+	name: "ヘリオスB系惑星",
 	kind: "rocky",
 	texturePath: earthTexture,
 	rotationSpeedY: 2,

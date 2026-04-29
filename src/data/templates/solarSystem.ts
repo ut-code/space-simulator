@@ -24,10 +24,10 @@ const AU = 100;
 
 const sun: Planet = {
 	id: "sun",
-	name: "Sun",
+	name: "太陽",
 	texturePath: sunTexture,
 	rotationSpeedY: 0.1,
-	radius: 10,
+	radius: 30,
 	width: 64,
 	height: 64,
 	position: new THREE.Vector3(0, 0, 0),
@@ -37,20 +37,20 @@ const sun: Planet = {
 
 const mercury: Planet = {
 	id: "mercury",
-	name: "Mercury",
+	name: "水星",
 	texturePath: mercuryTexture,
 	rotationSpeedY: 2,
 	radius: 0.76, // 0.38 × 2
 	width: 64,
 	height: 64,
-	position: new THREE.Vector3(0.39 * AU, 0, 0),
-	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(0.39 * AU, sun.mass, G)),
+	position: new THREE.Vector3(0.5 * AU, 0, 0),
+	velocity: new THREE.Vector3(0, 0, createOrbitalSpeed(0.5 * AU, sun.mass, G)),
 	mass: 0.055,
 };
 
 const venus: Planet = {
 	id: "venus",
-	name: "Venus",
+	name: "金星",
 	texturePath: venusTexture,
 	rotationSpeedY: 2,
 	radius: 1.9, // 0.95 × 2
@@ -63,7 +63,7 @@ const venus: Planet = {
 
 const earth: Planet = {
 	id: "earth",
-	name: "Earth",
+	name: "地球",
 	texturePath: earthTexture,
 	rotationSpeedY: 2,
 	radius: 2,
@@ -76,7 +76,7 @@ const earth: Planet = {
 
 const mars: Planet = {
 	id: "mars",
-	name: "Mars",
+	name: "火星",
 	texturePath: marsTexture,
 	rotationSpeedY: 2,
 	radius: 1.06, // 0.53 × 2
@@ -89,7 +89,7 @@ const mars: Planet = {
 
 const jupiter: Planet = {
 	id: "jupiter",
-	name: "Jupiter",
+	name: "木星",
 	texturePath: jupiterTexture,
 	rotationSpeedY: 2,
 	radius: 22.4, // 11.2 × 2
@@ -102,7 +102,7 @@ const jupiter: Planet = {
 
 const saturn: Planet = {
 	id: "saturn",
-	name: "Saturn",
+	name: "土星",
 	texturePath: saturnTexture,
 	rotationSpeedY: 2,
 	radius: 18.9, // 9.45 × 2
@@ -115,7 +115,7 @@ const saturn: Planet = {
 
 const uranus: Planet = {
 	id: "uranus",
-	name: "Uranus",
+	name: "天王星",
 	texturePath: uranusTexture,
 	rotationSpeedY: 2,
 	radius: 8.0, // 4.0 × 2
@@ -128,7 +128,7 @@ const uranus: Planet = {
 
 const neptune: Planet = {
 	id: "neptune",
-	name: "Neptune",
+	name: "海王星",
 	texturePath: neptuneTexture,
 	rotationSpeedY: 2,
 	radius: 7.8, // 3.9 × 2

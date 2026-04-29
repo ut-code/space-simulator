@@ -40,7 +40,7 @@ export default function Page() {
 						type="button"
 						onClick={() => navigate("/play")}
 						className="
-						w-80
+						w-90
 						px-10 py-4
 						text-xl font-semibold
 						text-white
@@ -54,13 +54,13 @@ export default function Page() {
 						active:scale-95
 					"
 					>
-						Start Simulation
+						シミュレーションを始める
 					</button>
 					<button
 						type="button"
 						onClick={() => navigate("/templates")}
 						className="
-						w-80
+						w-90
 						px-10 py-4
 						text-xl font-semibold
 						text-white
@@ -74,13 +74,13 @@ export default function Page() {
 						active:scale-95
 					"
 					>
-						Start with Templates
+						テンプレートから始める
 					</button>
 					<button
 						type="button"
 						onClick={() => navigate("/tutorial")}
 						className="
-						w-80
+						w-90
 						px-10 py-4
 						text-xl font-semibold
 						text-white
@@ -94,7 +94,7 @@ export default function Page() {
 						active:scale-95
 					"
 					>
-						Tutorial
+						チュートリアル
 					</button>
 				</div>
 			</div>

@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
-import { earth, jupiter, mars, sun, venus } from "@/data/planets";
+import {
+	earth,
+	jupiter,
+	mars,
+	mercury,
+	neptune,
+	saturn,
+	sun,
+	uranus,
+	venus,
+} from "@/data/planets";
 import type { StagedPlanet } from "../types/sidebar";
 
 type SidebarFormProps = {
@@ -18,11 +28,15 @@ type SidebarFormProps = {
 };
 
 const planetTemplates = {
-	earth,
 	sun,
+	mercury,
+	venus,
+	earth,
 	mars,
 	jupiter,
-	venus,
+	saturn,
+	uranus,
+	neptune,
 };
 
 export function SidebarForm({
@@ -57,7 +71,7 @@ export function SidebarForm({
 							type="button"
 							onClick={() => onTemplateChange(key)}
 							aria-pressed={form.templateKey === key}
-							className={`rounded-md border px-2.5 py-1 text-xs capitalize transition-colors ${
+							className={`rounded-md border px-2.5 py-1 text-xs transition-colors ${
 								form.templateKey === key
 									? "border-cyan-400 bg-cyan-400/20 text-cyan-200"
 									: "border-white/20 bg-white/5 text-white/70 hover:border-white/40 hover:bg-white/10"
@@ -81,7 +95,7 @@ export function SidebarForm({
 					id="planet-radius"
 					type="range"
 					min={0.2}
-					max={6}
+					max={50}
 					step={0.1}
 					value={form.radius}
 					onChange={(e) => onRadiusChange(Number(e.target.value))}
@@ -98,7 +112,7 @@ export function SidebarForm({
 					id="planet-mass"
 					type="range"
 					min={0.1}
-					max={30000}
+					max={500000}
 					step={0.1}
 					value={form.mass}
 					onChange={(e) => onMassChange(Number(e.target.value))}

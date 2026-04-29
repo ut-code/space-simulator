@@ -85,7 +85,7 @@ export default function Page() {
 								onClick={() => navigate("/tutorial/physics")}
 								className="text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
 							>
-								← Back to List
+								← 一覧へ戻る
 							</button>
 						</div>
 					)}

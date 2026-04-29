@@ -5,12 +5,12 @@ import HomeScene from "@/components/Scene";
 
 const tutorialCards = [
 	{
-		title: "How to Play",
+		title: "遊び方",
 		description: "宇宙シミュレーションで遊ぶ方法を知る",
 		href: "/tutorial/how-to-play",
 	},
 	{
-		title: "Physics Guide",
+		title: "物理入門ガイド",
 		description: "天体の物理の基本を学ぶ",
 		href: "/tutorial/physics",
 	},
@@ -52,7 +52,7 @@ export default function Page() {
 				>
 					<div className="text-center">
 						<h1 className="text-5xl font-black tracking-tight text-white mb-4 italic uppercase">
-							Tutorial
+							チュートリアル
 						</h1>
 						<p className="text-blue-200 text-lg opacity-80">
 							宇宙シミュレーションの基本を学ぶ
@@ -90,7 +90,7 @@ export default function Page() {
 							onClick={() => navigate("/")}
 							className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
 						>
-							Back to Home
+							ホームへ戻る
 						</button>
 					</div>
 				</div>
