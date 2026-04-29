@@ -52,12 +52,16 @@ export function SidebarForm({
 	onAutoKindToggle,
 	onAddToStaged,
 }: SidebarFormProps) {
-	const [position, setPosition] = useState<
-		[number | "", number | "", number | ""]
-	>([form.position[0], form.position[1], form.position[2]]);
-	const [velocity, setVelocity] = useState<
-		[number | "", number | "", number | ""]
-	>([form.velocity[0], form.velocity[1], form.velocity[2]]);
+	const [position, setPosition] = useState<[string, string, string]>([
+		String(form.position[0]),
+		String(form.position[1]),
+		String(form.position[2]),
+	]);
+	const [velocity, setVelocity] = useState<[string, string, string]>([
+		String(form.velocity[0]),
+		String(form.velocity[1]),
+		String(form.velocity[2]),
+	]);
 	const [error, setError] = useState<string | null>(null);
 	return (
 		<div className="space-y-3">
@@ -170,34 +174,52 @@ export function SidebarForm({
 									id={`planet-${axis}`}
 									type="text"
 									value={position[idx]}
-									onChange={(e) => {
-										const val = e.target.value.trim();
-										if (val !== "" && !Number.isNaN(Number(val))) {
-											onPositionChange(axis, Number(val));
-											setPosition((prev) => {
-												const newPos = [...prev] as [
-													number | "",
-													number | "",
-													number | "",
-												];
-												newPos[idx] = Number(val);
-												return newPos;
-											});
+									onBlur={() => {
+										const val = position[idx].trim();
+										if (val === "") {
 											setError(null);
-										} else if (val !== "" && Number.isNaN(Number(val))) {
-											setError("数値を入力してください");
-										} else if (val === "") {
-											setPosition((prev) => {
-												const newPos = [...prev] as [
-													number | "",
-													number | "",
-													number | "",
-												];
-												newPos[idx] = "";
-												return newPos;
-											});
-											setError(null);
+											return;
 										}
+										const num = Number(val);
+										if (!Number.isNaN(num)) {
+											onPositionChange(axis, num);
+											setPosition((prev) => {
+												const newPos = [...prev] as [string, string, string];
+												newPos[idx] = String(num);
+												return newPos;
+											});
+											setError(null);
+										} else {
+											setError("数値を入力してください");
+										}
+									}}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											const val = position[idx].trim();
+											if (val === "") {
+												setError(null);
+												return;
+											}
+											const num = Number(val);
+											if (!Number.isNaN(num)) {
+												onPositionChange(axis, num);
+												setPosition((prev) => {
+													const newPos = [...prev] as [string, string, string];
+													newPos[idx] = String(num);
+													return newPos;
+												});
+												setError(null);
+											} else {
+												setError("数値を入力してください");
+											}
+										}
+									}}
+									onChange={(e) => {
+										setPosition((prev) => {
+											const newPos = [...prev] as [string, string, string];
+											newPos[idx] = e.target.value;
+											return newPos;
+										});
 									}}
 									className="mt-0.5 w-full rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 								/>
@@ -226,34 +248,52 @@ export function SidebarForm({
 									id={`planet-${axis}`}
 									type="text"
 									value={velocity[idx]}
-									onChange={(e) => {
-										const val = e.target.value.trim();
-										if (val !== "" && !Number.isNaN(Number(val))) {
-											onVelocityChange(axis, Number(val));
-											setVelocity((prev) => {
-												const newVel = [...prev] as [
-													number | "",
-													number | "",
-													number | "",
-												];
-												newVel[idx] = Number(val);
-												return newVel;
-											});
+									onBlur={() => {
+										const val = velocity[idx].trim();
+										if (val === "") {
 											setError(null);
-										} else if (val !== "" && Number.isNaN(Number(val))) {
-											setError("数値を入力してください");
-										} else if (val === "") {
-											setVelocity((prev) => {
-												const newVel = [...prev] as [
-													number | "",
-													number | "",
-													number | "",
-												];
-												newVel[idx] = "";
-												return newVel;
-											});
-											setError(null);
+											return;
 										}
+										const num = Number(val);
+										if (!Number.isNaN(num)) {
+											onVelocityChange(axis, num);
+											setVelocity((prev) => {
+												const newVel = [...prev] as [string, string, string];
+												newVel[idx] = String(num);
+												return newVel;
+											});
+											setError(null);
+										} else {
+											setError("数値を入力してください");
+										}
+									}}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											const val = velocity[idx].trim();
+											if (val === "") {
+												setError(null);
+												return;
+											}
+											const num = Number(val);
+											if (!Number.isNaN(num)) {
+												onVelocityChange(axis, num);
+												setVelocity((prev) => {
+													const newVel = [...prev] as [string, string, string];
+													newVel[idx] = String(num);
+													return newVel;
+												});
+												setError(null);
+											} else {
+												setError("数値を入力してください");
+											}
+										}
+									}}
+									onChange={(e) => {
+										setVelocity((prev) => {
+											const newVel = [...prev] as [string, string, string];
+											newVel[idx] = e.target.value;
+											return newVel;
+										});
 									}}
 									className="mt-0.5 w-full rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 								/>
