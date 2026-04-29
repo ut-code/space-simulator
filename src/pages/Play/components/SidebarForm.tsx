@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { earth, jupiter, mars, sun, venus } from "@/data/planets";
 import type { StagedPlanet } from "../types/sidebar";
@@ -37,6 +38,13 @@ export function SidebarForm({
 	onAutoKindToggle,
 	onAddToStaged,
 }: SidebarFormProps) {
+	const [position, setPosition] = useState<
+		[number | "", number | "", number | ""]
+	>([form.position[0], form.position[1], form.position[2]]);
+	const [velocity, setVelocity] = useState<
+		[number | "", number | "", number | ""]
+	>([form.velocity[0], form.velocity[1], form.velocity[2]]);
+	const [error, setError] = useState<string | null>(null);
 	return (
 		<div className="space-y-3">
 			{/* Planet type selector */}
@@ -144,14 +152,37 @@ export function SidebarForm({
 								</label>
 								<input
 									id={`planet-${axis}`}
-									type="number"
-									min={-200}
-									max={200}
-									step={0.2}
-									value={form.position[idx]}
-									onChange={(e) =>
-										onPositionChange(axis, Number(e.target.value))
-									}
+									type="text"
+									value={position[idx]}
+									onChange={(e) => {
+										const val = e.target.value.trim();
+										if (val !== "" && !Number.isNaN(Number(val))) {
+											onPositionChange(axis, Number(val));
+											setPosition((prev) => {
+												const newPos = [...prev] as [
+													number | "",
+													number | "",
+													number | "",
+												];
+												newPos[idx] = Number(val);
+												return newPos;
+											});
+											setError(null);
+										} else if (val !== "" && Number.isNaN(Number(val))) {
+											setError("数値を入力してください");
+										} else if (val === "") {
+											setPosition((prev) => {
+												const newPos = [...prev] as [
+													number | "",
+													number | "",
+													number | "",
+												];
+												newPos[idx] = "";
+												return newPos;
+											});
+											setError(null);
+										}
+									}}
 									className="mt-0.5 w-full rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 								/>
 							</div>
@@ -176,14 +207,37 @@ export function SidebarForm({
 								</label>
 								<input
 									id={`planet-${axis}`}
-									type="number"
-									min={-20}
-									max={20}
-									step={0.1}
-									value={form.velocity[idx]}
-									onChange={(e) =>
-										onVelocityChange(axis, Number(e.target.value))
-									}
+									type="text"
+									value={velocity[idx]}
+									onChange={(e) => {
+										const val = e.target.value.trim();
+										if (val !== "" && !Number.isNaN(Number(val))) {
+											onVelocityChange(axis, Number(val));
+											setVelocity((prev) => {
+												const newVel = [...prev] as [
+													number | "",
+													number | "",
+													number | "",
+												];
+												newVel[idx] = Number(val);
+												return newVel;
+											});
+											setError(null);
+										} else if (val !== "" && Number.isNaN(Number(val))) {
+											setError("数値を入力してください");
+										} else if (val === "") {
+											setVelocity((prev) => {
+												const newVel = [...prev] as [
+													number | "",
+													number | "",
+													number | "",
+												];
+												newVel[idx] = "";
+												return newVel;
+											});
+											setError(null);
+										}
+									}}
 									className="mt-0.5 w-full rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 								/>
 							</div>
@@ -203,6 +257,8 @@ export function SidebarForm({
 					<span className="text-white/80">自動テクスチャ</span>
 				</div>
 			</div>
+
+			<div>{error && <p className="text-red-500 text-xs mt-1">{error}</p>}</div>
 
 			{/* Add button */}
 			<button
