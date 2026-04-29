@@ -180,11 +180,13 @@ export function PlanetSidebar({
 										<div className="flex items-center justify-between gap-2">
 											<div>
 												<div className="font-medium">{planet.name}</div>
-												<div className="opacity-70">
-													r={planet.radius.toFixed(1)} / (
-													{planet.position.x.toFixed(1)},{" "}
-													{planet.position.y.toFixed(1)},{" "}
-													{planet.position.z.toFixed(1)})
+												<div className="opacity-70 flex gap-2">
+													<span>半径: {planet.radius.toFixed(1)}</span>
+													<span>
+														位置: ({planet.position.x.toFixed(1)},
+														{planet.position.y.toFixed(1)},
+														{planet.position.z.toFixed(1)})
+													</span>
 												</div>
 											</div>
 											<div className="flex shrink-0 items-center gap-1.5">
@@ -237,6 +239,7 @@ export function PlanetSidebar({
 							</ul>
 						</div>
 
+						<div className="border-t border-white/60 mt-2" />
 						{/* Helpers section */}
 						<div className="mt-4 border-t border-white/15 pt-3">
 							<strong className="text-xs">ヘルパー</strong>

@@ -82,6 +82,7 @@ export function SidebarForm({
 					))}
 				</div>
 			</div>
+			<div className="border-t border-white/60" />
 
 			{/* Radius */}
 			<div>
@@ -140,6 +141,7 @@ export function SidebarForm({
 				/>
 			</div>
 
+			<div className="border-t border-white/60" />
 			{/* Position */}
 			<div>
 				<div className="mb-1 flex items-center justify-between">
@@ -205,6 +207,7 @@ export function SidebarForm({
 				</div>
 			</div>
 
+			<div className="border-t border-white/60" />
 			{/* Velocity */}
 			<div>
 				<span className="mb-1 block text-xs opacity-80">速度</span>
@@ -260,6 +263,7 @@ export function SidebarForm({
 				</div>
 			</div>
 
+			<div className="border-t border-white/60" />
 			{/* Auto texture toggle */}
 			<div className="flex items-center gap-2">
 				<div className="flex items-center justify-between text-xs gap-1.5">
