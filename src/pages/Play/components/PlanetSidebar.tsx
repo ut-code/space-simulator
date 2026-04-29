@@ -239,7 +239,7 @@ export function PlanetSidebar({
 
 						{/* Helpers section */}
 						<div className="mt-4 border-t border-white/15 pt-3">
-							<strong className="text-xs">Helpers</strong>
+							<strong className="text-xs">ヘルパー</strong>
 							<div className="mt-2 space-y-1.5">
 								<div className="flex items-center justify-between text-xs">
 									<span className="text-white/80">グリッド</span>

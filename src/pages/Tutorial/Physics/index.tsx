@@ -41,7 +41,7 @@ export default function Page() {
 				>
 					<div className="text-center">
 						<h1 className="text-5xl font-black tracking-tight text-white mb-4 italic uppercase">
-							Physics Guide
+							物理入門ガイド
 						</h1>
 						<p className="text-blue-200 text-lg opacity-80">
 							天体の物理の基本を学ぶ
@@ -80,7 +80,7 @@ export default function Page() {
 							onClick={() => navigate("/tutorial")}
 							className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
 						>
-							Back to Menu
+							メニューへ戻る
 						</button>
 					</div>
 				</div>

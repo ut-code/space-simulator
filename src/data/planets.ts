@@ -25,7 +25,7 @@ export const testPlanet: Planet = {
 
 export const sun: Planet = {
 	id: "sun",
-	name: "Sun",
+	name: "太陽",
 	texturePath: sunTexture,
 	rotationSpeedY: 0.1,
 	radius: 30,
@@ -38,7 +38,7 @@ export const sun: Planet = {
 
 export const mercury: Planet = {
 	id: "mercury",
-	name: "Mercury",
+	name: "水星",
 	texturePath: mercuryTexture,
 	rotationSpeedY: 2,
 	radius: 0.76, // 0.38 × 2
@@ -51,7 +51,7 @@ export const mercury: Planet = {
 
 export const venus: Planet = {
 	id: "venus",
-	name: "Venus",
+	name: "金星",
 	texturePath: venusTexture,
 	rotationSpeedY: 1.8,
 	radius: 1.8,
@@ -64,7 +64,7 @@ export const venus: Planet = {
 
 export const earth: Planet = {
 	id: "initial-earth",
-	name: "Earth",
+	name: "地球",
 	texturePath: earthTexture,
 	rotationSpeedY: 2,
 	radius: 2,
@@ -77,7 +77,7 @@ export const earth: Planet = {
 
 export const mars: Planet = {
 	id: "mars",
-	name: "Mars",
+	name: "火星",
 	texturePath: marsTexture,
 	rotationSpeedY: 1.5,
 	radius: 1,
@@ -90,7 +90,7 @@ export const mars: Planet = {
 
 export const jupiter: Planet = {
 	id: "jupiter",
-	name: "Jupiter",
+	name: "木星",
 	texturePath: jupiterTexture,
 	rotationSpeedY: 1.2,
 	radius: 22,
@@ -103,7 +103,7 @@ export const jupiter: Planet = {
 
 export const saturn: Planet = {
 	id: "saturn",
-	name: "Saturn",
+	name: "土星",
 	texturePath: saturnTexture,
 	rotationSpeedY: 2,
 	radius: 18.2, // 9.45 × 2
@@ -116,7 +116,7 @@ export const saturn: Planet = {
 
 export const uranus: Planet = {
 	id: "uranus",
-	name: "Uranus",
+	name: "天王星",
 	texturePath: uranusTexture,
 	rotationSpeedY: 2,
 	radius: 8.0, // 4.0 × 2
@@ -129,7 +129,7 @@ export const uranus: Planet = {
 
 export const neptune: Planet = {
 	id: "neptune",
-	name: "Neptune",
+	name: "海王星",
 	texturePath: neptuneTexture,
 	rotationSpeedY: 2,
 	radius: 7.8, // 3.9 × 2

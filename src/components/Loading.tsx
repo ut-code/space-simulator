@@ -30,7 +30,7 @@ export default function Page() {
 						drop-shadow-[0_0_25px_rgba(255,255,255,0.8)]
 					"
 				>
-					Loading...
+					ロード中...
 				</h1>
 			</div>
 		</div>

@@ -1,10 +1,11 @@
-import { earth, jupiter, sun } from "@/data/planets";
+import moonTexture from "@/assets/960px-Moon_texture.avif";
+import { saturn, sun } from "@/data/planets";
 import type { Planet, PlanetKind } from "@/types/planet";
 
 const kindTextureMap: Record<PlanetKind, string> = {
 	star: sun.texturePath,
-	rocky: earth.texturePath,
-	gas: jupiter.texturePath,
+	rocky: moonTexture,
+	gas: saturn.texturePath,
 };
 
 const STAR_MASS_THRESHOLD = 10000;

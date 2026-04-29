@@ -10,10 +10,10 @@ const templateDescriptions: Record<string, string> = {
 };
 
 function getTemplateTitle(id: string): string {
-	if (id === "default") return "Default";
-	if (id === "solar") return "Solar System";
-	if (id === "binary") return "Binary System";
-	if (id === "asteroid-belt") return "Asteroid Belt";
+	if (id === "default") return "デフォルト";
+	if (id === "solar") return "太陽系";
+	if (id === "binary") return "連星系";
+	if (id === "asteroid-belt") return "小惑星帯";
 	return id;
 }
 
@@ -24,7 +24,7 @@ export default function Page() {
 	return (
 		<div className="min-h-screen bg-slate-950 text-white px-6 py-12">
 			<div className="mx-auto max-w-5xl">
-				<h1 className="text-4xl font-bold tracking-wide mb-3">Templates</h1>
+				<h1 className="text-4xl font-bold tracking-wide mb-3">テンプレート</h1>
 				<p className="text-slate-300 mb-8">
 					開始したいテンプレートを選択してください。
 				</p>
@@ -36,7 +36,7 @@ export default function Page() {
 							className="rounded-xl border border-slate-700 bg-slate-900/60 p-5"
 						>
 							<h2 className="text-2xl font-semibold mb-2">
-								{getTemplateTitle(id)}
+								{getTemplateTitle(id) ?? "テンプレート"}
 							</h2>
 							<p className="text-slate-300 mb-5">
 								{templateDescriptions[id] ?? "テンプレート"}
@@ -58,7 +58,7 @@ export default function Page() {
 						onClick={() => navigate("/")}
 						className="px-5 py-2 rounded-lg border border-slate-500 hover:bg-slate-800 transition"
 					>
-						Back to Home
+						ホームに戻る
 					</button>
 				</div>
 			</div>

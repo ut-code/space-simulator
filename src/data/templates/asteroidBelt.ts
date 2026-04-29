@@ -34,7 +34,7 @@ function createAsteroid(index: number, sunMass: number): Planet {
 
 	return {
 		id: `asteroid-${index}`,
-		name: `Asteroid ${index + 1}`,
+		name: `小惑星 ${index + 1}`,
 		kind: "rocky",
 		texturePath: mercuryTexture,
 		rotationSpeedY: 0.6 + (index % 6) * 0.15,
@@ -49,7 +49,7 @@ function createAsteroid(index: number, sunMass: number): Planet {
 
 const sun: Planet = {
 	id: "belt-sun",
-	name: "Sun",
+	name: "太陽",
 	kind: "star",
 	texturePath: sunTexture,
 	rotationSpeedY: 0.1,
@@ -63,7 +63,7 @@ const sun: Planet = {
 
 const innerGiant: Planet = {
 	id: "belt-inner-giant",
-	name: "Aster",
+	name: "アスター",
 	kind: "gas",
 	texturePath: jupiterTexture,
 	rotationSpeedY: 1.3,
