@@ -128,7 +128,7 @@ export function SimulationCanvas({
 
 			{/* Optional background and controls */}
 			<Stars
-				radius={200}
+				radius={3000}
 				depth={200}
 				count={40000}
 				factor={6}
