@@ -41,7 +41,7 @@ export const moon: Planet = {
 	id: "moon",
 	name: "月",
 	texturePath: moonTexture,
-	rotationSpeedY: 0.14,
+	rotationSpeedY: 0.07,
 	radius: 0.54,
 	width: 64,
 	height: 64,

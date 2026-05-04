@@ -54,6 +54,11 @@ export function SidebarForm({
 	onAutoKindToggle,
 	onAddToStaged,
 }: SidebarFormProps) {
+	const [radiusInput, setRadiusInput] = useState<string>(String(form.radius));
+	const [massInput, setMassInput] = useState<string>(String(form.mass));
+	const [rotationSpeedYInput, setRotationSpeedYInput] = useState<string>(
+		String(form.rotationSpeedY),
+	);
 	const [position, setPosition] = useState<[string, string, string]>([
 		String(form.position[0]),
 		String(form.position[1]),
@@ -65,6 +70,18 @@ export function SidebarForm({
 		String(form.velocity[2]),
 	]);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		setRadiusInput(String(form.radius));
+	}, [form.radius]);
+
+	useEffect(() => {
+		setMassInput(String(form.mass));
+	}, [form.mass]);
+
+	useEffect(() => {
+		setRotationSpeedYInput(String(form.rotationSpeedY));
+	}, [form.rotationSpeedY]);
 
 	useEffect(() => {
 		setPosition([
@@ -101,12 +118,32 @@ export function SidebarForm({
 
 			{/* Radius */}
 			<div>
-				<label
-					htmlFor="planet-radius"
-					className="mb-1 block text-xs opacity-80"
-				>
-					半径: {form.radius.toFixed(1)}
-				</label>
+				<div className="flex items-center justify-between">
+					<label
+						htmlFor="planet-radius"
+						className="mb-1 block text-xs opacity-80"
+					>
+						半径: {form.radius.toFixed(1)}
+					</label>
+					<input
+						type="text"
+						value={radiusInput}
+						onChange={(e) => setRadiusInput(e.target.value)}
+						onBlur={() => {
+							const val = radiusInput.trim();
+							if (val === "") {
+								setRadiusInput(String(form.radius));
+								return;
+							}
+							const num = Number(val);
+							if (!Number.isNaN(num)) {
+								onRadiusChange(num);
+								setRadiusInput(String(num));
+							}
+						}}
+						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+					/>
+				</div>
 				<input
 					id="planet-radius"
 					type="range"
@@ -121,9 +158,32 @@ export function SidebarForm({
 
 			{/* Mass */}
 			<div>
-				<label htmlFor="planet-mass" className="mb-1 block text-xs opacity-80">
-					質量: {form.mass.toFixed(1)}
-				</label>
+				<div className="flex items-center justify-between">
+					<label
+						htmlFor="planet-mass"
+						className="mb-1 block text-xs opacity-80"
+					>
+						質量: {form.mass.toFixed(1)}
+					</label>
+					<input
+						type="text"
+						value={massInput}
+						onChange={(e) => setMassInput(e.target.value)}
+						onBlur={() => {
+							const val = massInput.trim();
+							if (val === "") {
+								setMassInput(String(form.mass));
+								return;
+							}
+							const num = Number(val);
+							if (!Number.isNaN(num)) {
+								onMassChange(num);
+								setMassInput(String(num));
+							}
+						}}
+						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+					/>
+				</div>
 				<input
 					id="planet-mass"
 					type="range"
@@ -138,18 +198,38 @@ export function SidebarForm({
 
 			{/* Rotation Speed */}
 			<div>
-				<label
-					htmlFor="planet-rotation"
-					className="mb-1 block text-xs opacity-80"
-				>
-					自転速度: {form.rotationSpeedY.toFixed(1)}
-				</label>
+				<div className="flex items-center justify-between">
+					<label
+						htmlFor="planet-rotation"
+						className="mb-1 block text-xs opacity-80"
+					>
+						自転速度: {form.rotationSpeedY.toFixed(2)}
+					</label>
+					<input
+						type="text"
+						value={rotationSpeedYInput}
+						onChange={(e) => setRotationSpeedYInput(e.target.value)}
+						onBlur={() => {
+							const val = rotationSpeedYInput.trim();
+							if (val === "") {
+								setRotationSpeedYInput(String(form.rotationSpeedY));
+								return;
+							}
+							const num = Number(val);
+							if (!Number.isNaN(num)) {
+								onRotationSpeedChange(num);
+								setRotationSpeedYInput(String(num));
+							}
+						}}
+						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+					/>
+				</div>
 				<input
 					id="planet-rotation"
 					type="range"
-					min={0}
+					min={-10}
 					max={10}
-					step={0.1}
+					step={0.01}
 					value={form.rotationSpeedY}
 					onChange={(e) => onRotationSpeedChange(Number(e.target.value))}
 					className="w-full"
