@@ -5,6 +5,7 @@ import {
 	jupiter,
 	mars,
 	mercury,
+	moon,
 	neptune,
 	saturn,
 	sun,
@@ -29,6 +30,7 @@ type SidebarFormProps = {
 
 const planetTemplates = {
 	sun,
+	moon,
 	mercury,
 	venus,
 	earth,

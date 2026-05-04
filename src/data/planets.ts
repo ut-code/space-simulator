@@ -7,6 +7,7 @@ import saturnTexture from "@/assets/2k_saturn.avif";
 import sunTexture from "@/assets/2k_sun.avif";
 import uranusTexture from "@/assets/2k_uranus.avif";
 import venusTexture from "@/assets/2k_venus_atmosphere.avif";
+import moonTexture from "@/assets/960px-Moon_texture.avif";
 import earthTexture from "@/assets/earth_atmos_2048.avif";
 import type { Planet } from "@/types/planet";
 
@@ -27,7 +28,7 @@ export const sun: Planet = {
 	id: "sun",
 	name: "太陽",
 	texturePath: sunTexture,
-	rotationSpeedY: 0.1,
+	rotationSpeedY: 0.07,
 	radius: 30,
 	width: 64,
 	height: 64,
@@ -36,11 +37,24 @@ export const sun: Planet = {
 	mass: 333000,
 };
 
+export const moon: Planet = {
+	id: "moon",
+	name: "月",
+	texturePath: moonTexture,
+	rotationSpeedY: 0.07,
+	radius: 0.54,
+	width: 64,
+	height: 64,
+	position: new THREE.Vector3(0, 0, 0),
+	velocity: new THREE.Vector3(0, 0, 0),
+	mass: 0.012,
+};
+
 export const mercury: Planet = {
 	id: "mercury",
 	name: "水星",
 	texturePath: mercuryTexture,
-	rotationSpeedY: 2,
+	rotationSpeedY: 0.03,
 	radius: 0.76, // 0.38 × 2
 	width: 64,
 	height: 64,
@@ -53,7 +67,7 @@ export const venus: Planet = {
 	id: "venus",
 	name: "金星",
 	texturePath: venusTexture,
-	rotationSpeedY: 1.8,
+	rotationSpeedY: -0.01,
 	radius: 1.8,
 	width: 64,
 	height: 64,
@@ -79,7 +93,7 @@ export const mars: Planet = {
 	id: "mars",
 	name: "火星",
 	texturePath: marsTexture,
-	rotationSpeedY: 1.5,
+	rotationSpeedY: 1.95,
 	radius: 1,
 	width: 64,
 	height: 64,
@@ -92,7 +106,7 @@ export const jupiter: Planet = {
 	id: "jupiter",
 	name: "木星",
 	texturePath: jupiterTexture,
-	rotationSpeedY: 1.2,
+	rotationSpeedY: 4.82,
 	radius: 22,
 	width: 64,
 	height: 64,
@@ -105,7 +119,7 @@ export const saturn: Planet = {
 	id: "saturn",
 	name: "土星",
 	texturePath: saturnTexture,
-	rotationSpeedY: 2,
+	rotationSpeedY: 4.68,
 	radius: 18.2, // 9.45 × 2
 	width: 64,
 	height: 64,
@@ -118,7 +132,7 @@ export const uranus: Planet = {
 	id: "uranus",
 	name: "天王星",
 	texturePath: uranusTexture,
-	rotationSpeedY: 2,
+	rotationSpeedY: -2.78,
 	radius: 8.0, // 4.0 × 2
 	width: 64,
 	height: 64,
@@ -131,7 +145,7 @@ export const neptune: Planet = {
 	id: "neptune",
 	name: "海王星",
 	texturePath: neptuneTexture,
-	rotationSpeedY: 2,
+	rotationSpeedY: 2.97,
 	radius: 7.8, // 3.9 × 2
 	width: 64,
 	height: 64,

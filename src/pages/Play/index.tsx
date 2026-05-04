@@ -3,7 +3,18 @@ import { useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import * as THREE from "three";
 import type { OrbitControls as Controls } from "three-stdlib";
-import { earth, jupiter, mars, sun, venus } from "@/data/planets";
+import {
+	earth,
+	jupiter,
+	mars,
+	mercury,
+	moon,
+	neptune,
+	saturn,
+	sun,
+	uranus,
+	venus,
+} from "@/data/planets";
 import { PlanetSidebar } from "./components/PlanetSidebar";
 import { SimulationCanvas } from "./components/SimulationCanvas";
 import { usePlanetSidebar } from "./hooks/usePlanetSidebar";
@@ -11,11 +22,16 @@ import { useSimulation } from "./hooks/useSimulation";
 import { decidePlanetKind, texturePathByKind } from "./utils/planetKind";
 
 const planetTexturePaths = [
-	earth.texturePath,
 	sun.texturePath,
+	moon.texturePath,
+	mercury.texturePath,
+	venus.texturePath,
+	earth.texturePath,
 	mars.texturePath,
 	jupiter.texturePath,
-	venus.texturePath,
+	saturn.texturePath,
+	uranus.texturePath,
+	neptune.texturePath,
 ];
 useTexture.preload(planetTexturePaths);
 

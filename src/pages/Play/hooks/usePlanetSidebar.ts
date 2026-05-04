@@ -4,6 +4,7 @@ import {
 	jupiter,
 	mars,
 	mercury,
+	moon,
 	neptune,
 	saturn,
 	sun,
@@ -15,6 +16,7 @@ import type { StagedPlanet } from "../types/sidebar";
 
 const planetTemplates: Record<string, Planet> = {
 	sun,
+	moon,
 	mercury,
 	venus,
 	earth,
