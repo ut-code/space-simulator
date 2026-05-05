@@ -4,9 +4,17 @@ import { templates } from "@/data/templates";
 
 const templateDescriptions: Record<string, string> = {
 	default: "1つの地球から始める基本シミュレーション",
-	solar: "太陽系の主要天体を配置したテンプレート",
+	solar: `太陽系の主要天体を配置したテンプレート `,
 	binary: "2つの恒星が互いを公転する連星系",
 	"asteroid-belt": "小惑星帯を含むダイナミックな系",
+};
+
+const templateNotes: Record<string, string> = {
+	default: "",
+	solar: `※地球と月のみデフォルトのサイズより小さくなっています。 
+	追尾して画面を拡大すると見つけやすいです。`,
+	binary: "",
+	"asteroid-belt": "",
 };
 
 function getTemplateTitle(id: string): string {
@@ -52,6 +60,9 @@ export default function Page() {
 							>
 								このテンプレートで開始
 							</button>
+							<p className="text-slate-400 whitespace-pre-line text-sm mt-5">
+								{templateNotes[id] ?? ""}
+							</p>
 						</div>
 					))}
 				</div>
