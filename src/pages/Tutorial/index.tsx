@@ -1,7 +1,4 @@
-import { Stars } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
-import ThreeCanvas from "@/components/Canvas";
-import HomeScene from "@/components/Scene";
 
 const tutorialCards = [
 	{
@@ -21,19 +18,6 @@ export default function Page() {
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-			<ThreeCanvas>
-				<Stars
-					radius={100}
-					depth={50}
-					count={5000}
-					factor={4}
-					saturation={0}
-					fade
-					speed={1}
-				/>
-				<HomeScene />
-			</ThreeCanvas>
-
 			<div className="absolute inset-0 overflow-y-auto flex justify-center p-6 py-12 md:py-20">
 				<div
 					className="
@@ -88,7 +72,7 @@ export default function Page() {
 						<button
 							type="button"
 							onClick={() => navigate("/")}
-							className="text-gray-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
+							className="text-gray-500 hover:text-white transition-colors text-lg font-bold uppercase tracking-[0.4em] cursor-pointer"
 						>
 							ホームへ戻る
 						</button>

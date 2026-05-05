@@ -1,26 +1,10 @@
-import { Stars } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
-import ThreeCanvas from "@/components/Canvas";
-import HomeScene from "@/components/Scene";
 
 export default function Page() {
 	const navigate = useNavigate();
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-			<ThreeCanvas>
-				<Stars
-					radius={100}
-					depth={50}
-					count={5000}
-					factor={4}
-					saturation={0}
-					fade
-					speed={1}
-				/>
-				<HomeScene />
-			</ThreeCanvas>
-
 			<div className="absolute inset-0 overflow-y-auto flex justify-center p-6 py-12 md:py-20">
 				<div className="bg-black/60 backdrop-blur-2xl rounded-[3rem] p-12 md:p-20 max-w-6xl w-full h-fit my-auto border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col gap-12">
 					<div className="text-center space-y-4">
@@ -30,6 +14,25 @@ export default function Page() {
 						<p className="text-blue-200 text-lg opacity-80">
 							宇宙シミュレーションで遊ぶ方法を知る
 						</p>
+					</div>
+
+					<div className="rounded-3xl border border-white/10 bg-white/10 p-8 text-gray-300 leading-relaxed">
+						<p className="text-2xl text-center font-semibold text-white mb-3">
+							基本操作
+						</p>
+						<div className="flex flex-col text-lg items-center gap-2 text-gray-300">
+							<div className="flex items-center gap-2">
+								<span>①　左クリック＋ドラッグで視点を回転</span>
+							</div>
+
+							<div className="flex items-center gap-2">
+								<span>②　右クリック＋ドラッグで視点を移動</span>
+							</div>
+
+							<div className="flex items-center gap-2">
+								<span>③　スクロールで拡大・縮小</span>
+							</div>
+						</div>
 					</div>
 
 					<div className="grid gap-6 md:grid-cols-3">
@@ -70,7 +73,7 @@ export default function Page() {
 						<button
 							type="button"
 							onClick={() => navigate("/tutorial")}
-							className="text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
+							className="text-gray-400 hover:text-white transition-colors text-lg font-bold uppercase tracking-[0.4em] cursor-pointer"
 						>
 							メニューへ戻る
 						</button>
