@@ -72,7 +72,7 @@ export default function Page() {
 						<button
 							type="button"
 							onClick={() => navigate("/")}
-							className="text-gray-500 hover:text-white transition-colors text-lg font-bold uppercase tracking-[0.4em] cursor-pointer"
+							className="text-gray-400 hover:text-white transition-colors text-lg font-bold uppercase tracking-[0.4em] cursor-pointer"
 						>
 							ホームへ戻る
 						</button>

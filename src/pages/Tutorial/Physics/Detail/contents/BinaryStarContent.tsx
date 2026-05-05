@@ -40,7 +40,7 @@ export default function BinaryStarContent() {
 					<div className="text-3xl text-blue-400 my-6 text-center">
 						<BlockMath math={"M_1 r_1 = M_2 r_2"} />
 					</div>
-					<p className="text-xs text-gray-500 mb-4 text-center">
+					<p className="text-xs text-gray-400 mb-4 text-center">
 						※ M: 星の重さ、r: 重心からの距離
 					</p>
 					<p className="text-sm text-gray-400 border-t border-white/10 pt-4">
@@ -76,7 +76,7 @@ export default function BinaryStarContent() {
 							math={"M_1 \\frac{v_1^2}{r_1} = G \\frac{M_1 M_2}{(r_1 + r_2)^2}"}
 						/>
 					</div>
-					<div className="text-xs text-gray-500 mb-4 text-center space-y-1">
+					<div className="text-xs text-gray-400 mb-4 text-center space-y-1">
 						<p>
 							左辺：外へ逃げようとする力（遠心力） /
 							右辺：相手に引かれる力（万有引力）

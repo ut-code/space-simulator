@@ -63,7 +63,7 @@ export default function EccentricityContent() {
 					<div className="text-4xl text-blue-400 my-4">
 						<BlockMath math={"v_{circle} = \\sqrt{\\frac{GM}{r}}"} />
 					</div>
-					<p className="text-xs text-gray-500 mt-4">
+					<p className="text-xs text-gray-400 mt-4">
 						この速度ぴったりだと <InlineMath math={"e = 0"} />
 						（円）になります。
 					</p>

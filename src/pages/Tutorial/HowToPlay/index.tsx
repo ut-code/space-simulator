@@ -16,21 +16,23 @@ export default function Page() {
 						</p>
 					</div>
 
-					<div className="rounded-3xl border border-white/10 bg-white/10 p-8 text-gray-300 leading-relaxed">
-						<p className="text-2xl text-center font-semibold text-white mb-3">
-							基本操作
-						</p>
-						<div className="flex flex-col text-lg items-center gap-2 text-gray-300">
-							<div className="flex items-center gap-2">
-								<span>①　左クリック＋ドラッグで視点を回転</span>
-							</div>
+					<div className="flex justify-center">
+						<div className="w-fit rounded-3xl border border-white/10 bg-white/10 p-8 text-gray-300 leading-relaxed">
+							<p className="text-2xl text-center font-semibold text-white mb-3">
+								基本操作
+							</p>
+							<div className="flex flex-col text-lg items-left gap-2 text-gray-300">
+								<div className="flex items-center gap-2">
+									<span>①　左クリック＋ドラッグで視点を回転</span>
+								</div>
 
-							<div className="flex items-center gap-2">
-								<span>②　右クリック＋ドラッグで視点を移動</span>
-							</div>
+								<div className="flex items-center gap-2">
+									<span>②　右クリック＋ドラッグで視点を移動</span>
+								</div>
 
-							<div className="flex items-center gap-2">
-								<span>③　スクロールで拡大・縮小</span>
+								<div className="flex items-center gap-2">
+									<span>③　スクロールで拡大・縮小</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -45,7 +47,7 @@ export default function Page() {
 								key={text}
 								className="rounded-3xl border border-white/10 bg-white/10 p-8 text-gray-300 leading-relaxed"
 							>
-								<p className="text-sm uppercase tracking-[0.35em] text-blue-200/60 mb-4 font-bold">
+								<p className="text-center text-sm uppercase tracking-[0.35em] text-blue-200/60 mb-4 font-bold">
 									Step {index + 1}
 								</p>
 								<p>{text}</p>
@@ -54,7 +56,9 @@ export default function Page() {
 					</div>
 
 					<div className="rounded-3xl border border-white/10 bg-white/10 p-8 text-gray-300 leading-relaxed">
-						<p className="text-xl font-semibold text-white mb-3">操作のコツ</p>
+						<p className="text-center text-xl font-semibold text-white mb-3">
+							操作のコツ
+						</p>
 						<p>
 							ヘルパー
 							でグリッド・軸・プレビュー表示を切り替えると見やすくなります。

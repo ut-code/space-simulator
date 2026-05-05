@@ -24,16 +24,20 @@ export default function Page() {
 	return (
 		<div className="min-h-screen bg-slate-950 text-white px-6 py-12">
 			<div className="mx-auto max-w-5xl">
-				<h1 className="text-4xl font-bold tracking-wide mb-3">テンプレート</h1>
-				<p className="text-slate-300 mb-8">
-					開始したいテンプレートを選択してください。
-				</p>
+				<div className="text-center">
+					<h1 className="text-4xl font-bold tracking-wide mb-3">
+						テンプレート
+					</h1>
+					<p className="text-slate-300 mb-8">
+						開始したいテンプレートを選択してください。
+					</p>
+				</div>
 
 				<div className="grid gap-4 md:grid-cols-2">
 					{templateIds.map((id) => (
 						<div
 							key={id}
-							className="rounded-xl border border-slate-700 bg-slate-900/60 p-5"
+							className="text-center rounded-xl border border-slate-700 bg-slate-900/60 p-5"
 						>
 							<h2 className="text-2xl font-semibold mb-2">
 								{getTemplateTitle(id) ?? "テンプレート"}
@@ -52,13 +56,13 @@ export default function Page() {
 					))}
 				</div>
 
-				<div className="mt-8">
+				<div className="flex justify-center mt-8">
 					<button
 						type="button"
 						onClick={() => navigate("/")}
-						className="px-5 py-2 rounded-lg border border-slate-500 hover:bg-slate-800 transition"
+						className="text-gray-400 hover:text-white transition-colors text-xl font-bold uppercase tracking-[0.4em] cursor-pointer"
 					>
-						ホームに戻る
+						ホームへ戻る
 					</button>
 				</div>
 			</div>
