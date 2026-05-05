@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { OrbitControls as Controls } from "three-stdlib";
+import Content from "@/components/HowToPlayContent";
 import { Switch } from "@/components/ui/switch";
 import type {
 	PlanetRegistry,
@@ -86,6 +88,8 @@ export function PlanetSidebar({
 				item !== null,
 		);
 
+	const [isHintOpen, setIsHintOpen] = useState<boolean>(false);
+
 	return (
 		<>
 			{/* Sidebar */}
@@ -102,8 +106,15 @@ export function PlanetSidebar({
 				{/* Panel content */}
 				{isOpen && (
 					<div className="w-80 max-h-screen overflow-y-auto rounded-l-lg bg-black/80 p-4 text-sm text-white backdrop-blur-sm">
-						<div className="mb-4">
+						<div className="flex mb-4 items-center">
 							<strong className="text-base">惑星を追加する</strong>
+							<button
+								type="button"
+								onClick={() => setIsHintOpen(true)}
+								className="ml-auto w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold hover:bg-slate-600"
+							>
+								?
+							</button>
 						</div>
 
 						{/* Form */}
@@ -280,6 +291,37 @@ export function PlanetSidebar({
 									className="mt-1 w-full rounded border border-white/30 bg-transparent px-2 py-1 text-xs text-white/80 hover:bg-white/10"
 								>
 									カメラリセット
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
+
+				{isHintOpen && (
+					<div
+						className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-8"
+						onClick={() => setIsHintOpen(false)}
+						onKeyDown={(e) => {
+							if (e.key === "Escape") setIsHintOpen(false);
+						}}
+						role="dialog"
+						aria-modal="true"
+						tabIndex={-1}
+					>
+						<div
+							className="flex flex-col gap-12 bg-slate-900 text-white p-12 rounded-2xl w-[90%] max-w-5xl max-h-[90vh] overflow-y-auto no-scrollbar"
+							role="document"
+							onMouseDown={(e) => e.stopPropagation()}
+						>
+							<Content />
+
+							<div className="flex flex-col items-center gap-6 pt-8 border-t border-white/10">
+								<button
+									type="button"
+									onClick={() => setIsHintOpen(false)}
+									className="w-64 px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold text-lg transition-all transform hover:scale-105 cursor-pointer"
+								>
+									シミュレーションに戻る{" "}
 								</button>
 							</div>
 						</div>
