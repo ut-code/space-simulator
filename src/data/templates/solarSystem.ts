@@ -67,7 +67,7 @@ const earth: Planet = {
 	name: "地球",
 	texturePath: earthTexture,
 	rotationSpeedY: 2,
-	radius: 0.1,
+	radius: 0.1, //半径が大きいと最初から月とぶつかる
 	width: 64,
 	height: 64,
 	position: new THREE.Vector3(1 * AU, 0, 0),
