@@ -168,6 +168,11 @@ export function SidebarForm({
 						type="text"
 						value={radiusInput}
 						onChange={(e) => setRadiusInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.currentTarget.blur();
+							}
+						}}
 						onBlur={() => {
 							const val = radiusInput.trim();
 							if (val === "") {
@@ -185,7 +190,7 @@ export function SidebarForm({
 									setPropertyError("radius", "範囲内の数値を入力してください");
 								}
 							} else {
-								setPropertyError("radius", "数値を入力してください");
+								setPropertyError("radius", "半角数字で入力してください");
 							}
 						}}
 						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -220,6 +225,11 @@ export function SidebarForm({
 						type="text"
 						value={massInput}
 						onChange={(e) => setMassInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.currentTarget.blur();
+							}
+						}}
 						onBlur={() => {
 							const val = massInput.trim();
 							if (val === "") {
@@ -237,7 +247,7 @@ export function SidebarForm({
 									setPropertyError("mass", "範囲内の数値を入力してください");
 								}
 							} else {
-								setPropertyError("mass", "数値を入力してください");
+								setPropertyError("mass", "半角数字で入力してください");
 							}
 						}}
 						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -272,6 +282,11 @@ export function SidebarForm({
 						type="text"
 						value={rotationSpeedYInput}
 						onChange={(e) => setRotationSpeedYInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.currentTarget.blur();
+							}
+						}}
 						onBlur={() => {
 							const val = rotationSpeedYInput.trim();
 							if (val === "") {
@@ -292,7 +307,7 @@ export function SidebarForm({
 									);
 								}
 							} else {
-								setPropertyError("rotation", "数値を入力してください");
+								setPropertyError("rotation", "半角数字で入力してください");
 							}
 						}}
 						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -386,34 +401,12 @@ export function SidebarForm({
 											});
 											setPositionError(idx, null);
 										} else {
-											setPositionError(idx, "数値を入力してください");
+											setPositionError(idx, "半角数字で入力してください");
 										}
 									}}
 									onKeyDown={(e) => {
 										if (e.key === "Enter") {
-											const val = position[idx].trim();
-											if (val === "") {
-												onPositionChange(axis, 0);
-												setPosition((prev) => {
-													const newPos = [...prev] as [string, string, string];
-													newPos[idx] = String(0);
-													return newPos;
-												});
-												setPositionError(idx, null);
-												return;
-											}
-											const num = Number(val);
-											if (!Number.isNaN(num)) {
-												onPositionChange(axis, num);
-												setPosition((prev) => {
-													const newPos = [...prev] as [string, string, string];
-													newPos[idx] = String(num);
-													return newPos;
-												});
-												setPositionError(idx, null);
-											} else {
-												setPositionError(idx, "数値を入力してください");
-											}
+											e.currentTarget.blur();
 										}
 									}}
 									onChange={(e) => {
@@ -481,34 +474,12 @@ export function SidebarForm({
 											});
 											setVelocityError(idx, null);
 										} else {
-											setVelocityError(idx, "数値を入力してください");
+											setVelocityError(idx, "半角数字で入力してください");
 										}
 									}}
 									onKeyDown={(e) => {
 										if (e.key === "Enter") {
-											const val = velocity[idx].trim();
-											if (val === "") {
-												onVelocityChange(axis, 0);
-												setVelocity((prev) => {
-													const newVel = [...prev] as [string, string, string];
-													newVel[idx] = String(0);
-													return newVel;
-												});
-												setVelocityError(idx, null);
-												return;
-											}
-											const num = Number(val);
-											if (!Number.isNaN(num)) {
-												onVelocityChange(axis, num);
-												setVelocity((prev) => {
-													const newVel = [...prev] as [string, string, string];
-													newVel[idx] = String(num);
-													return newVel;
-												});
-												setVelocityError(idx, null);
-											} else {
-												setVelocityError(idx, "数値を入力してください");
-											}
+											e.currentTarget.blur();
 										}
 									}}
 									onChange={(e) => {
