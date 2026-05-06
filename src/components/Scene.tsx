@@ -1,13 +1,36 @@
 import { useFrame, useLoader } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
-import { earth, jupiter, mars, sun, venus } from "@/data/planets";
+import {
+	earth,
+	jupiter,
+	mars,
+	mercury,
+	moon,
+	neptune,
+	saturn,
+	sun,
+	uranus,
+	venus,
+} from "@/data/planets";
 import type { Planet } from "@/types/planet";
 
-const planets = [earth, jupiter, mars, sun, venus];
+const planets = [
+	sun,
+	moon,
+	mercury,
+	venus,
+	earth,
+	mars,
+	jupiter,
+	saturn,
+	uranus,
+	neptune,
+];
 
 export default function HomeScene() {
-	const planet: Planet = planets[Math.floor(Math.random() * planets.length)];
+	const planetIndex = useRef(Math.floor(Math.random() * planets.length));
+	const planet: Planet = planets[planetIndex.current];
 	const texture = useLoader(THREE.TextureLoader, planet.texturePath);
 	const planetRef = useRef<THREE.Mesh>(null);
 

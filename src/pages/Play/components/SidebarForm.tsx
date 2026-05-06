@@ -5,6 +5,7 @@ import {
 	jupiter,
 	mars,
 	mercury,
+	moon,
 	neptune,
 	saturn,
 	sun,
@@ -29,6 +30,7 @@ type SidebarFormProps = {
 
 const planetTemplates = {
 	sun,
+	moon,
 	mercury,
 	venus,
 	earth,
@@ -52,6 +54,11 @@ export function SidebarForm({
 	onAutoKindToggle,
 	onAddToStaged,
 }: SidebarFormProps) {
+	const [radiusInput, setRadiusInput] = useState<string>(String(form.radius));
+	const [massInput, setMassInput] = useState<string>(String(form.mass));
+	const [rotationSpeedYInput, setRotationSpeedYInput] = useState<string>(
+		String(form.rotationSpeedY),
+	);
 	const [position, setPosition] = useState<[string, string, string]>([
 		String(form.position[0]),
 		String(form.position[1]),
@@ -62,15 +69,66 @@ export function SidebarForm({
 		String(form.velocity[1]),
 		String(form.velocity[2]),
 	]);
-	const [error, setError] = useState<string | null>(null);
+	const [propertyErrors, setPropertyErrors] = useState({
+		radius: null as string | null,
+		mass: null as string | null,
+		rotation: null as string | null,
+	});
+	const [stateErrors, setStateErrors] = useState({
+		position: [null, null, null] as (string | null)[],
+		velocity: [null, null, null] as (string | null)[],
+	});
 
 	useEffect(() => {
-		setPosition([
-			String(form.position[0]),
-			String(form.position[1]),
-			String(form.position[2]),
-		]);
-	}, [form.position]);
+		setRadiusInput(String(form.radius));
+	}, [form.radius]);
+
+	useEffect(() => {
+		setMassInput(String(form.mass));
+	}, [form.mass]);
+
+	useEffect(() => {
+		setRotationSpeedYInput(String(form.rotationSpeedY));
+	}, [form.rotationSpeedY]);
+
+	// useEffect(() => {
+	// 	setPosition([
+	// 		String(form.position[0]),
+	// 		String(form.position[1]),
+	// 		String(form.position[2]),
+	// 	]);
+	// }, [form.position]);
+
+	function setPropertyError(
+		key: "radius" | "mass" | "rotation",
+		message: string | null,
+	) {
+		setPropertyErrors((prev) => ({
+			...prev,
+			[key]: message,
+		}));
+	}
+
+	function setPositionError(idx: number, message: string | null) {
+		setStateErrors((prev) => {
+			const newErrors = [...prev.position];
+			newErrors[idx] = message;
+			return { ...prev, position: newErrors };
+		});
+	}
+
+	function setVelocityError(idx: number, message: string | null) {
+		setStateErrors((prev) => {
+			const newErrors = [...prev.velocity];
+			newErrors[idx] = message;
+			return { ...prev, velocity: newErrors };
+		});
+	}
+
+	const canAdd =
+		!Object.values(propertyErrors).some((e) => e !== null) &&
+		!stateErrors.position.some((e) => e !== null) &&
+		!stateErrors.velocity.some((e) => e !== null);
 
 	return (
 		<div className="space-y-3">
@@ -99,12 +157,45 @@ export function SidebarForm({
 
 			{/* Radius */}
 			<div>
-				<label
-					htmlFor="planet-radius"
-					className="mb-1 block text-xs opacity-80"
-				>
-					半径: {form.radius.toFixed(1)}
-				</label>
+				<div className="flex items-center justify-between">
+					<label
+						htmlFor="planet-radius"
+						className="mb-1 block text-xs opacity-80"
+					>
+						半径: {form.radius.toFixed(1)}
+					</label>
+					<input
+						type="text"
+						value={radiusInput}
+						onChange={(e) => setRadiusInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.currentTarget.blur();
+							}
+						}}
+						onBlur={() => {
+							const val = radiusInput.trim();
+							if (val === "") {
+								setRadiusInput(String(form.radius));
+								setPropertyError("radius", null);
+								return;
+							}
+							const num = Number(val);
+							if (!Number.isNaN(num)) {
+								if (0.2 <= num && num <= 50) {
+									onRadiusChange(num);
+									setRadiusInput(String(num));
+									setPropertyError("radius", null);
+								} else {
+									setPropertyError("radius", "範囲内の数値を入力してください");
+								}
+							} else {
+								setPropertyError("radius", "半角数字で入力してください");
+							}
+						}}
+						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+					/>
+				</div>
 				<input
 					id="planet-radius"
 					type="range"
@@ -112,16 +203,56 @@ export function SidebarForm({
 					max={50}
 					step={0.1}
 					value={form.radius}
-					onChange={(e) => onRadiusChange(Number(e.target.value))}
+					onChange={(e) => {
+						const val = Number(e.target.value);
+						onRadiusChange(val);
+						setPropertyError("radius", null);
+					}}
 					className="w-full"
 				/>
 			</div>
 
 			{/* Mass */}
 			<div>
-				<label htmlFor="planet-mass" className="mb-1 block text-xs opacity-80">
-					質量: {form.mass.toFixed(1)}
-				</label>
+				<div className="flex items-center justify-between">
+					<label
+						htmlFor="planet-mass"
+						className="mb-1 block text-xs opacity-80"
+					>
+						質量: {form.mass.toFixed(1)}
+					</label>
+					<input
+						type="text"
+						value={massInput}
+						onChange={(e) => setMassInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.currentTarget.blur();
+							}
+						}}
+						onBlur={() => {
+							const val = massInput.trim();
+							if (val === "") {
+								setMassInput(String(form.mass));
+								setPropertyError("mass", null);
+								return;
+							}
+							const num = Number(val);
+							if (!Number.isNaN(num)) {
+								if (0.1 <= num && num <= 500000) {
+									onMassChange(num);
+									setMassInput(String(num));
+									setPropertyError("mass", null);
+								} else {
+									setPropertyError("mass", "範囲内の数値を入力してください");
+								}
+							} else {
+								setPropertyError("mass", "半角数字で入力してください");
+							}
+						}}
+						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+					/>
+				</div>
 				<input
 					id="planet-mass"
 					type="range"
@@ -129,29 +260,94 @@ export function SidebarForm({
 					max={500000}
 					step={0.1}
 					value={form.mass}
-					onChange={(e) => onMassChange(Number(e.target.value))}
+					onChange={(e) => {
+						const val = Number(e.target.value);
+						onMassChange(val);
+						setPropertyError("mass", null);
+					}}
 					className="w-full"
 				/>
 			</div>
 
 			{/* Rotation Speed */}
 			<div>
-				<label
-					htmlFor="planet-rotation"
-					className="mb-1 block text-xs opacity-80"
-				>
-					自転速度: {form.rotationSpeedY.toFixed(1)}
-				</label>
+				<div className="flex items-center justify-between">
+					<label
+						htmlFor="planet-rotation"
+						className="mb-1 block text-xs opacity-80"
+					>
+						自転速度: {form.rotationSpeedY.toFixed(2)}
+					</label>
+					<input
+						type="text"
+						value={rotationSpeedYInput}
+						onChange={(e) => setRotationSpeedYInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.currentTarget.blur();
+							}
+						}}
+						onBlur={() => {
+							const val = rotationSpeedYInput.trim();
+							if (val === "") {
+								setRotationSpeedYInput(String(form.rotationSpeedY));
+								setPropertyError("rotation", null);
+								return;
+							}
+							const num = Number(val);
+							if (!Number.isNaN(num)) {
+								if (-10 <= num && num <= 10) {
+									onRotationSpeedChange(num);
+									setRotationSpeedYInput(String(num));
+									setPropertyError("rotation", null);
+								} else {
+									setPropertyError(
+										"rotation",
+										"範囲内の数値を入力してください",
+									);
+								}
+							} else {
+								setPropertyError("rotation", "半角数字で入力してください");
+							}
+						}}
+						className="w-20 text-left rounded border border-white/20 bg-white/5 px-2 py-1 text-sm text-white [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+					/>
+				</div>
 				<input
 					id="planet-rotation"
 					type="range"
-					min={0}
+					min={-10}
 					max={10}
-					step={0.1}
+					step={0.01}
 					value={form.rotationSpeedY}
-					onChange={(e) => onRotationSpeedChange(Number(e.target.value))}
+					onChange={(e) => {
+						const val = Number(e.target.value);
+						onRotationSpeedChange(val);
+						setPropertyError("rotation", null);
+					}}
 					className="w-full"
 				/>
+			</div>
+			<div>
+				{propertyErrors.radius && (
+					<p className="text-red-400 text-xs mt-1">
+						半径 : {propertyErrors.radius}
+					</p>
+				)}
+			</div>
+			<div>
+				{propertyErrors.mass && (
+					<p className="text-red-400 text-xs mt-1">
+						質量 : {propertyErrors.mass}
+					</p>
+				)}
+			</div>
+			<div>
+				{propertyErrors.rotation && (
+					<p className="text-red-400 text-xs mt-1">
+						自転速度 : {propertyErrors.rotation}
+					</p>
+				)}
 			</div>
 
 			<div className="border-t border-white/60" />
@@ -192,7 +388,7 @@ export function SidebarForm({
 												newPos[idx] = String(0);
 												return newPos;
 											});
-											setError(null);
+											setPositionError(idx, null);
 											return;
 										}
 										const num = Number(val);
@@ -203,36 +399,14 @@ export function SidebarForm({
 												newPos[idx] = String(num);
 												return newPos;
 											});
-											setError(null);
+											setPositionError(idx, null);
 										} else {
-											setError("数値を入力してください");
+											setPositionError(idx, "半角数字で入力してください");
 										}
 									}}
 									onKeyDown={(e) => {
 										if (e.key === "Enter") {
-											const val = position[idx].trim();
-											if (val === "") {
-												onPositionChange(axis, 0);
-												setPosition((prev) => {
-													const newPos = [...prev] as [string, string, string];
-													newPos[idx] = String(0);
-													return newPos;
-												});
-												setError(null);
-												return;
-											}
-											const num = Number(val);
-											if (!Number.isNaN(num)) {
-												onPositionChange(axis, num);
-												setPosition((prev) => {
-													const newPos = [...prev] as [string, string, string];
-													newPos[idx] = String(num);
-													return newPos;
-												});
-												setError(null);
-											} else {
-												setError("数値を入力してください");
-											}
+											e.currentTarget.blur();
 										}
 									}}
 									onChange={(e) => {
@@ -248,6 +422,15 @@ export function SidebarForm({
 						);
 					})}
 				</div>
+				<ul className="text-red-400 text-xs mt-2 space-y-1">
+					{stateErrors.position.map((err, i) =>
+						err ? (
+							<li key={`pos-${"XYZ"[i]}`}>
+								pos{"XYZ"[i]}: {err}
+							</li>
+						) : null,
+					)}
+				</ul>
 			</div>
 
 			<div className="border-t border-white/60" />
@@ -278,7 +461,7 @@ export function SidebarForm({
 												newVel[idx] = String(0);
 												return newVel;
 											});
-											setError(null);
+											setVelocityError(idx, null);
 											return;
 										}
 										const num = Number(val);
@@ -289,36 +472,14 @@ export function SidebarForm({
 												newVel[idx] = String(num);
 												return newVel;
 											});
-											setError(null);
+											setVelocityError(idx, null);
 										} else {
-											setError("数値を入力してください");
+											setVelocityError(idx, "半角数字で入力してください");
 										}
 									}}
 									onKeyDown={(e) => {
 										if (e.key === "Enter") {
-											const val = velocity[idx].trim();
-											if (val === "") {
-												onVelocityChange(axis, 0);
-												setVelocity((prev) => {
-													const newVel = [...prev] as [string, string, string];
-													newVel[idx] = String(0);
-													return newVel;
-												});
-												setError(null);
-												return;
-											}
-											const num = Number(val);
-											if (!Number.isNaN(num)) {
-												onVelocityChange(axis, num);
-												setVelocity((prev) => {
-													const newVel = [...prev] as [string, string, string];
-													newVel[idx] = String(num);
-													return newVel;
-												});
-												setError(null);
-											} else {
-												setError("数値を入力してください");
-											}
+											e.currentTarget.blur();
 										}
 									}}
 									onChange={(e) => {
@@ -334,6 +495,15 @@ export function SidebarForm({
 						);
 					})}
 				</div>
+				<ul className="text-red-400 text-xs mt-2 space-y-1">
+					{stateErrors.velocity.map((err, i) =>
+						err ? (
+							<li key={`vel-${"XYZ"[i]}`}>
+								vel{"XYZ"[i]}: {err}
+							</li>
+						) : null,
+					)}
+				</ul>
 			</div>
 
 			<div className="border-t border-white/60" />
@@ -349,16 +519,25 @@ export function SidebarForm({
 				</div>
 			</div>
 
-			<div>{error && <p className="text-red-500 text-xs mt-1">{error}</p>}</div>
-
 			{/* Add button */}
 			<button
 				type="button"
 				onClick={onAddToStaged}
-				className="w-full rounded-md bg-cyan-500/80 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-cyan-500"
+				disabled={!canAdd}
+				className={`
+				w-full rounded-md px-3 py-2 text-sm font-semibold text-white transition-colors
+				${
+					canAdd
+						? "bg-cyan-500/80 hover:bg-cyan-500"
+						: "bg-cyan-500/30 text-white/50 cursor-not-allowed"
+				}
+				`}
 			>
 				配置待ちリストに追加
 			</button>
+			{!canAdd && (
+				<p className="text-red-400 text-xs mt-1">入力内容に誤りがあります</p>
+			)}
 		</div>
 	);
 }

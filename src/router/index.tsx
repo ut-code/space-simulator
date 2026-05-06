@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Layout from "@/components/Layout";
 import Loading from "@/components/Loading";
 import Home from "@/pages/Home";
 
@@ -14,7 +15,6 @@ const PhysicsDetail = lazy(() => import("@/pages/Tutorial/Physics/Detail"));
 export const AppRouter = () => (
 	<BrowserRouter>
 		<Routes>
-			<Route path="/" element={<Home />} />
 			<Route
 				path="/play"
 				element={
@@ -31,46 +31,49 @@ export const AppRouter = () => (
 					</Suspense>
 				}
 			/>
-			<Route
-				path="/tutorial"
-				element={
-					<Suspense fallback={<Loading />}>
-						<Tutorial />
-					</Suspense>
-				}
-			/>
-			<Route
-				path="/tutorial/how-to-play"
-				element={
-					<Suspense fallback={<Loading />}>
-						<HowToPlay />
-					</Suspense>
-				}
-			/>
-			<Route
-				path="/tutorial/physics"
-				element={
-					<Suspense fallback={<Loading />}>
-						<Physics />
-					</Suspense>
-				}
-			/>
-			<Route
-				path="/tutorial/:id"
-				element={
-					<Suspense fallback={<Loading />}>
-						<PhysicsDetail />
-					</Suspense>
-				}
-			/>
-			<Route
-				path="*"
-				element={
-					<Suspense fallback={<Loading />}>
-						<NotFound />
-					</Suspense>
-				}
-			/>
+			<Route path="/" element={<Layout />}>
+				<Route path="/" element={<Home />} />
+				<Route
+					path="/tutorial"
+					element={
+						<Suspense fallback={<Loading />}>
+							<Tutorial />
+						</Suspense>
+					}
+				/>
+				<Route
+					path="/tutorial/how-to-play"
+					element={
+						<Suspense fallback={<Loading />}>
+							<HowToPlay />
+						</Suspense>
+					}
+				/>
+				<Route
+					path="/tutorial/physics"
+					element={
+						<Suspense fallback={<Loading />}>
+							<Physics />
+						</Suspense>
+					}
+				/>
+				<Route
+					path="/tutorial/:id"
+					element={
+						<Suspense fallback={<Loading />}>
+							<PhysicsDetail />
+						</Suspense>
+					}
+				/>
+				<Route
+					path="*"
+					element={
+						<Suspense fallback={<Loading />}>
+							<NotFound />
+						</Suspense>
+					}
+				/>
+			</Route>
 		</Routes>
 	</BrowserRouter>
 );

@@ -19,7 +19,7 @@ export default function CircularMotionContent() {
 					<div className="text-4xl text-blue-400 my-4">
 						<BlockMath math={"F = G \\frac{M m}{r^2}"} />
 					</div>
-					<p className="text-xs text-gray-500 mt-4">
+					<p className="text-xs text-gray-400 mt-4">
 						※ F:引力, G:定数, M,m:重さ, r:距離
 					</p>
 				</div>
@@ -49,7 +49,7 @@ export default function CircularMotionContent() {
 					<div className="text-4xl text-orange-400 my-4">
 						<BlockMath math={"m \\frac{v^2}{r} = G \\frac{M m}{r^2}"} />
 					</div>
-					<p className="text-xs text-gray-500 mt-4">
+					<p className="text-xs text-gray-400 mt-4">
 						（左辺：遠心力 ＝ 右辺：万有引力）
 					</p>
 				</div>
@@ -76,7 +76,7 @@ export default function CircularMotionContent() {
 					<div className="text-4xl text-green-400 my-4">
 						<BlockMath math={"v = \\sqrt{\\frac{GM}{r}}"} />
 					</div>
-					<p className="text-xs text-gray-500 mt-4">
+					<p className="text-xs text-gray-400 mt-4">
 						この式は、
 						<strong>「中心から遠くなるほど、ゆっくり回れば安定する」</strong>
 						ことを示しています。

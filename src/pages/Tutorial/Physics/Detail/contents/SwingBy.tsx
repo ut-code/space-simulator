@@ -36,10 +36,10 @@ export default function SwingByContent() {
 					<div className="text-3xl text-blue-400 my-4 font-bold">
 						探査機の速度 += 惑星の速度の成分
 					</div>
-					<p className="text-xs text-gray-500 mt-4">
+					<p className="text-xs text-gray-400 mt-4">
 						相対速度が変化 → 観測すると加速したように見える
 					</p>
-					<p className="text-xs text-gray-500 mt-4">
+					<p className="text-xs text-gray-400 mt-4">
 						動いているトラックにロープを投げて、引っ張ってもらうようなイメージです！
 					</p>
 				</div>
@@ -64,7 +64,7 @@ export default function SwingByContent() {
 					<div className="text-4xl text-orange-400 my-4">
 						<BlockMath math={"m_1 v_1 + m_2 v_2 = \\text{一定}"} />
 					</div>
-					<p className="text-xs text-gray-500 mt-4">
+					<p className="text-xs text-gray-400 mt-4">
 						m: 重さ, v: 速度（1番が飛んできた天体、2番が待ち構える惑星）
 					</p>
 				</div>

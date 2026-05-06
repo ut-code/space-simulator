@@ -22,7 +22,7 @@ export default function SolarSystemContent() {
 					<p className="text-xl tracking-[0.2em] text-blue-400">
 						水星 → 金星 → 地球 → 火星 → 木星 → 土星 → 天王星 → 海王星
 					</p>
-					<p className="text-xs text-gray-500 mt-4 italic">
+					<p className="text-xs text-gray-400 mt-4 italic">
 						「すい・きん・ち・か・もく・ど・てん・かい」で覚えよう！
 					</p>
 				</div>
@@ -73,7 +73,7 @@ export default function SolarSystemContent() {
 					<div className="text-4xl text-green-400 my-4">
 						<BlockMath math={"T^2 \\propto a^3"} />
 					</div>
-					<p className="text-xs text-gray-500 mt-4 italic">
+					<p className="text-xs text-gray-400 mt-4 italic">
 						T: 1周する時間, a: 太陽からの距離
 					</p>
 				</div>

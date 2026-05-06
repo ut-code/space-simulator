@@ -1,7 +1,4 @@
-import { Stars } from "@react-three/drei";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import ThreeCanvas from "@/components/Canvas";
-import HomeScene from "@/components/Scene";
 // KaTeXのスタイルとコンポーネントをインポート
 import "katex/dist/katex.min.css";
 import { fallback, tutorialSections } from "./contents";
@@ -20,19 +17,6 @@ export default function Page() {
 
 	return (
 		<div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-			<ThreeCanvas>
-				<Stars
-					radius={100}
-					depth={50}
-					count={5000}
-					factor={4}
-					saturation={0}
-					fade
-					speed={1}
-				/>
-				<HomeScene />
-			</ThreeCanvas>
-
 			<div className="absolute inset-0 overflow-y-auto flex justify-center p-6 py-12 md:py-20">
 				<div
 					className="
@@ -83,7 +67,7 @@ export default function Page() {
 							<button
 								type="button"
 								onClick={() => navigate("/tutorial/physics")}
-								className="text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-[0.4em] cursor-pointer"
+								className="text-gray-400 hover:text-white transition-colors text-lg font-bold uppercase tracking-[0.4em] cursor-pointer"
 							>
 								← 一覧へ戻る
 							</button>
