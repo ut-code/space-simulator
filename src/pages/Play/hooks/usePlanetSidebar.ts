@@ -103,12 +103,8 @@ export function usePlanetSidebar() {
 	const addToStaged = useCallback(() => {
 		setStagedPlanets((prev) => [...prev, form]);
 		setForm((prev) => ({
-			...defaultForm(),
-			// keep position, velocity, and autoKindAssignment for convenient
-			// consecutive placement
-			position: prev.position,
-			velocity: prev.velocity,
-			autoKindAssignment: prev.autoKindAssignment,
+			...prev,
+			id: crypto.randomUUID(),
 		}));
 	}, [form]);
 
